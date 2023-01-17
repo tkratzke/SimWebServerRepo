@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>FloridaCorrections.kml</name>
+	<open>1</open>
+	<Style id="sn_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>1.5</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl0">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="s_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin00</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_ylw-pushpin">
+		<LineStyle id="cyanHighlightLineStyle">
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle id="cyanHighlightPolyStyle">
+			<color>ffffff00</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl1">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin00">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="msn_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>1.5</width>
+		</LineStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin01</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl00</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin_hl00">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin00">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sn_ylw-pushpin">
+		<LineStyle id="cyanNormalLineStyle">
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle id="cyanNormalPolyStyle">
+			<color>80ffff00</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin01">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+	</Style>
+	<StyleMap id="msn_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_ylw-pushpin0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Folder>
+		<name>Corrections</name>
+		<open>1</open>
+		<Placemark>
+			<name>SUBSTITUTE_PATH</name>
+			<description>Fort Pierce Inlet Correction North</description>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-80.3116834716021,27.47936707948902,0 -80.30800543378038,27.47865532802879,0 -80.30733647914744,27.47675688854767,0 -80.30439419055281,27.47557048146268,0 -80.30258870544553,27.47408740466509,0 -80.30071650256021,27.4740281203124,0 -80.3005828707915,27.47604517495779,0 -80.30205393746851,27.47634177854737,0 -80.30232150386506,27.47776560350512,0 -80.30352527804674,27.47954539477375,0 -80.30198726161841,27.47913013275699,0 -80.2991118653333,27.47717238199213,0 -80.29717273074836,27.47533329148423,0 -80.29616976829524,27.47385016874334,0 -80.29630349988688,27.47242639122018,0 -80.29269292427567,27.47260430592403,0 -80.28861422434613,27.47331604807399,0 -80.28567210328291,27.47408711077483,0 -80.28787864415527,27.47408723228657,0 -80.29068680247561,27.47610440431832,0 -80.29222456714186,27.47877413428652,0 -80.29449790380018,27.4849444227609,0 -80.29872114190791,27.49684242506178,0 -80.30480854220865,27.51108027348753,0 -80.30600971507846,27.51344026633068,0 -80.30722136012639,27.51568425081188,0 -80.30837702339566,27.51810292905054,0 -80.30953276556984,27.52049673419185,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>ADD_CONNECTOR</name>
+			<water>true</water>
+			<description>Haulover Inlet</description>
+			<styleUrl>#m_ylw-pushpin00</styleUrl>
+			<Polygon>
+				<tessellate>1</tessellate>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-80.12065421078266,25.91011910718673,0 -80.12109662093579,25.90620792197653,0 -80.12146532858199,25.90063965897271,0 -80.12544456903652,25.90083848448055,0 -80.12610778634202,25.90256195015562,0 -80.12772899512825,25.90362251030746,0 -80.12971847977431,25.90004289916798,0 -80.12979202715512,25.89712628288458,0 -80.12736044327467,25.89918125678561,0 -80.1208758483392,25.89957905313314,0 -80.12176015685407,25.89845217315303,0 -80.12117086348965,25.88943716106229,0 -80.11984466169901,25.8756489657898,0 -80.11682386109393,25.87710717182132,0 -80.11667598190807,25.89228733787135,0 -80.11689647254336,25.90057330215266,0 -80.12065421078266,25.91011910718673,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+		<Placemark>
+			<name>SUBSTITUTE_PATH</name>
+			<description>Hillsboro Inlet Correction</description>
+			<styleUrl>#msn_ylw-pushpin0</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-80.08625565722846,26.24260480091509,0 -80.08459079400718,26.24805057094372,0 -80.08370934666941,26.25393527689537,0 -80.08341552755604,26.25621885828446,0 -80.08281374153026,26.25744783660678,0 -80.08220532556025,26.25753308966136,0 -80.08188210022699,26.25795936385271,0 -80.08207222571552,26.25843679515507,0 -80.08294683011755,26.25826628881412,0 -80.08330808050708,26.25859025979625,0 -80.0836122924856,26.25860731059465,0 -80.08403059978608,26.26007370759346,0 -80.08344118393212,26.26063639654712,0 -80.08370737946834,26.26106267796353,0 -80.08355527337388,26.26142075440821,0 -80.08414470592371,26.26165947453021,0 -80.08456300693428,26.26140370434585,0 -80.0856087611201,26.26090921108327,0 -80.08686367964761,26.26061932315778,0 -80.08825171549525,26.26041467835709,0 -80.08893618786688,26.25954503429462,0 -80.08952556083406,26.25818089445691,0 -80.08948750830385,26.25773755763289,0 -80.08865077564354,26.2546512726464,0 -80.08916410261706,26.25234923788976,0 -80.0896033021895,26.25074907829037,0 -80.09005949809288,26.24865173173634,0 -80.09093409400137,26.24871988599004,0 -80.09032589169451,26.25211316426819,0 -80.08969863416441,26.25453451221557,0 -80.09028832116634,26.25719461813683,0 -80.09055806794035,26.25839115030202,0 -80.09002575950686,26.25958478727766,0 -80.08962652419439,26.26043738860566,0 -80.0888279596596,26.26110242646042,0 -80.08821949411653,26.26115358899479,0 -80.08612793612222,26.26163105468292,0 -80.08434063264895,26.26263711929353,0 -80.08359023506758,26.26324439181228,0 -80.08300079552855,26.26418220501819,0 -80.08248740964405,26.26573386136598,0 -80.08117541335554,26.26556332962002,0 -80.08195501471552,26.2638752765149,0 -80.0827916411308,26.26273285700293,0 -80.08317192424512,26.26191440196596,0 -80.08205012777125,26.26032864140782,0 -80.08166987429652,26.25942492255633,0 -80.08111849691832,26.25894748107789,0 -80.08079527679568,26.25870875855567,0 -80.08049106527987,26.25867465167403,0 -80.08056713819234,26.25799259413521,0 -80.08064320869377,26.25739578968283,0 -80.0800918176798,26.25770271061187,0 -80.08011080278551,26.25858938865061,0 -80.08018680588437,26.26026041658121,0 -80.07973033698224,26.26513701894862,0 -80.07948303951035,26.26893947503522,0 -80.07920959230277,26.27189777083403,0 -80.07932364768797,26.27297199379106,0 -80.07869599337778,26.27701310818802,0 -80.07858181682632,26.2797243175162,0 -80.07844546532769,26.28301451954897,0 -80.07814109946051,26.28535052459801,0 -80.07787474787082,26.28848800118796,0 -80.07746148829052,26.29216296069282,0 -80.07732817022975,26.29649398076733,0 -80.07694767612443,26.29929045539813,0 -80.07679351072692,26.30038299285602,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+		<Placemark>
+			<name>SUBSTITUTE_PATH</name>
+			<description>Boca Raton Correction</description>
+			<styleUrl>#m_ylw-pushpin1</styleUrl>
+			<LineString>
+				<tessellate>1</tessellate>
+				<coordinates>
+					-80.07361600005046,26.32385046369636,0 -80.0730545848954,26.32748694697834,0 -80.07216141146992,26.33137501409424,0 -80.07205931316494,26.33373077783861,0 -80.07175306024749,26.33540042830585,0 -80.07246916645843,26.33568564644877,0 -80.07310715252554,26.33637179319328,0 -80.07320920966784,26.33794991394463,0 -80.07290295821714,26.33849882096178,0 -80.07292847071828,26.33907059784222,0 -80.07379616118264,26.34021414914078,0 -80.07571023522175,26.34071729604904,0 -80.07609305117113,26.34053432131194,0 -80.07614408973522,26.34025986742476,0 -80.0763993010616,26.34021412006874,0 -80.07673106960165,26.33977956096565,0 -80.07775186911132,26.33673763367636,0 -80.07846645892975,26.33678334394307,0 -80.07731806373649,26.33998538565356,0 -80.07726703170029,26.34046568171376,0 -80.07757329768283,26.34076299834574,0 -80.07739466216938,26.34135765305577,0 -80.07724153645543,26.34151775466497,0 -80.07736915457735,26.34183794750069,0 -80.07719051795253,26.34238685847765,0 -80.07749678312995,26.34245546544453,0 -80.07731816964298,26.34362189861464,0 -80.07690979872082,26.34309586860995,0 -80.07614421228305,26.34563458155632,0 -80.07627183359375,26.3459090372746,0 -80.07588900375475,26.34616062396347,0 -80.07558277474173,26.34755578707322,0 -80.07588906057671,26.34785312053515,0 -80.07555727843185,26.34837917078847,0 -80.07604223812773,26.34883661198733,0 -80.07568493273962,26.34940841211645,0 -80.07599126511315,26.3505291591873,0 -80.07606784982522,26.35080363073415,0 -80.07532765622131,26.35084936808129,0 -80.07504684026557,26.34920255795441,0 -80.0745108080006,26.34707547858397,0 -80.07425558042692,26.34693824782979,0 -80.07259662497191,26.34689248556243,0 -80.07206065548566,26.34705257657873,0 -80.0716522867006,26.3478530717364,0 -80.07101422460613,26.34783018653845,0 -80.07124394259793,26.34705256038697,0 -80.0714736429634,26.3470525652472,0 -80.0714226115291,26.34634355267344,0 -80.07170335496321,26.34629781545529,0 -80.07300501106148,26.34094601761067,0 -80.07218836789055,26.33964236756973,0 -80.07226499062499,26.33646327664545,0 -80.07175459919169,26.33614307165444,0 -80.07098900019342,26.33623454611395,0 -80.07045308289756,26.33623453478825,0 -80.0703254262846,26.33801849146671,0 -80.06976375389873,26.34433085351796,0 
+				</coordinates>
+			</LineString>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

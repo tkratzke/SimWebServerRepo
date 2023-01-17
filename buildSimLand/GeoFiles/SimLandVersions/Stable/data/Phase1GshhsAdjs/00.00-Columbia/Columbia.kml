@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/8/18 2:02 PM-->
+    <Document>
+        <name>00.00-Columbia.Columbia-adj.kml</name>
+        <description>Conversion on 5/8/18 2:02:46 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 3 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>SUBSTITUTE_PATH</name>
+                <description>00.00-Columbia*Columbia-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <LineString>
+                    <coordinates>
+					-124.0824340,46.2641660 -124.0800719,46.2627265 -124.0777099,46.2612870 -124.0753481,46.2598475
+					-124.0729864,46.2584079 -124.0706248,46.2569682 -124.0682633,46.2555285 -124.0659020,46.2540888
+					-124.0635408,46.2526490 -124.0611797,46.2512091 -124.0588187,46.2497692 -124.0564579,46.2483293
+					-124.0540971,46.2468893 -124.0517365,46.2454493 -124.0493761,46.2440092 -124.0470157,46.2425690
+					-124.0446555,46.2411289 -124.0422954,46.2396886 -124.0399354,46.2382483 -124.0375755,46.2368080
+					-124.0352158,46.2353676 -124.0328562,46.2339272 -124.0304967,46.2324867 -124.0281374,46.2310462
+					-124.0257781,46.2296056 -124.0234190,46.2281650
+					</coordinates>
+                </LineString>
+            </Placemark>
+            <Placemark>
+                <name>DELETE_POLYGON</name>
+                <description>00.00-Columbia*Columbia-adj.xml[01]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-124.0500000,46.3400000 -124.0500000,46.1300000 -123.2900000,46.1300000 -123.2900000,46.3400000
+					-124.0500000,46.3400000
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+            <Placemark>
+                <name>DELETE_POLYGON</name>
+                <description>00.00-Columbia*Columbia-adj.xml[02]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-119.0600000,46.2200000 -119.0600000,46.0600000 -118.8700000,46.0600000 -118.8700000,46.2200000
+					-119.0600000,46.2200000
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <Jdk32Dir>C:\Program Files (x86)\Java\jdk-19\</Jdk32Dir>
+    <Jre32Dir>C:\SAROPS\SIM64\jre\</Jre32Dir>
+    <Jdk64Dir>C:\Program Files\Java\jdk-19\</Jdk64Dir>
+    <Jre64Dir>C:\SAROPS\SIM64\jre64\</Jre64Dir>
+    <VldDir>C:\Program Files (x86)\Visual Leak Detector\</VldDir>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="Jdk32Dir">
+      <Value>$(Jdk32Dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="Jre32Dir">
+      <Value>$(Jre32Dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="Jdk64Dir">
+      <Value>$(Jdk64Dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="Jre64Dir">
+      <Value>$(Jre64Dir)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VldDir">
+      <Value>$(VldDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

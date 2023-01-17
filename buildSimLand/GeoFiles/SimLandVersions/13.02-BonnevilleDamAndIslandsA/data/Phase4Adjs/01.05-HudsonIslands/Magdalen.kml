@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>01.02-HudsonIslands.Magdalen-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>ADD_POLYGON</name>
+    			<water>false</water>
+                <description>01.02-HudsonIslands*Magdalen-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-73.9265000,42.0476170 -73.9271330,42.0472170 -73.9274170,42.0466330 -73.9276000,42.0459330
+					-73.9277170,42.0451330 -73.9278500,42.0447330 -73.9279830,42.0443500 -73.9280000,42.0440830
+					-73.9276170,42.0439670 -73.9276000,42.0442330 -73.9275330,42.0442830 -73.9273830,42.0442670
+					-73.9271830,42.0444330 -73.9267670,42.0446670 -73.9268170,42.0449500 -73.9265830,42.0454670
+					-73.9264000,42.0457170 -73.9263830,42.0465670 -73.9262670,42.0470670 -73.9265000,42.0476170
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

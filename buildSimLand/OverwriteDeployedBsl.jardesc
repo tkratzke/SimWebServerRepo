@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="C:/SAROPS/SIM64/BuildSimLandDir/Bsl.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/buildSimLand/OverwriteDeployedBsl.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=buildSimLand/src\/main\/java&lt;com.skagit.buildSimLand{BuildSimLand.java[BuildSimLand" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/buildSimLand/.project"/>
+        <file path="/buildSimLand/pom.xml"/>
+        <file path="/buildSimLand/.classpath"/>
+        <file path="/buildSimLand/CompareGshhsFiles.launch"/>
+        <javaElement handleIdentifier="=util/src\/main\/java"/>
+        <file path="/buildSimLand/BuildSimLand.launch"/>
+        <javaElement handleIdentifier="=buildSimLand/src\/main\/resources"/>
+        <javaElement handleIdentifier="=util/src\/main\/resources"/>
+        <javaElement handleIdentifier="=buildSimLand/src\/main\/java"/>
+    </selectedElements>
+</jardesc>

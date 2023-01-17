@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="MyHdrs">
+      <UniqueIdentifier>{e06c4c0b-f4b7-4e48-901e-8988f8a7c7bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MySrc">
+      <UniqueIdentifier>{50c99691-1e53-428b-8d63-18f604f9ac14}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="javaSymbols64.txt" />
+    <Text Include="javaSymbols32.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\CRng.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\LobsEllipse.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\NavCalc.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\SimCodeHook.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\SimCodeHookImpl.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\SimPattern.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+    <ClInclude Include="MyHdrs\BufferToImpl.h">
+      <Filter>MyHdrs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\CRng.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\LobsEllipse.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\SimCodeHook.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\SimCodeHookImpl.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\SimPattern.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+    <ClCompile Include="MySrc\BufferToImpl.cpp">
+      <Filter>MySrc</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

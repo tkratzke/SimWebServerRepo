@@ -1,0 +1,59 @@
+In this note, I have listed what I hope to convey
+during the BuildInstaller's  1st webex.
+
+You will need the following software:
+Eclipse for Java Developers
+MSVC2017
+Advanced Installer
+Java JDK (32-bit and 64-bit Windows).  You will need version 202.
+In addition, notepad++ is almost always useful.
+
+I suggest that before the webex, you;
+Install Java JDK 202
+Install Eclipse
+Uninstall old versions of Java (both JRE and JDK, both 32Bit and 64Bit)
+Install MSVC2017 (this takes quite a while)
+
+Eclipse is free.
+MSVC2017 is not free, but has a 6-month trial period.
+Advanced Installer is not free, but has a 1-month trial period.
+Java JDK is still free as far as I can tell.
+
+We will retrieve the repo Sws22 from within Eclipse,
+build java and C++ parts, the code for Java 202,
+and build an installer.  Contact Young
+or Jim if you want to view this with a "hands-on"
+experience; they are admins for the Sws22 repository and
+they can add you.
+
+We will then:
+Update Netcdf-C
+Update 3rd-party Java libraries
+Rebuild the installer.
+
+​We will cover:
+1. Compiling the code and installing a "patch jar"
+   in C:/SAROPS/SIM64 for testing purposes.
+2. Building a new installer.
+3. Checking out and in code, using git-within-Eclipse.
+   You can use git outside of Eclipse if you wish.
+4. Updating the version string.  This is optional and
+   only useful if you want to be sure which version some-
+   body's output came from
+5. A basic overview of Advanced Installer's script.
+   This is the easiest way of learning what all the
+   components of SIM/Planner are (e.g., how land fits
+   in, SimCaseManager.properties, SimLib, etc.
+
+At the end of the webex, you should be able to:
+1. Build an Eclipse Workspace from the respository Sws22.
+2. Keep the 3rd party java libraries up-to-date
+3. Keep java updated
+4. Keep Netcdf-C updated
+5. Build the files that Adv Installer is looking for
+6. Run Adv Installer to create an installer
+7. Use git-within-Eclipse to change the code
+   and check it in (only within Eclipse)
+
+Tom
+571 344 8489

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>01.00-ColumbiaIslands.ColRiverIsland01-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>ADD_POLYGON</name>
+    			<water>false</water>
+                <description>01.00-ColumbiaIslands*ColRiverIsland01-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-123.2215530,46.1664340 -123.2229860,46.1660070 -123.2240610,46.1656330 -123.2245210,46.1654730
+					-123.2252120,46.1652780 -123.2260830,46.1651180 -123.2273880,46.1647800 -123.2281300,46.1645130
+					-123.2287960,46.1642460 -123.2293070,46.1639620 -123.2297680,46.1636950 -123.2302290,46.1634100
+					-123.2305610,46.1631080 -123.2308940,46.1629660 -123.2315340,46.1628590 -123.2324550,46.1628410
+					-123.2334280,46.1625570 -123.2341450,46.1622370 -123.2346050,46.1619520 -123.2347590,46.1616850
+					-123.2349640,46.1611340 -123.2350920,46.1605290 -123.2353730,46.1600670 -123.2353730,46.1597830
+					-123.2351430,46.1596050 -123.2346310,46.1597290 -123.2343240,46.1598890 -123.2331460,46.1600140
+					-123.2320200,46.1601200 -123.2311250,46.1602630 -123.2303570,46.1604760 -123.2296660,46.1607070
+					-123.2293070,46.1609560 -123.2289240,46.1611870 -123.2282070,46.1611700 -123.2272600,46.1612940
+					-123.2268500,46.1614540 -123.2257500,46.1617740 -123.2248290,46.1621830 -123.2235230,46.1627700
+					-123.2231140,46.1631260 -123.2226530,46.1637660 -123.2221670,46.1643530 -123.2214500,46.1649400
+					-123.2209380,46.1655620 -123.2207590,46.1659530 -123.2208620,46.1662560 -123.2212450,46.1664340
+					-123.2215530,46.1664340
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

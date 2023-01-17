@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>00.00-OldAdjs.Oahu-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>SUBSTITUTE_PATH</name>
+                <description>00.00-OldAdjs*Oahu-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <LineString>
+                    <coordinates>
+					-158.2295000,21.5826390 -158.2318840,21.5816950 -158.2342680,21.5807510 -158.2371950,21.5804035
+					-158.2401220,21.5800560 -158.2428394,21.5800193 -158.2455568,21.5799825 -158.2482742,21.5799457
+					-158.2509916,21.5799089 -158.2537090,21.5798720 -158.2553470,21.5790140 -158.2582575,21.5785083
+					-158.2611680,21.5780026 -158.2640785,21.5774968 -158.2669890,21.5769910 -158.2695010,21.5756230
+					-158.2716270,21.5758680 -158.2737530,21.5761130 -158.2758790,21.5763580 -158.2776375,21.5762865
+					-158.2793960,21.5762150 -158.2800080,21.5755000 -158.2800730,21.5746010 -158.2780090,21.5735300
+					-158.2759450,21.5724590
+					</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

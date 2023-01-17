@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 6/28/18 4:05 PM-->
+    <Document>
+        <name>caseData.kml</name>
+        <description>Conversion on 6/28/18 4:05:10 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ddffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>ddffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 26 Central LatLngs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.7239963,48.0046219
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.6434029,47.9075765
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.6371517,47.8822088
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.5666103,47.8521071
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.3517987,47.5381472
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.1552189,46.9056648
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.0426696,46.6691062
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-123.9655572,45.5708349
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-123.9562681,45.5661024
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-123.9721056,45.1591547
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.0833302,44.6114142
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.0741952,44.6114142
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.1460766,44.0192117
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.1454660,44.0165367
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2121367,43.6708623
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2173233,43.6657236
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.3445754,43.3584329
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.3504875,43.3540481
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.3776735,43.3443228
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.4297735,43.1246978
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.4309732,43.1230629
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2820973,42.0438085
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2727147,42.0435020
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2700607,42.0439757
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2376422,40.7692993
+					</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Red X</name>
+                <description>X Marks the spot</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Point>
+                    <coordinates>
+					-124.2442973,40.7623600
+					</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

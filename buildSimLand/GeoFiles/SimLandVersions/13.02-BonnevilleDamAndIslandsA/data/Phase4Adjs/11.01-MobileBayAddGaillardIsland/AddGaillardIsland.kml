@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>AddGaillardIsland.kml</name>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<PolyStyle>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark>
+		<name>ADD_POLYGON</name>
+		<water>false</water>
+		<description>Add Gaillard Island</description>
+		<styleUrl>#m_ylw-pushpin</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-88.05047915716676,30.50467168268137,0 -88.0471535552354,30.50225957079528,0 -88.04239129309413,30.49971634722576,0 -88.03830935875651,30.49749903813886,0 -88.03543658505987,30.49625953907865,0 -88.03127921290928,30.49365093530487,0 -88.0278015054772,30.49208502172546,0 -88.02568425126749,30.4914972217965,0 -88.02485130720244,30.49253917221226,0 -88.02409539801867,30.49201740693225,0 -88.02371803287124,30.4911049469742,0 -88.0231868210048,30.49299415263622,0 -88.02454426088606,30.49736060032236,0 -88.02461461830804,30.50276877840842,0 -88.02529040500571,30.50772134573892,0 -88.02619468027473,30.51111027955643,0 -88.02664328875341,30.51606305714121,0 -88.02921225795856,30.51919237850638,0 -88.03246281288919,30.52173549891903,0 -88.03601876229691,30.5215415604379,0 -88.03851622413764,30.52049995430221,0 -88.04207434139413,30.51737357383365,0 -88.04336181890328,30.51548443883227,0 -88.04517893679726,30.51320464529092,0 -88.04744949886052,30.51112059850605,0 -88.05070348578745,30.50832033294112,0 -88.05244357218822,30.50721346359863,0 -88.05168855023175,30.50545402921682,0 -88.05047915716676,30.50467168268137,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>

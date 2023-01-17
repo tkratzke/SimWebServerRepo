@@ -1,0 +1,4 @@
+C:\SAROPS\SIM64\BuildSimLandDir\BuildSimLand.exe ^
+AMEND "Next" "Previous" SimLand2.2_f.b ^
+STOP
+pause

@@ -1,0 +1,26 @@
+<PLAN particleFile="\\c3c-vdb-t-01\cases\west\e03a90aa-af3a-43ef-962b-7188198bb5b0\a1a4e36a-a27d-4c57-86c4-6590d5a4d8f4\particles.nc" searchForLandedParticles="false" searchForAdriftParticles="true" use_UI="false" plannerTimeInSeconds="0 secs" maxNJumpsWithNoImprovement="0">
+  <SRU cst="020600Z OCT 16" duration="360 mins" id="36152" name="1720" speed="180 kts" type="fixed-wing" minimumTrackSpacing="1.00 NM" separationBuffer="20.40 NM" onMars="false">
+    <COMP_OBJECT_TYPE id="33266" sw="48.844175 NM" ap0="3.853895" a1="0.142034" a2="-0.008119" displayScale="25.00 NM" isActive="yes" />
+    <PATTERN creepDirection="134 degrees clockwise from north">
+      <WAYPOINT lng="-72.0080572" lat="28.2729543" dtgs="02060529Z OCT 16" />
+      <WAYPOINT lng="-68.3049053" lat="31.6153136" dtgs="02075431Z OCT 16" />
+      <WAYPOINT lng="-67.9172998" lat="31.2862832" dtgs="02080529Z OCT 16" />
+      <WAYPOINT lng="-71.6214322" lat="27.9546597" dtgs="02095431Z OCT 16" />
+      <WAYPOINT lng="-71.2371435" lat="27.6352354" dtgs="02100529Z OCT 16" />
+      <WAYPOINT lng="-67.5323314" lat="30.9561513" dtgs="02115431Z OCT 16" />
+    </PATTERN>
+  </SRU>
+  <SRU cst="020600Z OCT 16" duration="480 mins" id="36153" name="1717" speed="150 kts" type="fixed-wing" minimumTrackSpacing="1.00 NM" separationBuffer="59.40 NM" onMars="false">
+    <COMP_OBJECT_TYPE id="33266" sw="127.621222 NM" ap0="4.726502" a1="-0.063442" a2="0.005287" displayScale="64.00 NM" isActive="yes" />
+    <PATTERN creepDirection="75 degrees clockwise from north">
+      <WAYPOINT lng="-72.0420839" lat="26.7632488" dtgs="02061526Z OCT 16" />
+      <WAYPOINT lng="-73.5907691" lat="23.9346297" dtgs="02074434Z OCT 16" />
+      <WAYPOINT lng="-72.5201745" lat="23.4513039" dtgs="02081526Z OCT 16" />
+      <WAYPOINT lng="-70.9524947" lat="26.2691518" dtgs="02094434Z OCT 16" />
+      <WAYPOINT lng="-69.8719714" lat="25.7671099" dtgs="02101526Z OCT 16" />
+      <WAYPOINT lng="-71.4574896" lat="22.960427" dtgs="02114434Z OCT 16" />
+      <WAYPOINT lng="-70.4027839" lat="22.4623124" dtgs="02121526Z OCT 16" />
+      <WAYPOINT lng="-68.8005691" lat="25.2574585" dtgs="02134434Z OCT 16" />
+    </PATTERN>
+  </SRU>
+</PLAN>

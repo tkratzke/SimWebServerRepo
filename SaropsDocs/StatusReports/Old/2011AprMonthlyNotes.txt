@@ -1,0 +1,60 @@
+854 discussion:
+
+I'm trying to close the gap between the performance of SAROPS' interactive planner and planner's internal gui.
+The POS table in the internal gui just displays the POS wrt the selected particles, and it uses cached computations from the planner itself.
+The "Eval runs" have no cached calculations and are restricted to using all of the particles.  I suggested at the IPR that we use downsampling to
+get Eval runs closer in performance to the internal gui's performance. 
+
+One thing this did was cause a little confusion.  There is a difference between "selected vs all" and "sampled vs all."  "Selected"
+refers to landed and adrift.  A particle qualifies as selected if at some time during the search epoch (earliest commence search time to
+last end search time over the SRUs) it is landed and we are searching for landed particles, or it is adrift at some time during the same period
+and we are searching for adrift particles.  Planner optimizes on "selected particles" and, in SAROPS, reporting POS tables based on "all particles."
+We are also deciding whether or not to keep a new planner solution by comparing planner's POS-based-on-all with the old solution's
+POS-based-on-all.  This is akin to the following notion; Suppose a coach had to assemble as good a basketball team as possible.
+He gets to keep the team that he assembled if it does well against a previously assembled team in a game of ... baseball.
+It took me a while to identify this as a possible source of apparent errors and a little longer to communicate that this is what SAROPS does.
+
+Anyway, now I'm trying to downsample the "all particles" to speed up the eval runs.  Since downsampling before was done only on selected
+particles (within Planner), this is a fair amount of work.
+
+Moreover, it makes more sense for SAROPS to do the compare than for planner.  An Eval run is a separate Planner run so Planner did not compute
+the original boxes' POS table.  It did on the previous Planner run, but that information is not given back to Planner for the curent run.  SAROPS
+DOES have that information and can use it.  So I have put in an option for computing the POS table for the initial configurations, and defaulted it
+to false.  Even if Planner is supposed to compute the original one, if PlannerTimeInSecs is set to 0, it will not.
+
+Similarly, I made another property for down sampling or not, when I compute the pos table in the xml output file.
+
+Because there's a fair amount of post processing, I reserved 3 seconds if that's available.  I also removed the "keep going if the overlap isn't
+cleared" part of the code.
+
+Pushed patterns into boxes tag.
+
+Redid tags to get all information in selected and boxes tag (in particular, the "Patterns")
+
+Here's a bug that occurred in old code after new code was written to fix it.  I fixed this problem before it was ever reported.
+Redid the way timing is set up in the environmental files.  It used to be that the time units string within the NetCdf file was assumed to be
+"minutes since ..."  Guy sent me a case that was crashing at SAR school.  I actually got this fixed before it was reported; Guy is using a new
+version and it works there, but not for entirely good reasons.  Guy is also giving me, in this case, an extra field before the time zone (seconds).
+I'm interpreting that field as the time zone.  This field is currently "00" which isn't a time zone designation so I get back the default time zone,
+which is GMT, which (luckily or not) is what Guy intended.  We have to tighten this up.
+
+SAR school is using an older version and it's crashing because the old code, written before I cleaned up the time units string interpretation, parsed the string
+assuming "hours."  Since "minute" has 3 more letters than "hour," it was trying to parse the "2009-01-01," starting at "9-01."
+
+Part of this work was to run the case in the
+debugger and use old code to verify that it is crashing under the old code, and run it under the new code and verify that it is working under the new code. 
+
+Still todo:
+PS/CS bias.
+
+Cleared out out and err files for each run (thought that was done by SAROPS; apparently not)
+
+Cleaned up LOB code to interpret input as s.d. instead of 2 s.d., and then put in truncation versions.
+
+Answered technical questions regarding LOB, including generating pictures.
+
+Re-did the logging mechanism so that logging is done with loggers that are tied to the engines,
+instead of a single global logger.  log4j, the package I'm using for logging.  This took about 18 hours to chase down
+all of the places where I use a logger and make sure that I'm using the correct logger.  If I did not do that,
+then simultaneous runs (as in SAR school) would log to the same sim.out.txt and sim.err.txt which would be a problem.
+

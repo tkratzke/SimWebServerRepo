@@ -1,0 +1,21 @@
+
+VersionName: Sws22-2019Feb09a
+
+1.5708
+<LRC_SET>
+<SENSOR SubType = "InverseCube"
+sw = "1.2435 NM"
+ApplyToCrossLegs = "true"
+UpCreepMinRange = "0.0 NM"
+UpCreepMaxRange = "100.0 NM"
+UpCreepMinLookAngle = "0.0 degs"
+UpCreepMaxLookAngle = "180.0 degs"
+DownCreepMinRange = "0.0 NM"
+DownCreepMaxRange = "100.0 NM"
+DownCreepMinLookAngle = "0.0 degs"
+DownCreepMaxLookAngle = "180.0 degs" />
+</LRC_SET>
+1.23646
+
+	=>RAW_SPD_TO_USE[14.705882] LEN[10.0000] WID[nan]
+	SLL[nan] TS[2.0000], PS[T] FrstTrnRt[F] nPath[10] nSpec[4] nTsLoose[4] nTsTight[4] nExcTight[4]

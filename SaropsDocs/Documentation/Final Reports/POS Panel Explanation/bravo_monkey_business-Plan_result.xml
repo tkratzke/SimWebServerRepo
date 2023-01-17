@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PLAN_RESULTS>
+ <!--Generation time: 9/20/11 10:25 AM -->
+ <BOXES POC="0.752414" POD="0.469125" POS="0.352977" answerType="Best"
+  cumPOS="0.698062" deltaPOS="0.164719" nCompleteSolutionsComputed="78"
+  nNewRectangles="388" numberOfParticles="7497" solveBestDate="20142500Z SEP 2011"
+  solveStartDate="20142358Z SEP 2011" theoreticalMaxPOS="0.509880"
+  totalOvl="0.0" totalOvlOfPreRounded="0.0" totalTsv="0.0">
+  <SEARCH_OBJECT_TYPE POD="0.0" conditionalPOC="0.0"
+   conditionalPOS="0.0" cumConditionalPOS="0.0" cumJointPOS="0.0" id="-1"
+   initialProbability="0.0" initialProbabilityForCum="0.0" jointPOS="0.0" />
+  <SEARCH_OBJECT_TYPE POD="0.088866" conditionalPOC="0.675744"
+   conditionalPOS="0.060050" cumConditionalPOS="0.261387" cumJointPOS="0.082807"
+   id="1" initialProbability="0.533457" initialProbabilityForCum="0.316800"
+   jointPOS="0.032034" />
+  <SEARCH_OBJECT_TYPE POD="0.584045" conditionalPOC="0.817209"
+   conditionalPOS="0.477287" cumConditionalPOS="0.808937" cumJointPOS="0.256271"
+   id="2" initialProbability="0.248142" initialProbabilityForCum="0.316800"
+   jointPOS="0.118435" />
+  <SEARCH_OBJECT_TYPE POD="1.070617" conditionalPOC="0.866069"
+   conditionalPOS="0.927228" cumConditionalPOS="0.979758" cumJointPOS="0.358983"
+   id="3" initialProbability="0.218401" initialProbabilityForCum="0.366400"
+   jointPOS="0.202507" />
+  <BOX CspLat="35.105054" CspLng="-72.713815" POC="0.504596" POD="0.441553"
+   POS="0.222806" centerPointLat="35.30833330" centerPointLng="-73.43666670"
+   cumPOS="0.637317" firstTurnRight="true" length="76.500000 NM"
+   nSearchLegs="6" orientation="279.0 degrees clockwise from north" ovl="0.0"
+   pathType="PS" searchLegLength="74.0 NM" sru="FW1_1" trackSpacing="2.500000 NM"
+   tsv="0.0" width="15.000000 NM">
+   <PATTERN SruNameId="FW1_1">
+    <WAYPOINT dtg="261130Z SEP 2006" dtgs="26113029Z SEP 2006"
+     lat="35.105054" lng="-72.713815" />
+    <WAYPOINT dtg="261200Z SEP 2006" dtgs="26115930Z SEP 2006"
+     lat="35.301650" lng="-74.202037" />
+    <WAYPOINT dtg="261200Z SEP 2006" dtgs="26120029Z SEP 2006"
+     lat="35.342781" lng="-74.194273" />
+    <WAYPOINT dtg="261230Z SEP 2006" dtgs="26122930Z SEP 2006"
+     lat="35.146083" lng="-72.705317" />
+    <WAYPOINT dtg="261230Z SEP 2006" dtgs="26123029Z SEP 2006"
+     lat="35.187111" lng="-72.696810" />
+    <WAYPOINT dtg="261300Z SEP 2006" dtgs="26125930Z SEP 2006"
+     lat="35.383911" lng="-74.186501" />
+    <WAYPOINT dtg="261300Z SEP 2006" dtgs="26130029Z SEP 2006"
+     lat="35.425041" lng="-74.178721" />
+    <WAYPOINT dtg="261330Z SEP 2006" dtgs="26132930Z SEP 2006"
+     lat="35.228139" lng="-72.688294" />
+    <WAYPOINT dtg="261330Z SEP 2006" dtgs="26133029Z SEP 2006"
+     lat="35.269166" lng="-72.679770" />
+    <WAYPOINT dtg="261400Z SEP 2006" dtgs="26135930Z SEP 2006"
+     lat="35.466170" lng="-74.170933" />
+    <WAYPOINT dtg="261400Z SEP 2006" dtgs="26140029Z SEP 2006"
+     lat="35.507299" lng="-74.163138" />
+    <WAYPOINT dtg="261430Z SEP 2006" dtgs="26142930Z SEP 2006"
+     lat="35.310193" lng="-72.671236" />
+   </PATTERN>
+   <POINT lat="35.081063" lng="-72.692992" position="LeftLow" />
+   <POINT lat="35.284247" lng="-74.231110" position="LeftHigh" />
+   <POINT lat="35.531036" lng="-74.184507" position="RightHigh" />
+   <POINT lat="35.327219" lng="-72.641823" position="RightLow" />
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.107440" aes="1.8e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.524681" conditionalPOS="0.056372"
+    coverage="0.16" cumConditionalPOS="0.258496" cumJointPOS="0.081892"
+    id="1" initialProbability="0.533457" initialProbabilityForCum="0.316800"
+    jointPOS="0.030072" sw="0.40 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.640046" aes="8.3e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.486796" conditionalPOS="0.311572"
+    coverage="0.72" cumConditionalPOS="0.748364" cumJointPOS="0.237082"
+    id="2" initialProbability="0.248142" initialProbabilityForCum="0.316800"
+    jointPOS="0.077314" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.110806" aes="2.9e+03 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.475760" conditionalPOS="0.528477"
+    coverage="2.5" cumConditionalPOS="0.868841" cumJointPOS="0.318343"
+    id="3" initialProbability="0.218401" initialProbabilityForCum="0.366400"
+    jointPOS="0.115420" sw="6.3 NM" />
+  </BOX>
+  <BOX CspLat="35.745848" CspLng="-74.536601" POC="0.247818" POD="0.545130"
+   POS="0.135093" centerPointLat="35.30333330" centerPointLng="-74.93166670"
+   cumPOS="0.596385" firstTurnRight="true" length="66.000000 NM"
+   nSearchLegs="20" orientation="234.0 degrees clockwise from north"
+   ovl="0.0" pathType="CS" searchLegLength="19.7 NM" sru="FW2_2"
+   trackSpacing="3.300000 NM" tsv="0.0" width="23.000000 NM">
+   <PATTERN SruNameId="FW2_2">
+    <WAYPOINT dtg="261131Z SEP 2006" dtgs="26113039Z SEP 2006"
+     lat="35.745848" lng="-74.536601" />
+    <WAYPOINT dtg="261138Z SEP 2006" dtgs="26113823Z SEP 2006"
+     lat="35.481807" lng="-74.297389" />
+    <WAYPOINT dtg="261140Z SEP 2006" dtgs="26113941Z SEP 2006"
+     lat="35.449273" lng="-74.351733" />
+    <WAYPOINT dtg="261147Z SEP 2006" dtgs="26114725Z SEP 2006"
+     lat="35.713206" lng="-74.591025" />
+    <WAYPOINT dtg="261149Z SEP 2006" dtgs="26114843Z SEP 2006"
+     lat="35.680540" lng="-74.645405" />
+    <WAYPOINT dtg="261156Z SEP 2006" dtgs="26115627Z SEP 2006"
+     lat="35.416714" lng="-74.406034" />
+    <WAYPOINT dtg="261158Z SEP 2006" dtgs="26115745Z SEP 2006"
+     lat="35.384131" lng="-74.460290" />
+    <WAYPOINT dtg="261205Z SEP 2006" dtgs="26120529Z SEP 2006"
+     lat="35.647850" lng="-74.699740" />
+    <WAYPOINT dtg="261207Z SEP 2006" dtgs="26120647Z SEP 2006"
+     lat="35.615136" lng="-74.754031" />
+    <WAYPOINT dtg="261215Z SEP 2006" dtgs="26121431Z SEP 2006"
+     lat="35.351525" lng="-74.514502" />
+    <WAYPOINT dtg="261216Z SEP 2006" dtgs="26121549Z SEP 2006"
+     lat="35.318894" lng="-74.568671" />
+    <WAYPOINT dtg="261224Z SEP 2006" dtgs="26122333Z SEP 2006"
+     lat="35.582398" lng="-74.808277" />
+    <WAYPOINT dtg="261225Z SEP 2006" dtgs="26122451Z SEP 2006"
+     lat="35.549636" lng="-74.862479" />
+    <WAYPOINT dtg="261233Z SEP 2006" dtgs="26123235Z SEP 2006"
+     lat="35.286239" lng="-74.622796" />
+    <WAYPOINT dtg="261234Z SEP 2006" dtgs="26123353Z SEP 2006"
+     lat="35.253561" lng="-74.676877" />
+    <WAYPOINT dtg="261242Z SEP 2006" dtgs="26124137Z SEP 2006"
+     lat="35.516851" lng="-74.916637" />
+    <WAYPOINT dtg="261243Z SEP 2006" dtgs="26124255Z SEP 2006"
+     lat="35.484041" lng="-74.970750" />
+    <WAYPOINT dtg="261251Z SEP 2006" dtgs="26125039Z SEP 2006"
+     lat="35.220859" lng="-74.730914" />
+    <WAYPOINT dtg="261252Z SEP 2006" dtgs="26125157Z SEP 2006"
+     lat="35.188134" lng="-74.784907" />
+    <WAYPOINT dtg="261300Z SEP 2006" dtgs="26125941Z SEP 2006"
+     lat="35.451208" lng="-75.024819" />
+    <WAYPOINT dtg="261301Z SEP 2006" dtgs="26130059Z SEP 2006"
+     lat="35.418351" lng="-75.078844" />
+    <WAYPOINT dtg="261309Z SEP 2006" dtgs="26130843Z SEP 2006"
+     lat="35.155384" lng="-74.838857" />
+    <WAYPOINT dtg="261310Z SEP 2006" dtgs="26131001Z SEP 2006"
+     lat="35.122611" lng="-74.892763" />
+    <WAYPOINT dtg="261318Z SEP 2006" dtgs="26131745Z SEP 2006"
+     lat="35.385471" lng="-75.132825" />
+    <WAYPOINT dtg="261319Z SEP 2006" dtgs="26131903Z SEP 2006"
+     lat="35.352567" lng="-75.186762" />
+    <WAYPOINT dtg="261327Z SEP 2006" dtgs="26132647Z SEP 2006"
+     lat="35.089815" lng="-74.946625" />
+    <WAYPOINT dtg="261328Z SEP 2006" dtgs="26132805Z SEP 2006"
+     lat="35.056996" lng="-75.000444" />
+    <WAYPOINT dtg="261336Z SEP 2006" dtgs="26133549Z SEP 2006"
+     lat="35.319640" lng="-75.240654" />
+    <WAYPOINT dtg="261337Z SEP 2006" dtgs="26133707Z SEP 2006"
+     lat="35.286690" lng="-75.294503" />
+    <WAYPOINT dtg="261345Z SEP 2006" dtgs="26134451Z SEP 2006"
+     lat="35.024153" lng="-75.054220" />
+    <WAYPOINT dtg="261346Z SEP 2006" dtgs="26134609Z SEP 2006"
+     lat="34.991286" lng="-75.107951" />
+    <WAYPOINT dtg="261354Z SEP 2006" dtgs="26135353Z SEP 2006"
+     lat="35.253716" lng="-75.348307" />
+    <WAYPOINT dtg="261355Z SEP 2006" dtgs="26135511Z SEP 2006"
+     lat="35.220719" lng="-75.402067" />
+    <WAYPOINT dtg="261403Z SEP 2006" dtgs="26140255Z SEP 2006"
+     lat="34.958397" lng="-75.161640" />
+    <WAYPOINT dtg="261404Z SEP 2006" dtgs="26140413Z SEP 2006"
+     lat="34.925484" lng="-75.215284" />
+    <WAYPOINT dtg="261412Z SEP 2006" dtgs="26141157Z SEP 2006"
+     lat="35.187698" lng="-75.455784" />
+    <WAYPOINT dtg="261413Z SEP 2006" dtgs="26141315Z SEP 2006"
+     lat="35.154655" lng="-75.509456" />
+    <WAYPOINT dtg="261421Z SEP 2006" dtgs="26142059Z SEP 2006"
+     lat="34.892548" lng="-75.268886" />
+    <WAYPOINT dtg="261422Z SEP 2006" dtgs="26142217Z SEP 2006"
+     lat="34.859589" lng="-75.322444" />
+    <WAYPOINT dtg="261430Z SEP 2006" dtgs="26143001Z SEP 2006"
+     lat="35.121588" lng="-75.563085" />
+   </PATTERN>
+   <POINT lat="35.784257" lng="-74.529476" position="LeftLow" />
+   <POINT lat="35.475924" lng="-74.250240" position="LeftHigh" />
+   <POINT lat="34.821139" lng="-75.329118" position="RightHigh" />
+   <POINT lat="35.126964" lng="-75.610111" position="RightLow" />
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.024351" aes="46 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.151062" conditionalPOS="0.003679"
+    coverage="0.030" cumConditionalPOS="0.217090" cumJointPOS="0.068774"
+    id="1" initialProbability="0.533457" initialProbabilityForCum="0.316800"
+    jointPOS="0.001962" sw="0.10 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.503409" aes="8.3e+02 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.330413" conditionalPOS="0.166333"
+    coverage="0.55" cumConditionalPOS="0.695276" cumJointPOS="0.220263"
+    id="2" initialProbability="0.248142" initialProbabilityForCum="0.316800"
+    jointPOS="0.041274" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.077580" aes="3.0e+03 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.390308" conditionalPOS="0.420589"
+    coverage="2.0" cumConditionalPOS="0.838830" cumJointPOS="0.307347"
+    id="3" initialProbability="0.218401" initialProbabilityForCum="0.366400"
+    jointPOS="0.091857" sw="6.4 NM" />
+  </BOX>
+ </BOXES>
+ <SELECTED_PARTICLES_ONLY POC="0.751527" POD="0.468696"
+  POS="0.352237" cumPOS="0.352237" deltaPOS="0.352237" totalOvl="0.0"
+  totalOvlOfPreRounded="0.0" totalTsv="0.0">
+  <SEARCH_OBJECT_TYPE POD="0.0" conditionalPOC="0.0"
+   conditionalPOS="0.0" cumConditionalPOS="0.0" cumJointPOS="0.0" id="-1"
+   initialProbability="0.0" initialProbabilityForCum="0.0" jointPOS="0.0" />
+  <SEARCH_OBJECT_TYPE POD="0.094910" conditionalPOC="0.679555"
+   conditionalPOS="0.064497" cumConditionalPOS="0.064497" cumJointPOS="0.034475"
+   id="1" initialProbability="0.534523" initialProbabilityForCum="0.534523"
+   jointPOS="0.034475" />
+  <SEARCH_OBJECT_TYPE POD="0.596043" conditionalPOC="0.801617"
+   conditionalPOS="0.477798" cumConditionalPOS="0.477798" cumJointPOS="0.120291"
+   id="2" initialProbability="0.251761" initialProbabilityForCum="0.251761"
+   jointPOS="0.120291" />
+  <SEARCH_OBJECT_TYPE POD="1.058982" conditionalPOC="0.872527"
+   conditionalPOS="0.923991" cumConditionalPOS="0.923991" cumJointPOS="0.197471"
+   id="3" initialProbability="0.213715" initialProbabilityForCum="0.213715"
+   jointPOS="0.197471" />
+  <BOX POC="0.510255" POD="0.450210" POS="0.229722" cumPOS="0.229722"
+   sru="FW1_1">
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.115345" aes="1.8e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.527241" conditionalPOS="0.060815"
+    coverage="0.16" cumConditionalPOS="0.060815" cumJointPOS="0.032507"
+    id="1" initialProbability="0.534523" initialProbabilityForCum="0.534523"
+    jointPOS="0.032507" sw="0.40 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.659193" aes="8.3e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.477612" conditionalPOS="0.314839"
+    coverage="0.72" cumConditionalPOS="0.314839" cumJointPOS="0.079264"
+    id="2" initialProbability="0.251761" initialProbabilityForCum="0.251761"
+    jointPOS="0.079264" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.090235" aes="2.9e+03 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.506227" conditionalPOS="0.551907"
+    coverage="2.5" cumConditionalPOS="0.551907" cumJointPOS="0.117951"
+    id="3" initialProbability="0.213715" initialProbabilityForCum="0.213715"
+    jointPOS="0.117951" sw="6.3 NM" />
+  </BOX>
+  <BOX POC="0.241271" POD="0.526774" POS="0.127095" cumPOS="0.127095"
+   sru="FW2_2">
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.024176" aes="46 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.152314" conditionalPOS="0.003682"
+    coverage="0.030" cumConditionalPOS="0.003682" cumJointPOS="0.001968"
+    id="1" initialProbability="0.534523" initialProbabilityForCum="0.534523"
+    jointPOS="0.001968" sw="0.10 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.505156" aes="8.3e+02 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.324005" conditionalPOS="0.163673"
+    coverage="0.55" cumConditionalPOS="0.163673" cumJointPOS="0.041207"
+    id="2" initialProbability="0.251761" initialProbabilityForCum="0.251761"
+    jointPOS="0.041207" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.072001" aes="3.0e+03 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.366300" conditionalPOS="0.392674"
+    coverage="2.0" cumConditionalPOS="0.392674" cumJointPOS="0.083921"
+    id="3" initialProbability="0.213715" initialProbabilityForCum="0.213715"
+    jointPOS="0.083921" sw="6.4 NM" />
+  </BOX>
+ </SELECTED_PARTICLES_ONLY>
+ <LANDED_ADRIFT POC="0.753053" POD="0.468999" POS="0.353182"
+  cumPOS="0.698294" deltaPOS="0.164740" totalOvl="0.0"
+  totalOvlOfPreRounded="0.0" totalTsv="0.0">
+  <SEARCH_OBJECT_TYPE POD="0.0" conditionalPOC="0.0"
+   conditionalPOS="0.0" cumConditionalPOS="0.0" cumJointPOS="0.0" id="-1"
+   initialProbability="0.0" initialProbabilityForCum="0.0" jointPOS="0.0" />
+  <SEARCH_OBJECT_TYPE POD="0.088866" conditionalPOC="0.676453"
+   conditionalPOS="0.060113" cumConditionalPOS="0.261602" cumJointPOS="0.082840"
+   id="1" initialProbability="0.533350" initialProbabilityForCum="0.316664"
+   jointPOS="0.032062" />
+  <SEARCH_OBJECT_TYPE POD="0.584045" conditionalPOC="0.817209"
+   conditionalPOS="0.477287" cumConditionalPOS="0.808937" cumJointPOS="0.256373"
+   id="2" initialProbability="0.248353" initialProbabilityForCum="0.316925"
+   jointPOS="0.118536" />
+  <SEARCH_OBJECT_TYPE POD="1.070117" conditionalPOC="0.867215"
+   conditionalPOS="0.928022" cumConditionalPOS="0.979997" cumJointPOS="0.359081"
+   id="3" initialProbability="0.218297" initialProbabilityForCum="0.366410"
+   jointPOS="0.202585" />
+  <BOX POC="0.505024" POD="0.441553" POS="0.222995" cumPOS="0.637569"
+   sru="FW1_1">
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.107440" aes="1.8e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.525232" conditionalPOS="0.056431"
+    coverage="0.16" cumConditionalPOS="0.258709" cumJointPOS="0.081924"
+    id="1" initialProbability="0.533350" initialProbabilityForCum="0.316664"
+    jointPOS="0.030098" sw="0.40 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.640046" aes="8.3e+02 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.486796" conditionalPOS="0.311572"
+    coverage="0.72" cumConditionalPOS="0.748364" cumJointPOS="0.237176"
+    id="2" initialProbability="0.248353" initialProbabilityForCum="0.316925"
+    jointPOS="0.077380" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.110806" aes="2.9e+03 NM2"
+    area="1.1e+03 NM2" conditionalPOC="0.476390" conditionalPOS="0.529177"
+    coverage="2.5" cumConditionalPOS="0.869160" cumJointPOS="0.318469"
+    id="3" initialProbability="0.218297" initialProbabilityForCum="0.366410"
+    jointPOS="0.115518" sw="6.3 NM" />
+  </BOX>
+  <BOX POC="0.248029" POD="0.544749" POS="0.135113" cumPOS="0.596577"
+   sru="FW2_2">
+   <SEARCH_OBJECT_TYPE conditionalPOC="0.0"
+    conditionalPOS="0.0" cumPOS="0.0" id="-1" initialProbability="0.0"
+    initialProbabilityForCum="0.0" jointPOS="0.0" />
+   <SEARCH_OBJECT_TYPE POD="0.024351" aes="46 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.151221" conditionalPOS="0.003682"
+    coverage="0.030" cumConditionalPOS="0.217269" cumJointPOS="0.068801"
+    id="1" initialProbability="0.533350" initialProbabilityForCum="0.316664"
+    jointPOS="0.001964" sw="0.10 NM" />
+   <SEARCH_OBJECT_TYPE POD="0.503409" aes="8.3e+02 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.330413" conditionalPOS="0.166333"
+    coverage="0.55" cumConditionalPOS="0.695276" cumJointPOS="0.220351"
+    id="2" initialProbability="0.248353" initialProbabilityForCum="0.316925"
+    jointPOS="0.041309" sw="1.8 NM" />
+   <SEARCH_OBJECT_TYPE POD="1.076471" aes="3.0e+03 NM2"
+    area="1.5e+03 NM2" conditionalPOC="0.390825" conditionalPOS="0.420712"
+    coverage="2.0" cumConditionalPOS="0.839018" cumJointPOS="0.307425"
+    id="3" initialProbability="0.218297" initialProbabilityForCum="0.366410"
+    jointPOS="0.091840" sw="6.4 NM" />
+  </BOX>
+ </LANDED_ADRIFT>
+</PLAN_RESULTS>

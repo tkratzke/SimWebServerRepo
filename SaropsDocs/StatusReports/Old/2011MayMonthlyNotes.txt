@@ -1,0 +1,112 @@
+Wrote up April's Monthly
+TWGs
+
+Created a new drop on May 2nd.  Verified that a 64-bit drop, though asked for
+by John Squires, would probably be ignored for a while.  I'm ready to build it
+though.
+
+Tried to answer Great Circle Calculation questions from Jim.
+Apparently that was successful.  Gave him GC intersection code which he paraphrased and found useful.
+
+Found and seemed to have knocked out the Computational Geometry problem
+that surfaced when a point hit the area of interest exactly.  This took
+a couple of days to run down and I rewrote two major routines to better
+handle the strange case.
+
+Chased down an apparent bug in LOB scenarios.  It appeared as if some of my particles were going outside of the 3-sd range.
+The cause of this was simply that the flat-earth rendering by SAROPS is inaccurate.  I wrote code to enhance my gui, which
+has far less distortion than SAROPS'.  The 3-sd bearing boundary now shows up and particles are clearly inside of it.  In other
+words, there was no error.
+
+Chased down an apparent bug in the track spacing output.  We have a requirement for at least 2 search legs that I
+had been ignoring.  The initial placement algorithm (used during the "GetInitialOnly" phase) as well as the iterative
+solves had to be worked on quite a bit.  Now I forbid a move it it reduces the number of search legs to 1.
+Fortunately, the moves are defined as what they do to the patterns so this was only about a day's worth of work.
+I did it by defining a pattern that has fewer than 2 search legs as having a track spacing violation equal to the
+entire path length.  That strongly encourages the algorithm to relieve itself of that penalty.  It seems to work.
+Discussed this with Jack since the constraint doesn't seem necessary.  The team is now aware of the issue and we'll
+probably allow a single search leg in some form or another in the near future.
+
+Logging reared its ugly head again.  In a case that was submitted to me for other reasons, there was an SRU that had
+0 POS.  I couldn't figure out why; the pos table in my gui had reasonable pos values for every other SRU.  So I isolated
+this one SRU.  The problem turned out to be that it ended before the particles ceased to be of type "originating craft"
+and it had no lateral range curve for originating craft.  But the problem was that this made that case extremely fast to
+compute and the logging mechanism, under those circumstances, was creating an enormous log file.  I cut down on the logging.
+
+Put together a new drop on May 9th but funding did not permit me to test it.  It should be ok.  I also put up a 64-bit
+drop with some initial swags at parameters.  No problems in either distribution were reported until May 15th.
+Initially, it was thought that I had changed the planner xml, but when I investigated thath possibility, it turned out
+to be false.  Then I noticed that the case had bad environmental ranges, but I suspected that to be a red herring and plowed on.
+With Jim's help, I found the source of the error in my code and cleaned it up.  I had changed the result of the GetStatus
+to make the 64-bit SarSchool distribution more useful, but that turned out to be incompatible with Beta19.  So I put a flag in
+that, for the re-release of Beta19, is set to "useOldGetStatus."  After discussing with Judy and Jim, I used the new GetStatus
+for Beta20. 
+
+Documented the parameter settings for the 64-bit SimWebServer; number of simultaneous cases that can be run, etc..
+
+Found a case (Forward/Bravo) where a crash (from bad input data) caused SimWebServer to not exit smoothly.
+Caught this bad data and logged it, exiting this case, and then worked to have SWS exit smoothly on crashes.
+I'm trying to make SWS more robust even with bad data.  With multiple cases running, it's important that a single
+bad case does not cause the SimWebServer problems; it should recognize the bad case, announce it and then go right on to processing the
+next case.
+
+Fixed a bug about minimum track spacing and number of legs.  Tricky since increasing the number of legs (from 1 to 2) is at odds
+with increasing the search leg length.  Now we increase the number of legs if need be and then forbid it from going back to 1.
+Preliminary testing indicates that it works.
+
+First try at keeping the length at most 3 times the width for a cs case.  I already had been using the long edge for the search
+leg when I generate a box from scratch.  If an input (non-frozen) cs box has a length more than 3 times the width, I rotate the pattern 90 degrees.  Thereafter, I prevent that from happening during the minor moves.
+
+The team is having trouble with SimWebServer.  Not too surprising, but I'm doing what I can to help.  I answer questions, set it up so that
+the number of engines is configurable, went over how to do that, as well as setting the number of particles lower for testing multiple cases
+on a small 32-bit box.
+
+There seems to be a problem with a single web server and 2 planner problems running simultaneously.  I've been chasing this one for a while.
+Rob sees the problem, Judy and I do not, but Rob's environment is perhaps more complex.  I did notice that Rob's xml is referring to particle file
+names as UCN's instead of particle file names.  I'm not sure if that's the cause of the problem, but the SWS shouldn't crash no matter what.
+I think I found and fixed this problem.  When an error in the data comes in, and is noticed by Engine-1 at the same time that Engine-0 is
+writing out the shape files, there was a crash.  What happened was that I had to set System.err to null to keep from writing an err file
+that the rest of SAROPS was reading.  That was happening in Engine-1.  Then Engine-0 was using System.err, which should cause a null pointer
+exception, which it was, and this exception indeed was being caught.  But in the handling of this exception, I had written code that again used
+System.err and this crash was not caught.  Because of how we do logging now, I don't have to set System.err to null while writing the shape files,
+and I check for System.err being null anyway when I process the original exception.
+
+Related to that is that the logging mechanism is a bit changed.  Logging goes to the case folder (plan.err.txt, or plan.out.txt or sim.err.txt or sim.out.txt).
+But the case folder is not formally specified.  I had always used the folder containing the particle file.  This is also the folder where I'm supposed to put
+the results file.  But if the xml is "healthy" and the particle file is not, I want to log that problem as well; and I have no place to put it.  Hence, I use
+a "generic" out.txt/err.txt pair.  But if that is not available, then I use the "System.out/System.err" mechanism.  This is redirected, by my installer, to
+<appDir>/LogFiles/SimWebServer.out.txt/err.txt for SimWebServer and similarly for Sim.exe.  Unfortunately, these cannot be easily "cleaned out" by me so
+I overwrite them for every run.
+
+
+Designed a workload for a summer intern.  It would be nice to have some help, especially testing and updating 3rd party libraries.
+
+
+Intern Tasks
+1. Get the SVN set up.
+
+2. Look up how to use and use JavaDoc for:
+a. All scenario types
+b. ParticleFile
+c. ParticleManager
+d. PlannerModel
+e. NavigationCalculator
+
+3. Install and run tests on SAROPS.  Both my issues and ones that show up from the rest of the team.
+
+4. Update 3rd party libraries
+
+5. Update Advanced Installer
+
+6. Work with John Squires about configuring 64-bit installer.
+   a. Test out multiple engines under different circumstances.
+
+7. Document install parameters (Sim.properties, Log4jContainer.properties, SimCaseManager.properties)
+
+8.  Build a JNI that uses Jim's pattern generator.
+
+9.  Help prepare a talk on Wojtowicz' formula
+
+Thal's Resume
+Soccer at Bethany, Swimming at Westfield, Orchestra at Westfield
+Worked on Air France search digitizing chart and creating input files for processing and display

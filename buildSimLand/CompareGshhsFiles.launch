@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <stringAttribute key="bad_container_name" value="\SimWebServer22\LaunchConfigu"/>
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/buildSimLand/src/main/java/com/skagit/buildSimLand/util/CompareGshhsFiles.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.skagit.buildSimLand.util.CompareGshhsFiles"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="buildSimLand"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="C:\Users\Thomas\Documents\Work\Geo\Dev\WorkingDirectory2018May15a\LandJarDir\com\skagit\util\gshhs\data\SimLand2.2_f.b&#13;&#10;C:\Users\Thomas\Documents\Work\Geo\Dev\WorkingDirectory2018May15b\LandJarDir\com\skagit\util\gshhs\data\SimLand2.2_f.b&#13;&#10;C:\Users\Thomas\Documents\Work\Geo\Dev\May15aVsMay15b.kml"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="buildSimLand"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea -Xmx11G -Xms1000M -Djava.library.path=${MathLibDir}\x64\Release -DLog.To.Console"/>
+</launchConfiguration>

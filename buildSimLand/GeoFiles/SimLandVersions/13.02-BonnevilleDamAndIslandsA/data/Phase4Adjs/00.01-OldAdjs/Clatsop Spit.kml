@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>00.00-OldAdjs.Clatsop Spit-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>SUBSTITUTE_PATH</name>
+                <description>00.00-OldAdjs*Clatsop Spit-adj.xml[00]</description>
+                <visibility>1</visibility>
+				<verboseDump>false</verboseDump>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <LineString>
+                    <coordinates>
+					-123.9951667,46.2301667 -123.9964417,46.2314000 -123.9977167,46.2326333 -123.9985583,46.2340000
+					-123.9994000,46.2353667 -124.0010166,46.2365500 -124.0026333,46.2377333 -124.0052500,46.2385750
+					-124.0078667,46.2394167 -124.0095000,46.2394667 -124.0117417,46.2389667 -124.0139833,46.2384667
+					-124.0176500,46.2375167 -124.0187833,46.2367833 -124.0195333,46.2356167 -124.0201500,46.2353667
+					-124.0209334,46.2340417 -124.0217167,46.2327167 -124.0225833,46.2311667 -124.0243333,46.2294333
+					-124.0280564,46.2302369 -124.0317797,46.2310403 -124.0355030,46.2318437 -124.0392264,46.2326469
+					-124.0429500,46.2334500 -124.0461333,46.2331167 -124.0498833,46.2332531 -124.0536332,46.2333894
+					-124.0573832,46.2335256 -124.0611332,46.2336616 -124.0648833,46.2337975 -124.0686333,46.2339333
+					-124.0686333,46.2336667 -124.0648944,46.2335392 -124.0611555,46.2334116 -124.0574166,46.2332839
+					-124.0536777,46.2331561 -124.0499388,46.2330281 -124.0462000,46.2329000 -124.0429500,46.2332333
+					-124.0392264,46.2324202 -124.0355030,46.2316070 -124.0317796,46.2307937 -124.0280564,46.2299803
+					-124.0243333,46.2291667 -124.0217416,46.2285667 -124.0191500,46.2279667
+					</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

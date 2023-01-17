@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>05.01-ExpandWestLakeSkegemog.Skegemog_Eastern_Shoreline-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>SUBSTITUTE_PATH</name>
+                <description>05.01-ExpandWestLakeSkegemog*Skegemog_Eastern_Shoreline-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <LineString>
+                    <coordinates>
+					-85.3181060,44.8193640 -85.3165550,44.8181440 -85.3150040,44.8169240 -85.3150040,44.8155300
+					-85.3146780,44.8139030 -85.3128005,44.8131475 -85.3109230,44.8123920 -85.3084740,44.8107650
+					-85.3070050,44.8093710 -85.3047190,44.8082090 -85.3034130,44.8066400 -85.3021070,44.8050710
+					-85.3021070,44.8042570 -85.2998215,44.8035015 -85.2975360,44.8027460 -85.2959035,44.8014095
+					-85.2942710,44.8000730 -85.2934550,44.7990270 -85.2959040,44.7970510 -85.2983520,44.7954240
+					-85.2991690,44.7939130 -85.2988420,44.7927500 -85.3009640,44.7914710 -85.3009640,44.7905410
+					-85.3045560,44.7896110 -85.3056990,44.7914710 -85.3068420,44.7922850 -85.3083110,44.7912970
+					-85.3097800,44.7903090 -85.3132080,44.7900760 -85.3154120,44.7908900 -85.3176160,44.7917040
+					-85.3197385,44.7929245 -85.3218610,44.7941450 -85.3241465,44.7948425 -85.3264320,44.7955400
+					-85.3288800,44.7967020 -85.3313290,44.7983300 -85.3329620,44.7996080
+					</coordinates>
+                </LineString>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

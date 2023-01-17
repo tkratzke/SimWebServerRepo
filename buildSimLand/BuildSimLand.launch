@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <stringAttribute key="bad_container_name" value="\SimWebServer22\LaunchConfigu"/>
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/buildSimLand/src/main/java/com/skagit/buildSimLand/BuildSimLand.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.skagit.buildSimLand.BuildSimLand"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="buildSimLand"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="PHASE1 &quot;13.02-BonnevilleDamAndIslandsA&quot; &quot;Phase1Gshhg-bin-2.3.7\gshhs_f.b&quot; ^&#13;&#10;STOP&#13;&#10;AMEND &quot;06.03-FloridaCorrections&quot; &quot;06.02-FloridaCorrections&quot; SimLand2.2_f ^"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="buildSimLand"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea -Xmx20G -Xms10G -Djava.library.path=${MathLibDir}\x64\Release -DLog.To.Console -DWrite.DispDirs=true -DEtopoLandJarDir=etopoLandJarDir"/>
+    <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:buildSimLand/GeoFiles/SimLandVersions}"/>
+</launchConfiguration>

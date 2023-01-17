@@ -1,0 +1,28 @@
+# **/GeoFiles/*.zip
+# **/GeoFiles/**/BuildSimLandLog/
+# **/GeoFiles/**/etopoLandJarDir/
+# **/GeoFiles/**/Phase*Log/
+# **/GeoFiles/**/Phase*Result/
+# **/GeoFiles/**/Phase*Shp/
+# **/GeoFiles/**/LandJarDir/
+# **/GeoFiles/*.Log/
+# **/GeoFiles/**/*-DispDir/
+# **/GeoFiles/**/Phase1Gshhg-bin-2.3.7/
+# **/GeoFiles/**/Phase1Region17_Area_Dissolve/
+# **/GeoFiles/**/Phase1Usgs/
+# **/GeoFiles/**/Phase3Refinements/
+
+*.zip
+*.jar
+BuildSimLandLog/
+etopoLandJarDir/
+Phase*Log/
+Phase*Result/
+Phase*Shp/
+LandJarDir/
+*.Log/
+*-DispDir/
+Phase1Gshhg-bin-2.3.7/
+Phase1Region17_Area_Dissolve/
+Phase1Usgs/
+Phase3Refinements/

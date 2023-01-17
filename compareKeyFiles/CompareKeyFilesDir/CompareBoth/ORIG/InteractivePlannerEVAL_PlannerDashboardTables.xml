@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PLANNER_DASHBOARD_TABLES timeCreated="2018 Aug 03  01.50.22 PM.EDT" versionName="2.1-B35[28Jun2017]">
+    <!--Generation time: 8/3/18 1:50 PM-->
+    <TOP_LEFT>
+        <PATTERN SelectedObjects-POS="60%" SruId="36153"/>
+        <PATTERN SelectedObjects-POS="7%" SruId="36152"/>
+    </TOP_LEFT>
+    <BOTTOM_LEFT NetGain="67%" ThisPlan="67%"/>
+    <TOP_RIGHT>
+        <PATTERN Area="62580.37041759401472518" JointPOS="60%"
+            ObjectProbability="100%" SruId="36153" Ts="65.5830815740406905">
+            <SO ConditionalPOS="60%" Coverage="1.94594606505008283"
+                JointPOS="60%" ObjectProbability="100%"
+                SW="127.62113952286307494" SoId="33266"/>
+        </PATTERN>
+        <PATTERN Area="24905.59437493935911334" JointPOS="7%"
+            ObjectProbability="100%" SruId="36152" Ts="27.98840558265406742">
+            <SO ConditionalPOS="7%" Coverage="1.74529722966199263"
+                JointPOS="7%" ObjectProbability="100%"
+                SW="48.84808672606239099" SoId="33266"/>
+        </PATTERN>
+        <ALL_SRUS Area="87485.96479253337020054" JointPOS="67%"/>
+    </TOP_RIGHT>
+    <BOTTOM_RIGHT>
+        <SO ConditionalPOS="67%" JointPOS="67%" ObjectProbability="100%"
+            RemainingProbability="33%" SoId="33266"/>
+        <ALL_SOs JointPOS="67%" ObjectProbability="100%" RemainingProbability="33%"/>
+    </BOTTOM_RIGHT>
+</PLANNER_DASHBOARD_TABLES>

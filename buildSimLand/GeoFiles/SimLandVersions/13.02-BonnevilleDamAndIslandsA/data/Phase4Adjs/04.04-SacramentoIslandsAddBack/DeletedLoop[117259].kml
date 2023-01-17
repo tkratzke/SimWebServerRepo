@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>04.04-SacramentoIslandsAddBack.DeletedLoop[117259]-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>ADD_POLYGON</name>
+    			<water>false</water>
+                <description>04.04-SacramentoIslandsAddBack*DeletedLoop[117259]-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-121.8342168,38.0606463 -121.8327780,38.0580560 -121.8286110,38.0538890 -121.8261110,38.0491670
+					-121.8297220,38.0450000 -121.8358330,38.0466670 -121.8359515,38.0466907 -121.8346710,38.0435143
+					-121.8315812,38.0381317 -121.8278047,38.0295907 -121.8236008,38.0260428 -121.8158798,38.0221100
+					-121.8047867,38.0223198 -121.7959672,38.0206718 -121.7883453,38.0199052 -121.7831192,38.0209122
+					-121.7785338,38.0237160 -121.7845078,38.0281372 -121.7868728,38.0290032 -121.7909927,38.0298308
+					-121.7950668,38.0293007 -121.7974167,38.0297127 -121.7997208,38.0287628 -121.8050232,38.0300217
+					-121.8091812,38.0322113 -121.8139420,38.0348397 -121.8162078,38.0325317 -121.8203278,38.0333595
+					-121.8222198,38.0378572 -121.8228912,38.0405655 -121.8200378,38.0428848 -121.8177567,38.0447427
+					-121.8166657,38.0470313 -121.8091278,38.0489883 -121.8062743,38.0513077 -121.8039552,38.0518037
+					-121.8021545,38.0504762 -121.8010558,38.0527648 -121.8046342,38.0549660 -121.8105087,38.0557593
+					-121.8158112,38.0570222 -121.8199233,38.0578498 -121.8222657,38.0578078 -121.8342168,38.0606463
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

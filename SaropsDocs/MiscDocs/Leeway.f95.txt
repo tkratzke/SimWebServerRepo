@@ -1,0 +1,110 @@
+      PROGRAM LEEWAY_TEST
+
+!     This program demonstrates a potential efficient SUBROUTINE for computing
+!     leeway, including divergence off the down-wind direction, provided the 
+!     down-wind and cross-wind leeway values are linear with wind speed and 
+!     and have Y-intercepts of zero, making
+! 
+!     leeway speed = (leeway coefficient)*(wind speed) 
+!
+!     for both down-wind and cross-wind leeway values.  Current representations
+!     of the relationship of leeway to wind provide a mean angle off the down-
+!     wind direction and an equation of the form
+!
+!     leeway speed + (leeway coefficient)*(wind speed) + B
+!
+!     where B can be non-zero.  To prevent the absurdity of non-zero (positive
+!     or negative) leeway with zero wind speed, the above form is used only for
+!     wind speeds above six knots.  Another straight line from zero to the value
+!     computed for six knots is used for wind speeds below six knots.  Hence, 
+!     the USCG would have to reinterpret its leeway data for this algorithm to
+!     work.  It appears that non-zero Y-intercepts may not be necessary for
+!     sufficiently accrate leeway estimates, which is what prompted this little
+!     demonstration.
+      
+      REAL WND_X, WND_Y, DWND_X, DWND_Y, LWY_X, LWY_Y, DWNDMULT, CWNDMULT
+      
+      REAL WND_DIR, WND_SPD, DWND_DIR, LWY_DIR, LWY_SPD, DIVERGENCE
+			
+      LOGICAL RIGHT
+      
+      PARAMETER( RADTODEG = 57.29578, DEGTORAD = 0.01745329 )
+			
+!     ******************************************************************
+
+!     Set some sample inputs for SUBROUTINE LEEWAY.
+
+      WND_DIR = 210.0
+      DWND_DIR = WND_DIR + 180.0
+      IF (DWND_DIR >= 360.0) THEN
+        DWND_DIR = DWND_DIR - 360.0
+      ENDIF 
+      WND_SPD = 20.0
+      DWNDMULT = 0.04
+      CWNDMULT = 0.01
+      DIVERGENCE = ATAN(0.01/0.04)*RADTODEG
+      RIGHT = .TRUE.
+      
+!     Note:  If wind data were stored in (x,y) or (u,v) components, the 
+!     following polar torectangular conversion would be unnecessary.  If stored 
+!     as "direction toward" instead of the usual convention of "direction from", 
+!     the direction conversion above would also be unnecessary.
+
+      DWND_X = WND_SPD*COS(DWND_DIR*DEGTORAD)
+      DWND_Y = WND_SPD*SIN(DWND_DIR*DEGTORAD)
+      
+      CALL LEEWAY(DWND_X,DWND_Y,DWNDMULT,CWNDMULT,RIGHT,LWY_X,LWY_Y)
+      
+      PRINT *, DWND_X,DWND_Y,DWNDMULT,CWNDMULT,LWY_X,LWY_Y
+      
+      LWY_DIR = ATAN2(LWY_Y,LWY_X)*RADTODEG
+      IF (LWY_DIR < 0.0) THEN
+        LWY_DIR = LWY_DIR + 180.0
+      ENDIF
+      LWY_SPD = SQRT(LWY_X**2 + LWY_Y**2)
+      
+      PRINT *, WND_SPD,'KTS ',DWND_DIR,'T ',LWY_SPD,'KTS ',LWY_DIR,'T ',&
+               DIVERGENCE
+      
+      STOP
+      END
+
+!     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      
+      SUBROUTINE LEEWAY(DWND_X,DWND_Y,DWNDMULT,CWNDMULT,RIGHT,LWY_X,LWY_Y)
+      
+      REAL DWND_X, DWND_Y, DWNDMULT, CWNDMULT, LWY_X, LWY_Y, CWND_X, &
+           CWND_Y
+      
+      LOGICAL RIGHT
+      
+!     ******************************************************************
+!     * Inputs:  DWND_X, DWND_Y, DWNDMULT, CWNDMULT, RIGHT
+!     * Outputs: LWY_X, LWY_Y
+!     * Locals:  CWND_X, CWND_Y
+!     *
+!     * CWNDMULT - Sample cross-wind multiplier
+!     * CWND_X - X-component of the sample wind when rotated 90 degrees left or right
+!     * CWND_Y - Y-component of the sample wind when rotated 90 degrees left or right
+!     * DWND_X - X-component of the sample wind in the down wind direction
+!     * DWND_Y - Y-component of the sample wind in the down wind direction
+!     * DWNDMULT - Sample down-wind multiplier
+!     * RIGHT - TRUE if leeway divergence is right of down wind, false otherwise
+!     * LWY_X - X-component of the sample leeway
+!     * LWY_Y - Y-component of the sample leeway
+!     *
+!     *******************************************************************
+
+      IF (RIGHT) THEN  !Rotate wind vector 90 degrees right (compass).
+        CWND_X = -DWND_Y
+        CWND_Y = DWND_X
+      ELSE  !Rotate wind vector 90 degrees left (compass).
+        CWND_X = DWND_Y
+        CWND_Y = -DWND_X
+      ENDIF
+      
+      LWY_X = DWND_X*DWNDMULT + CWND_X*CWNDMULT
+      LWY_Y = DWND_Y*DWNDMULT + CWND_Y*CWNDMULT
+      
+      END
+      

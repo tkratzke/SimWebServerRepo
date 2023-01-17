@@ -1,0 +1,149 @@
+1.8.0_202
+Compiled from "SimLibPattern.java"
+public class com.skagit.sarops.util.patternUtils.SimLibPattern {
+  public final double _rawSearchKts;
+    descriptor: D
+  public final long _baseSecs;
+    descriptor: J
+  public final boolean _baseEqualsUnix;
+    descriptor: Z
+  public final int _searchDurationSecs;
+    descriptor: I
+  public final boolean _firstTurnRight;
+    descriptor: Z
+  public final double _minTsNmi;
+    descriptor: D
+  public final com.skagit.sarops.util.patternUtils.SphericalTimedSegs _sphericalTimedSegs;
+    descriptor: Lcom/skagit/sarops/util/patternUtils/SphericalTimedSegs;
+  public final double _centerLat;
+    descriptor: D
+  public final double _centerLng;
+    descriptor: D
+  public final long[] _waypointSecsS;
+    descriptor: [J
+  public final double[] _pathLats;
+    descriptor: [D
+  public final double[] _pathLngs;
+    descriptor: [D
+  public final double[] _specLooseLats;
+    descriptor: [D
+  public final double[] _specLooseLngs;
+    descriptor: [D
+  public final double[] _tsLooseLats;
+    descriptor: [D
+  public final double[] _tsLooseLngs;
+    descriptor: [D
+  public final double[] _tsTightLats;
+    descriptor: [D
+  public final double[] _tsTightLngs;
+    descriptor: [D
+  public final double[] _excTightLats;
+    descriptor: [D
+  public final double[] _excTightLngs;
+    descriptor: [D
+  public final double _orntn;
+    descriptor: D
+  public final double _tsNmi;
+    descriptor: D
+  public final double _sllNmi;
+    descriptor: D
+  public final double _lenNmi;
+    descriptor: D
+  public final double _widNmi;
+    descriptor: D
+  public final boolean _ps;
+    descriptor: Z
+  public final double _eplNmi;
+    descriptor: D
+  public final double _rawSearchKtsToUse;
+    descriptor: D
+  public com.skagit.sarops.util.patternUtils.SimLibPattern(double, long, int, double, double, double, boolean, double, double, double, double, double, boolean, java.lang.String, boolean);
+    descriptor: (DJIDDDZDDDDDZLjava/lang/String;Z)V
+
+  public com.skagit.sarops.util.patternUtils.SimLibPattern(double, long, boolean, int, double, double, double, boolean, double, double, double, double, double, boolean, java.lang.String, boolean);
+    descriptor: (DJZIDDDZDDDDDZLjava/lang/String;Z)V
+
+  public double[][] getLooseAndTightArrays(com.skagit.sarops.util.patternUtils.SphericalTimedSegs$LoopType);
+    descriptor: (Lcom/skagit/sarops/util/patternUtils/SphericalTimedSegs$LoopType;)[[D
+
+  public com.skagit.sarops.util.patternUtils.SphericalTimedSegs getSphericalTimedSegs();
+    descriptor: ()Lcom/skagit/sarops/util/patternUtils/SphericalTimedSegs;
+
+  public java.lang.String getWaypointsAndPolygonsString();
+    descriptor: ()Ljava/lang/String;
+
+  public static void mainLp(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+
+  public java.lang.String toString();
+    descriptor: ()Ljava/lang/String;
+
+  public static void mainSs(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+}
+Compiled from "NavigationCalculator.java"
+public abstract class com.skagit.util.navigation.NavigationCalculator {
+  public abstract com.skagit.util.navigation.LatLng3 getPosition(long);
+    descriptor: (J)Lcom/skagit/util/navigation/LatLng3;
+
+  public abstract double getNmiFromLatLng0(com.skagit.util.navigation.LatLng3);
+    descriptor: (Lcom/skagit/util/navigation/LatLng3;)D
+
+  public abstract double getInitialHdg();
+    descriptor: ()D
+
+  public static void normalizeLatLngArray(double[]);
+    descriptor: ([D)V
+}
+Compiled from "Wangsness.java"
+public class com.skagit.sarops.util.wangsness.Wangsness {
+  public static final boolean _Clockwise;
+    descriptor: Z
+  public static final double _ContainmentValueOfInput;
+    descriptor: D
+  public final com.skagit.util.navigation.LatLng3 _fix;
+    descriptor: Lcom/skagit/util/navigation/LatLng3;
+  public final double _sigmaA_Nmi;
+    descriptor: D
+  public final double _sigmaB_Nmi;
+    descriptor: D
+  public final double _dirA_D_CwFromN;
+    descriptor: D
+  public final int[] _idxsInUse;
+    descriptor: [I
+  public final com.skagit.sarops.util.CppToJavaTracer _cppToJavaTracer;
+    descriptor: Lcom/skagit/sarops/util/CppToJavaTracer;
+  public boolean _valid;
+    descriptor: Z
+  public java.lang.String getString();
+    descriptor: ()Ljava/lang/String;
+
+  public static com.skagit.sarops.util.wangsness.Wangsness getWangsness(com.skagit.sarops.control.SimCaseManager$SimCase, com.skagit.sarops.util.CppToJavaTracer, java.util.List<com.skagit.sarops.util.wangsness.BearingCall>, com.skagit.sarops.util.wangsness.Thresholds);
+    descriptor: (Lcom/skagit/sarops/control/SimCaseManager$SimCase;Lcom/skagit/sarops/util/CppToJavaTracer;Ljava/util/List;Lcom/skagit/sarops/util/wangsness/Thresholds;)Lcom/skagit/sarops/util/wangsness/Wangsness;
+
+  public static double[] getEllipse(boolean) throws java.lang.Exception;
+    descriptor: (Z)[D
+
+  public static double[] getEllipse(double[]) throws java.lang.Exception;
+    descriptor: ([D)[D
+
+  public static double[] getEllipse(double[], double[][]) throws java.lang.Exception;
+    descriptor: ([D[[D)[D
+
+  public static void oldMain(java.lang.String[]) throws java.lang.Exception;
+    descriptor: ([Ljava/lang/String;)V
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+}
+Compiled from "PrintArgs.java"
+public class com.skagit.util.PrintArgs {
+  public com.skagit.util.PrintArgs();
+    descriptor: ()V
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2">
+    <!--Generation time: 5/2/18 12:42 PM-->
+    <Document>
+        <name>00.00-OldAdjs.Lemon_Island-adj.kml</name>
+        <description>Conversion on 5/2/18 12:42:18 PM.</description>
+        <visibility>1</visibility>
+        <open>1</open>
+        <Style id="cyanHighlight">
+            <LineStyle id="cyanHighlightLineStyle">
+                <color>ffffff00</color>
+                <width>3.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanHighlightPolyStyle">
+                <color>ffffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="cyanNormal">
+            <LineStyle id="cyanNormalLineStyle">
+                <color>ffffff00</color>
+                <width>2.5</width>
+            </LineStyle>
+            <PolyStyle id="cyanNormalPolyStyle">
+                <color>80ffff00</color>
+                <fill>0</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <StyleMap id="cyanStyle">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#cyanNormal</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#cyanHighlight</styleUrl>
+            </Pair>
+        </StyleMap>
+        <Folder>
+            <name>Folder of 1 MinorAdjs</name>
+            <visibility>1</visibility>
+            <open>1</open>
+            <Placemark>
+                <name>ADD_POLYGON</name>
+    			<water>false</water>
+                <description>00.00-OldAdjs*Lemon_Island-adj.xml[00]</description>
+                <visibility>1</visibility>
+                <open>1</open>
+                <styleUrl>#cyanStyle</styleUrl>
+                <Polygon>
+                    <outerBoundaryIs>
+                        <LinearRing id="outerBoundaryIs">
+                            <coordinates>
+					-122.5826330,45.5979500 -122.5810000,45.5977000 -122.5801330,45.5974170 -122.5778170,45.5974170
+					-122.5767000,45.5971670 -122.5757170,45.5973670 -122.5745500,45.5975000 -122.5737330,45.5975830
+					-122.5725830,45.5966830 -122.5716500,45.5964000 -122.5704830,45.5955330 -122.5697330,45.5950830
+					-122.5694330,45.5946330 -122.5685670,45.5946330 -122.5675170,45.5939830 -122.5660670,45.5932000
+					-122.5652500,45.5925500 -122.5632170,45.5913670 -122.5622830,45.5907170 -122.5613500,45.5897830
+					-122.5603670,45.5890500 -122.5595500,45.5882330 -122.5588000,45.5876170 -122.5583830,45.5867500
+					-122.5581000,45.5863830 -122.5582170,45.5854830 -122.5594830,45.5854830 -122.5606000,45.5860670
+					-122.5621000,45.5868000 -122.5638500,45.5874500 -122.5638500,45.5877830 -122.5616500,45.5874170
+					-122.5594830,45.5872000 -122.5601330,45.5876170 -122.5625170,45.5880670 -122.5650670,45.5891170
+					-122.5680330,45.5911170 -122.5700170,45.5922330 -122.5720500,45.5932500 -122.5745000,45.5946330
+					-122.5771670,45.5958170 -122.5791500,45.5966000 -122.5808830,45.5970830 -122.5821170,45.5973670
+					-122.5837330,45.5975000 -122.5826330,45.5979500
+					</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>
