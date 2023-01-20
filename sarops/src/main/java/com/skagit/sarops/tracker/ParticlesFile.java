@@ -44,10 +44,8 @@ public class ParticlesFile {
 	final public static String _FileContentAttribute = "model";
 	final public static String _ModelStringAttribute = "simEchoModel";
 	final public static String _OldModelStringAttribute = "xmlmodel";
-	final public static String _StateVectorTypesAttribute =
-			"stateVectorTypesString";
-	final public static String _StateVectorTypeColorsAttribute =
-			"stateVectorTypeColorsString";
+	final public static String _StateVectorTypesAttribute = "stateVectorTypesString";
+	final public static String _StateVectorTypeColorsAttribute = "stateVectorTypeColorsString";
 
 	/** Names of dimensions: */
 	final public static String _DimTime = "time";
@@ -100,18 +98,16 @@ public class ParticlesFile {
 	final public static String _VarMeanLandingTime = "meanLandingTime";
 
 	/**
-	 * (Means, not used by SAROPS) float vars, indexed by _DimTime, _DimScen
-	 * and _DimSot:
+	 * (Means, not used by SAROPS) float vars, indexed by _DimTime, _DimScen and
+	 * _DimSot:
 	 */
 	final public static String _VarMeanLat = "meanLat";
 	final public static String _VarMeanLng = "meanLng";
 
 	/** (If S/V case) float vars, indexed by _DimScen and _DimParticle: */
 	final public static String _VarSailorQuality = "sailorQualities";
-	final public static String _VarSailorForbiddenAngleIncrease =
-			"sailorForbiddenAngleIncrease";
-	final public static String _VarSailorSpeedMultiplier =
-			"sailorSpeedMultiplier";
+	final public static String _VarSailorForbiddenAngleIncrease = "sailorForbiddenAngleIncrease";
+	final public static String _VarSailorSpeedMultiplier = "sailorSpeedMultiplier";
 	final public static String _VarSailorZeroZeroMotor = "zeroZeroMotor";
 
 	/**
@@ -131,8 +127,7 @@ public class ParticlesFile {
 	final public static String _VarOcBoatSpd = "ocBoatSpd";
 
 	/**
-	 * (If writeOcTables) int var, indexed by _DimTime, _DimScen, and
-	 * _DimParticle:
+	 * (If writeOcTables) int var, indexed by _DimTime, _DimScen, and _DimParticle:
 	 */
 	final public static String _VarOcSvtOrd = "ocSvtOrdinal";
 
@@ -178,14 +173,12 @@ public class ParticlesFile {
 	private int[][][] _ocSvtOrdinals;
 
 	/**
-	 * This ctor creates a ParticlesFile object for a tracker, which populates
-	 * it; there is no NetCdf file here.
+	 * This ctor creates a ParticlesFile object for a tracker, which populates it;
+	 * there is no NetCdf file here.
 	 */
-	public ParticlesFile(final Tracker tracker, final long firstOutputRefSecs,
-			final long lastOutputRefSecs) {
+	public ParticlesFile(final Tracker tracker, final long firstOutputRefSecs, final long lastOutputRefSecs) {
 		_simCase = tracker.getSimCase();
-		final SimGlobalStrings simGlobalStrings =
-				_simCase.getSimGlobalStrings();
+		final SimGlobalStrings simGlobalStrings = _simCase.getSimGlobalStrings();
 		_model = tracker.getModel();
 		final int nSearchObjectTypes = _model.getNSearchObjectTypes();
 		final boolean storeMeans = simGlobalStrings.storeMeans();
@@ -205,13 +198,11 @@ public class ParticlesFile {
 		_initPriors = new float[nScenarii][nParticlesPerScenario];
 		if (_model.hasSailData()) {
 			_sailorQualities = new float[nScenarii][nParticlesPerScenario];
-			_sailorForbiddenAngleIncreases =
-					new float[nScenarii][nParticlesPerScenario];
+			_sailorForbiddenAngleIncreases = new float[nScenarii][nParticlesPerScenario];
 			_sailorSpeedMultipliers = new float[nScenarii][nParticlesPerScenario];
 			_zeroZeroMotor = new boolean[nScenarii][nParticlesPerScenario];
 		} else {
-			_sailorQualities =
-					_sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
+			_sailorQualities = _sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
 			_zeroZeroMotor = null;
 		}
 		_lats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
@@ -227,8 +218,7 @@ public class ParticlesFile {
 				Arrays.fill(_lngs[timeIdx][k0], Float.NaN);
 				Arrays.fill(_probabilities[timeIdx][k0], Float.NaN);
 				Arrays.fill(_cumPFails[timeIdx][k0], 1f);
-				Arrays.fill(_svtOrdinals[timeIdx][k0],
-						StateVectorType.UNDEFINED.ordinal());
+				Arrays.fill(_svtOrdinals[timeIdx][k0], StateVectorType.UNDEFINED.ordinal());
 			}
 		}
 		for (int k0 = 0; k0 < nScenarii; ++k0) {
@@ -238,17 +228,12 @@ public class ParticlesFile {
 		if (writeOcTables) {
 			_ocLats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
 			_ocLngs = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-			_ocEastDnWinds =
-					new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-			_ocNorthDnWinds =
-					new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-			_ocEastDnCurrents =
-					new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-			_ocNorthDnCurrents =
-					new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+			_ocEastDnWinds = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+			_ocNorthDnWinds = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+			_ocEastDnCurrents = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+			_ocNorthDnCurrents = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
 			_ocEastBoats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-			_ocNorthBoats =
-					new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+			_ocNorthBoats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
 			_ocSvtOrdinals = new int[nRefSecsS][nScenarii][nParticlesPerScenario];
 			for (int timeIdx = 0; timeIdx < nRefSecsS; ++timeIdx) {
 				for (int k0 = 0; k0 < nScenarii; ++k0) {
@@ -260,28 +245,24 @@ public class ParticlesFile {
 					Arrays.fill(_ocNorthDnCurrents[timeIdx][k0], Float.NaN);
 					Arrays.fill(_ocEastBoats[timeIdx][k0], Float.NaN);
 					Arrays.fill(_ocNorthBoats[timeIdx][k0], Float.NaN);
-					Arrays.fill(_ocSvtOrdinals[timeIdx][k0],
-							StateVectorType.UNDEFINED.ordinal());
+					Arrays.fill(_ocSvtOrdinals[timeIdx][k0], StateVectorType.UNDEFINED.ordinal());
 				}
 			}
 		} else {
 			_ocLats = _ocLngs = _ocEastDnWinds = _ocNorthDnWinds = null;
-			_ocEastDnCurrents =
-					_ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
+			_ocEastDnCurrents = _ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
 			_ocSvtOrdinals = null;
 		}
 		/**
-		 * Initialize the arrays. _probabilities is not initialized here.
-		 * _cumPFails is initialized to 1f. The rest are initialized to
-		 * "not-set."
+		 * Initialize the arrays. _probabilities is not initialized here. _cumPFails is
+		 * initialized to 1f. The rest are initialized to "not-set."
 		 */
 		for (int timeIdx = 0; timeIdx < nRefSecsS; ++timeIdx) {
 			for (int k0 = 0; k0 < nScenarii; ++k0) {
 				Arrays.fill(_lats[timeIdx][k0], Float.NaN);
 				Arrays.fill(_lngs[timeIdx][k0], Float.NaN);
 				Arrays.fill(_cumPFails[timeIdx][k0], 1f);
-				Arrays.fill(_svtOrdinals[timeIdx][k0],
-						StateVectorType.UNDEFINED.ordinal());
+				Arrays.fill(_svtOrdinals[timeIdx][k0], StateVectorType.UNDEFINED.ordinal());
 				Arrays.fill(_anchoringRefSecs[k0], -1);
 				Arrays.fill(_birthRefSecs[k0], -1);
 				Arrays.fill(_landingRefSecs[k0], -1);
@@ -297,8 +278,7 @@ public class ParticlesFile {
 					Arrays.fill(_ocNorthDnCurrents[timeIdx][k0], Float.NaN);
 					Arrays.fill(_ocEastBoats[timeIdx][k0], Float.NaN);
 					Arrays.fill(_ocNorthBoats[timeIdx][k0], Float.NaN);
-					Arrays.fill(_ocSvtOrdinals[timeIdx][k0],
-							StateVectorType.UNDEFINED.ordinal());
+					Arrays.fill(_ocSvtOrdinals[timeIdx][k0], StateVectorType.UNDEFINED.ordinal());
 				}
 			}
 		}
@@ -340,24 +320,20 @@ public class ParticlesFile {
 		_status = false;
 	}
 
-	/** This ctor reads in the data from a NetcdfFile. */
-	public ParticlesFile(final SimCaseManager.SimCase simCase,
-			String particlesFilePath) {
+	/** This ctor reads in the data from a NetCdfFile. */
+	public ParticlesFile(final SimCaseManager.SimCase simCase, String particlesFilePath) {
 		_simCase = simCase;
 		/** Try to find a non-directory existing file. */
 		File particlesFile = new File(particlesFilePath);
 		if (particlesFile.exists() && particlesFile.isFile()) {
-			particlesFilePath =
-					StringUtilities.cleanUpFilePath(particlesFilePath);
+			particlesFilePath = StringUtilities.cleanUpFilePath(particlesFilePath);
 		} else {
 			final File runDir = DirsTracker.getRunDir();
-			final String runDirPath =
-					runDir.getAbsolutePath() + Constants._FileSeparatorChar;
+			final String runDirPath = runDir.getAbsolutePath() + Constants._FileSeparatorChar;
 			particlesFilePath = runDirPath + particlesFilePath;
 			particlesFile = new File(particlesFilePath);
 			if (particlesFile.exists() && particlesFile.isFile()) {
-				particlesFilePath =
-						StringUtilities.cleanUpFilePath(particlesFilePath);
+				particlesFilePath = StringUtilities.cleanUpFilePath(particlesFilePath);
 			} else {
 				_model = null;
 				_refSecsS = null;
@@ -365,8 +341,7 @@ public class ParticlesFile {
 				_anchoringRefSecs = _birthRefSecs = _landingRefSecs = null;
 				_distressRefSecs = _expirationRefSecs = null;
 				_initPriors = null;
-				_sailorQualities =
-						_sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
+				_sailorQualities = _sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
 				_zeroZeroMotor = null;
 				_lats = _lngs = null;
 				_distressLats = _distressLngs = null;
@@ -383,31 +358,25 @@ public class ParticlesFile {
 		int nRefSecsS = 0;
 		int nScenarii = 0;
 		int nParticlesPerScenario = 0;
-		SimCaseManager.out(simCase,
-				"Reading ParticlesFile: " + particlesFilePath);
+		SimCaseManager.out(simCase, "Reading ParticlesFile: " + particlesFilePath);
 		try (NetcdfFile netCdfFile = NetcdfFile.open(particlesFilePath)) {
-			SimCaseManager.out(simCase,
-					String.format(
-							"FileTypeId: %s, Particle file Version: %s, Description: %s.",
-							netCdfFile.getFileTypeId(), netCdfFile.getFileTypeVersion(),
-							netCdfFile.getFileTypeDescription()));
-			final String modelString = NetCdfUtil.getGlobalAttributeValue(
-					netCdfFile, _ModelStringAttribute, _OldModelStringAttribute);
-			model = ModelReader.readFromParticlesFileModelString(simCase,
-					modelString);
+			SimCaseManager.out(simCase, String.format("FileTypeId: %s, Particle file Version: %s, Description: %s.",
+					netCdfFile.getFileTypeId(), netCdfFile.getFileTypeVersion(), netCdfFile.getFileTypeDescription()));
+			final String modelString = NetCdfUtil.getGlobalAttributeValue(netCdfFile, _ModelStringAttribute,
+					_OldModelStringAttribute);
+			model = ModelReader.readFromParticlesFileModelString(simCase, modelString);
 			SimCaseManager.out(simCase, "Decoded model from particlesFile.");
 			nScenarii = model.getNScenarii();
 			nParticlesPerScenario = model.getNParticlesPerScenario();
 			/** Get the basic dimension lengths. */
 			final Dimension timeDimension = netCdfFile.findDimension("time");
 			nRefSecsS = timeDimension.getLength();
-			final Dimension particleDimension =
-					netCdfFile.findDimension(_DimParticle);
+			final Dimension particleDimension = netCdfFile.findDimension(_DimParticle);
 			/**
-			 * Because reading nParticlesPerScenario from the model, even the one
-			 * within the particlesFile, might refer to the current set of
-			 * SimProperties, we must get it from the dimension within the actual
-			 * NetCdf file to not crash while reading.
+			 * Because reading nParticlesPerScenario from the model, even the one within the
+			 * particlesFile, might refer to the current set of SimProperties, we must get
+			 * it from the dimension within the actual NetCdf file to not crash while
+			 * reading.
 			 */
 			nParticlesPerScenario = particleDimension.getLength();
 			model.setNParticlesPerScenario(nParticlesPerScenario);
@@ -417,61 +386,51 @@ public class ParticlesFile {
 				_refSecsS = new long[nRefSecsS];
 				NetCdfUtil.read1DLongs(netCdfFile, nRefSecsS, _VarTime, _refSecsS);
 				_anchoringRefSecs = new long[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarAnchoringTime, _anchoringRefSecs);
+				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario, _VarAnchoringTime,
+						_anchoringRefSecs);
 				_birthRefSecs = new long[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarBirthTime, _birthRefSecs);
+				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario, _VarBirthTime, _birthRefSecs);
 				_landingRefSecs = new long[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarLandingTime, _landingRefSecs);
+				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario, _VarLandingTime, _landingRefSecs);
 				_distressRefSecs = new long[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarDistressTime, _distressRefSecs);
+				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario, _VarDistressTime,
+						_distressRefSecs);
 				_expirationRefSecs = new long[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarExpirationTime, _expirationRefSecs);
+				NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nParticlesPerScenario, _VarExpirationTime,
+						_expirationRefSecs);
 				_underwayTypes = new int[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DInts(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarUnderwayTypeName, _underwayTypes);
+				NetCdfUtil.read2DInts(netCdfFile, nScenarii, nParticlesPerScenario, _VarUnderwayTypeName,
+						_underwayTypes);
 				_distressTypes = new int[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DInts(netCdfFile, nScenarii, nParticlesPerScenario,
-						_VarDistressType, _distressTypes);
+				NetCdfUtil.read2DInts(netCdfFile, nScenarii, nParticlesPerScenario, _VarDistressType, _distressTypes);
 				_distressLats = new float[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-						nParticlesPerScenario, _VarDistressLat, _distressLats);
+				NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarDistressLat, _distressLats);
 				_distressLngs = new float[nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-						nParticlesPerScenario, _VarDistressLng, _distressLngs);
+				NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarDistressLng, _distressLngs);
 				_lats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-						nParticlesPerScenario, _VarLat, _lats);
+				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarLat, _lats);
 				_lngs = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-						nParticlesPerScenario, _VarLng, _lngs);
+				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarLng, _lngs);
 				_svtOrdinals = new int[nRefSecsS][nScenarii][nParticlesPerScenario];
 				try {
-					NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii,
-							nParticlesPerScenario, _VarSvtOrd, _svtOrdinals);
+					NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarSvtOrd,
+							_svtOrdinals);
 				} catch (final Exception e2) {
-					NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii,
-							nParticlesPerScenario, _OldVarSvtOrd, _svtOrdinals);
+					NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _OldVarSvtOrd,
+							_svtOrdinals);
 				}
-				_probabilities =
-						new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-						nParticlesPerScenario, _VarProbability, _probabilities);
+				_probabilities = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarProbability,
+						_probabilities);
 				_cumPFails = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-						nParticlesPerScenario, _VarPFail, _cumPFails);
+				NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarPFail, _cumPFails);
 				_initPriors = new float[nScenarii][nParticlesPerScenario];
 				try {
-					NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-							nParticlesPerScenario, _VarInitPrior0, _initPriors);
+					NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarInitPrior0, _initPriors);
 				} catch (final Exception e0) {
 					try {
-						NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-								nParticlesPerScenario, _VarInitPrior1, _initPriors);
+						NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarInitPrior1,
+								_initPriors);
 					} catch (final Exception e1) {
 						for (int k0 = 0; k0 < nScenarii; ++k0) {
 							for (int k1 = 0; k1 < nParticlesPerScenario; ++k1) {
@@ -481,42 +440,36 @@ public class ParticlesFile {
 					}
 				}
 				_sailorQualities = new float[nScenarii][nParticlesPerScenario];
-				_sailorForbiddenAngleIncreases =
-						new float[nScenarii][nParticlesPerScenario];
-				_sailorSpeedMultipliers =
-						new float[nScenarii][nParticlesPerScenario];
+				_sailorForbiddenAngleIncreases = new float[nScenarii][nParticlesPerScenario];
+				_sailorSpeedMultipliers = new float[nScenarii][nParticlesPerScenario];
 				_zeroZeroMotor = new boolean[nScenarii][nParticlesPerScenario];
 				try {
-					NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-							nParticlesPerScenario, _VarSailorQuality, _sailorQualities);
-					NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-							nParticlesPerScenario, _VarSailorForbiddenAngleIncrease,
-							_sailorForbiddenAngleIncreases);
-					NetCdfUtil.read2DFloats(netCdfFile, nScenarii,
-							nParticlesPerScenario, _VarSailorSpeedMultiplier,
+					NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarSailorQuality,
+							_sailorQualities);
+					NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario,
+							_VarSailorForbiddenAngleIncrease, _sailorForbiddenAngleIncreases);
+					NetCdfUtil.read2DFloats(netCdfFile, nScenarii, nParticlesPerScenario, _VarSailorSpeedMultiplier,
 							_sailorSpeedMultipliers);
-					NetCdfUtil.read2DBools(netCdfFile, nScenarii,
-							nParticlesPerScenario, _VarSailorZeroZeroMotor,
+					NetCdfUtil.read2DBools(netCdfFile, nScenarii, nParticlesPerScenario, _VarSailorZeroZeroMotor,
 							_zeroZeroMotor);
 				} catch (final Exception e) {
-					_sailorQualities = _sailorForbiddenAngleIncreases =
-							_sailorSpeedMultipliers = null;
+					_sailorQualities = _sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
 					_zeroZeroMotor = null;
 				}
 				final int nSearchObjectTypes = model.getNSearchObjectTypes();
 				try {
 					_meanBirthRefSecs = new long[nScenarii][nSearchObjectTypes];
-					NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nSearchObjectTypes,
-							_VarMeanBirthTime, _meanBirthRefSecs);
+					NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nSearchObjectTypes, _VarMeanBirthTime,
+							_meanBirthRefSecs);
 					_meanLandingRefSecs = new long[nScenarii][nSearchObjectTypes];
-					NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nSearchObjectTypes,
-							_VarMeanLandingTime, _meanLandingRefSecs);
+					NetCdfUtil.read2DLongs(netCdfFile, nScenarii, nSearchObjectTypes, _VarMeanLandingTime,
+							_meanLandingRefSecs);
 					_meanLats = new float[nRefSecsS][nScenarii][nSearchObjectTypes];
-					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-							nSearchObjectTypes, _VarMeanLat, _meanLats);
+					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nSearchObjectTypes, _VarMeanLat,
+							_meanLats);
 					_meanLngs = new float[nRefSecsS][nScenarii][nSearchObjectTypes];
-					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-							nSearchObjectTypes, _VarMeanLng, _meanLngs);
+					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nSearchObjectTypes, _VarMeanLng,
+							_meanLngs);
 				} catch (final Exception e) {
 					_meanBirthRefSecs = null;
 					_meanLandingRefSecs = null;
@@ -525,54 +478,44 @@ public class ParticlesFile {
 				/** See if we read in ocTables. */
 				_ocLats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
 				try {
-					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-							nParticlesPerScenario, _VarOcLat, _ocLats);
+					NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarOcLat,
+							_ocLats);
 				} catch (final Exception e) {
 					_ocLats = null;
 				}
 				if (_ocLats != null) {
 					_ocLngs = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocEastDnWinds =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocNorthDnWinds =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocEastDnCurrents =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocNorthDnCurrents =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocEastBoats =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocNorthBoats =
-							new float[nRefSecsS][nScenarii][nParticlesPerScenario];
-					_ocSvtOrdinals =
-							new int[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocEastDnWinds = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocNorthDnWinds = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocEastDnCurrents = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocNorthDnCurrents = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocEastBoats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocNorthBoats = new float[nRefSecsS][nScenarii][nParticlesPerScenario];
+					_ocSvtOrdinals = new int[nRefSecsS][nScenarii][nParticlesPerScenario];
 					try {
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcLng, _ocLngs);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcEastDnWind, _ocEastDnWinds);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcNorthDnWind, _ocNorthDnWinds);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcEastDnCurrent,
-								_ocEastDnCurrents);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcNorthDnCurrent,
-								_ocNorthDnCurrents);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcEastBoat, _ocEastBoats);
-						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcNorthBoat, _ocNorthBoats);
-						NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii,
-								nParticlesPerScenario, _VarOcSvtOrd, _ocSvtOrdinals);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarOcLng,
+								_ocLngs);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario,
+								_VarOcEastDnWind, _ocEastDnWinds);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario,
+								_VarOcNorthDnWind, _ocNorthDnWinds);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario,
+								_VarOcEastDnCurrent, _ocEastDnCurrents);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario,
+								_VarOcNorthDnCurrent, _ocNorthDnCurrents);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarOcEastBoat,
+								_ocEastBoats);
+						NetCdfUtil.read3DFloats(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario,
+								_VarOcNorthBoat, _ocNorthBoats);
+						NetCdfUtil.read3DInts(netCdfFile, nRefSecsS, nScenarii, nParticlesPerScenario, _VarOcSvtOrd,
+								_ocSvtOrdinals);
 					} catch (final Exception e) {
 						_ocLats = null;
 					}
 				} else {
 					_ocLats = _ocLngs = null;
 					_ocLats = _ocLngs = _ocEastDnWinds = _ocNorthDnWinds = null;
-					_ocEastDnCurrents =
-							_ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
+					_ocEastDnCurrents = _ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
 					_ocSvtOrdinals = null;
 				}
 				status = true;
@@ -581,8 +524,7 @@ public class ParticlesFile {
 				_anchoringRefSecs = _birthRefSecs = _landingRefSecs = null;
 				_distressRefSecs = _expirationRefSecs = null;
 				_initPriors = null;
-				_sailorQualities =
-						_sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
+				_sailorQualities = _sailorForbiddenAngleIncreases = _sailorSpeedMultipliers = null;
 				_zeroZeroMotor = null;
 				_lats = _lngs = null;
 				_distressLats = _distressLngs = null;
@@ -592,8 +534,7 @@ public class ParticlesFile {
 				_meanLats = _meanLngs = null;
 				_ocLats = _ocLngs = null;
 				_ocLats = _ocLngs = _ocEastDnWinds = _ocNorthDnWinds = null;
-				_ocEastDnCurrents =
-						_ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
+				_ocEastDnCurrents = _ocNorthDnCurrents = _ocEastBoats = _ocNorthBoats = null;
 				_ocSvtOrdinals = null;
 				status = false;
 			}
@@ -603,8 +544,7 @@ public class ParticlesFile {
 		_status = status;
 	}
 
-	public double[] getLatLngPair(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public double[] getLatLngPair(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		final double lat;
@@ -621,7 +561,9 @@ public class ParticlesFile {
 				lat = lng = Float.NaN;
 			}
 		}
-		return new double[] { lat, lng };
+		return new double[] {
+				lat, lng
+		};
 	}
 
 	public double[] getDistressLatLngPair(final ParticleIndexes prtclIndxs) {
@@ -629,29 +571,27 @@ public class ParticlesFile {
 		final int j = prtclIndxs.getParticleIndex();
 		final double distressLat = _distressLats[i][j];
 		final double distressLng = _distressLngs[i][j];
-		return new double[] { distressLat, distressLng };
+		return new double[] {
+				distressLat, distressLng
+		};
 	}
 
-	public StateVectorType getSvtFromTimeIdx(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public StateVectorType getSvtFromTimeIdx(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		final int ordinal = _svtOrdinals[timeIdx][i][j];
 		return StateVectorType.values()[ordinal];
 	}
 
-	public StateVectorType getSvtFromRefSecs(final long refSecs,
-			final ParticleIndexes prtclIndxs) {
-		final int timeIdx =
-				Math.max(0, CombinatoricTools.getGlbIndex(_refSecsS, refSecs));
+	public StateVectorType getSvtFromRefSecs(final long refSecs, final ParticleIndexes prtclIndxs) {
+		final int timeIdx = Math.max(0, CombinatoricTools.getGlbIndex(_refSecsS, refSecs));
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		final int ordinal = _svtOrdinals[timeIdx][i][j];
 		return StateVectorType.values()[ordinal];
 	}
 
-	public LatLng3 getLatLng(final long refSecs,
-			final ParticleIndexes prtclIndxs) {
+	public LatLng3 getLatLng(final long refSecs, final ParticleIndexes prtclIndxs) {
 		final int nRefsM1 = _refSecsS.length - 1;
 		final int timeIdx1X = CombinatoricTools.getGlbIndex(_refSecsS, refSecs);
 		final int timeIdx1 = Math.max(0, Math.min(nRefsM1, timeIdx1X));
@@ -671,23 +611,19 @@ public class ParticlesFile {
 		final long t1 = _refSecsS[timeIdx1];
 		final long t2 = _refSecsS[timeIdx2];
 		final long durationInSecs = t2 - t1;
-		final GreatCircleCalculator greatCircleCalculator =
-				(GreatCircleCalculator) NavigationCalculatorStatics
-						.buildWithSeconds(latLng1, t1, latLng2, durationInSecs,
-								MotionType.GREAT_CIRCLE);
+		final GreatCircleCalculator greatCircleCalculator = (GreatCircleCalculator) NavigationCalculatorStatics
+				.buildWithSeconds(latLng1, t1, latLng2, durationInSecs, MotionType.GREAT_CIRCLE);
 		final LatLng3 latLng = greatCircleCalculator.getPosition(refSecs);
 		return latLng;
 	}
 
-	public void setDistressType(final ParticleIndexes prtclIndxs,
-			final int distressTypeId) {
+	public void setDistressType(final ParticleIndexes prtclIndxs, final int distressTypeId) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_distressTypes[i][j] = distressTypeId;
 	}
 
-	public void setUnderwayType(final ParticleIndexes prtclIndxs,
-			final int underwayTypeId) {
+	public void setUnderwayType(final ParticleIndexes prtclIndxs, final int underwayTypeId) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_underwayTypes[i][j] = underwayTypeId;
@@ -703,8 +639,7 @@ public class ParticlesFile {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int k = prtclIndxs.getSotOrd();
 		if (k >= 0) {
-			final SearchObjectType searchObjectType =
-					_model.getSearchObjectTypeFromOrd(k);
+			final SearchObjectType searchObjectType = _model.getSearchObjectTypeFromOrd(k);
 			final int objectType = searchObjectType.getId();
 			if (objectType < 0) {
 				assert false : "Bad distressType in ParticlesFile: " + objectType;
@@ -716,16 +651,14 @@ public class ParticlesFile {
 		return objectType;
 	}
 
-	public int getObjectTypeId(final long refSecs,
-			final ParticleIndexes prtclIndxs) {
+	public int getObjectTypeId(final long refSecs, final ParticleIndexes prtclIndxs) {
 		final int objectType;
 		if (_model.getReverseDrift()) {
 			objectType = getDistressType(prtclIndxs);
 		} else {
 			final int k = prtclIndxs.getSotOrd();
 			if (k >= 0) {
-				final SearchObjectType searchObjectType =
-						_model.getSearchObjectTypeFromOrd(k);
+				final SearchObjectType searchObjectType = _model.getSearchObjectTypeFromOrd(k);
 				objectType = searchObjectType.getId();
 			} else {
 				final long distressRefSecs = getDistressRefSecs(prtclIndxs);
@@ -788,8 +721,7 @@ public class ParticlesFile {
 		return t;
 	}
 
-	public float getProbabilityForIdx(final int refSecsIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getProbabilityForIdx(final int refSecsIdx, final ParticleIndexes prtclIndxs) {
 		if (refSecsIdx < 0 || refSecsIdx >= _refSecsS.length) {
 			return 0f;
 		}
@@ -798,8 +730,7 @@ public class ParticlesFile {
 		return _probabilities[refSecsIdx][i][j];
 	}
 
-	public float getProbability(final long refSecs,
-			final ParticleIndexes prtclIndxs) {
+	public float getProbability(final long refSecs, final ParticleIndexes prtclIndxs) {
 		final int nRefsM1 = _refSecsS.length - 1;
 		final int timeIdxX = CombinatoricTools.getLubIndex(_refSecsS, refSecs);
 		final int timeIdx = Math.max(0, Math.min(nRefsM1, timeIdxX));
@@ -808,8 +739,7 @@ public class ParticlesFile {
 		return _probabilities[Math.max(0, timeIdx)][i][j];
 	}
 
-	public float getCumPFail(final long refSecs,
-			final ParticleIndexes prtclIndxs) {
+	public float getCumPFail(final long refSecs, final ParticleIndexes prtclIndxs) {
 		/** CumPFail is the probability at or AFTER refSecs. */
 		final int nRefsM1 = _refSecsS.length - 1;
 		final int timeIdxX = CombinatoricTools.getLubIndex(_refSecsS, refSecs);
@@ -834,8 +764,7 @@ public class ParticlesFile {
 		return _sailorQualities[i][j];
 	}
 
-	public float getSailorForbiddenAngleIncrease(
-			final ParticleIndexes prtclIndxs) {
+	public float getSailorForbiddenAngleIncrease(final ParticleIndexes prtclIndxs) {
 		if (_sailorForbiddenAngleIncreases == null) {
 			return Float.NaN;
 		}
@@ -853,8 +782,7 @@ public class ParticlesFile {
 		return _sailorSpeedMultipliers[i][j];
 	}
 
-	public boolean getSailorIsZeroZeroMotor(
-			final ParticleIndexes prtclIndxs) {
+	public boolean getSailorIsZeroZeroMotor(final ParticleIndexes prtclIndxs) {
 		if (_zeroZeroMotor == null) {
 			return false;
 		}
@@ -886,93 +814,80 @@ public class ParticlesFile {
 	public boolean deepEquals(final ParticlesFile other) {
 		final int nRefSecsS = _refSecsS.length;
 		if (nRefSecsS != other._refSecsS.length) {
-			SimCaseManager.err(_simCase, "Different number of times: " +
-					nRefSecsS + " vs. " + other._refSecsS.length);
+			SimCaseManager.err(_simCase, "Different number of times: " + nRefSecsS + " vs. " + other._refSecsS.length);
 			return false;
 		}
 		for (int timeIdx = 0; timeIdx < nRefSecsS; ++timeIdx) {
 			if (_refSecsS[timeIdx] != other._refSecsS[timeIdx]) {
-				SimCaseManager.err(_simCase, "Different times at index " + timeIdx +
-						": " + _refSecsS[timeIdx] + " vs." + other._refSecsS[timeIdx]);
+				SimCaseManager.err(_simCase, "Different times at index " + timeIdx + ": " + _refSecsS[timeIdx] + " vs."
+						+ other._refSecsS[timeIdx]);
 				return false;
 			}
 		}
 		/**
-		 * _distressTypes' first index indexes the scenarios; so the following
-		 * line is right.
+		 * _distressTypes' first index indexes the scenarios; so the following line is
+		 * right.
 		 */
 		final int nScenarii = _distressTypes.length;
 		if (nScenarii != other._distressTypes.length) {
-			SimCaseManager.err(_simCase, "Different number of scenarios: " +
-					nScenarii + " vs. " + other._distressTypes.length);
+			SimCaseManager.err(_simCase,
+					"Different number of scenarios: " + nScenarii + " vs. " + other._distressTypes.length);
 			return false;
 		}
 		final int nParticles = _distressTypes[0].length;
 		if (nParticles != other._distressTypes[0].length) {
-			SimCaseManager.err(_simCase, "Different number of particles: " +
-					nParticles + " vs. " + other._distressTypes[0].length);
+			SimCaseManager.err(_simCase,
+					"Different number of particles: " + nParticles + " vs. " + other._distressTypes[0].length);
 			return false;
 		}
-		if (!deepEquals("Underway Type", _underwayTypes, other._underwayTypes,
-				nScenarii, nParticles) || !deepEquals("Birth Time", _birthRefSecs, other._birthRefSecs,
-				nScenarii, nParticles) || !deepEquals("Distress Time", _distressRefSecs,
-				other._distressRefSecs, nScenarii, nParticles) || !deepEquals("Expiration Time", _expirationRefSecs,
-				other._expirationRefSecs, nScenarii, nParticles)) {
+		if (!deepEquals("Underway Type", _underwayTypes, other._underwayTypes, nScenarii, nParticles)
+				|| !deepEquals("Birth Time", _birthRefSecs, other._birthRefSecs, nScenarii, nParticles)
+				|| !deepEquals("Distress Time", _distressRefSecs, other._distressRefSecs, nScenarii, nParticles)
+				|| !deepEquals("Expiration Time", _expirationRefSecs, other._expirationRefSecs, nScenarii,
+						nParticles)) {
 			return false;
 		}
-		if (!deepEquals("Anchoring Time", _anchoringRefSecs,
-				other._anchoringRefSecs, nScenarii, nParticles)) {
+		if (!deepEquals("Anchoring Time", _anchoringRefSecs, other._anchoringRefSecs, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals("Distress Type", _distressTypes, other._distressTypes,
-				nScenarii, nParticles)) {
+		if (!deepEquals("Distress Type", _distressTypes, other._distressTypes, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals("Landing Time", _landingRefSecs, other._landingRefSecs,
-				nScenarii, nParticles)) {
+		if (!deepEquals("Landing Time", _landingRefSecs, other._landingRefSecs, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals(_VarLat, _lats, other._lats, nRefSecsS, nScenarii,
-				nParticles)) {
+		if (!deepEquals(_VarLat, _lats, other._lats, nRefSecsS, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals(_VarLng, _lngs, other._lngs, nRefSecsS, nScenarii,
-				nParticles)) {
+		if (!deepEquals(_VarLng, _lngs, other._lngs, nRefSecsS, nScenarii, nParticles)) {
 			return false;
 		}
 
-		if (!deepEquals(_VarDistressLat, _distressLats, other._distressLats,
-				nScenarii, nParticles)) {
+		if (!deepEquals(_VarDistressLat, _distressLats, other._distressLats, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals(_VarDistressLng, _distressLngs, other._distressLngs,
-				nScenarii, nParticles)) {
+		if (!deepEquals(_VarDistressLng, _distressLngs, other._distressLngs, nScenarii, nParticles)) {
 			return false;
 		}
 
-		if (!deepEquals(_VarSvtOrd, _svtOrdinals, other._svtOrdinals, nRefSecsS,
-				nScenarii, nParticles)) {
+		if (!deepEquals(_VarSvtOrd, _svtOrdinals, other._svtOrdinals, nRefSecsS, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals(_VarProbability, _probabilities, other._probabilities,
-				nRefSecsS, nScenarii, nParticles)) {
+		if (!deepEquals(_VarProbability, _probabilities, other._probabilities, nRefSecsS, nScenarii, nParticles)) {
 			return false;
 		}
-		if (!deepEquals(_VarPFail, _cumPFails, other._cumPFails, nRefSecsS,
-				nScenarii, nParticles)) {
+		if (!deepEquals(_VarPFail, _cumPFails, other._cumPFails, nRefSecsS, nScenarii, nParticles)) {
 			return false;
 		}
 		return true;
 	}
 
-	private boolean deepEquals(final String message, final int[][] numbers,
-			final int[][] otherNumbers, final int nScenarii,
-			final int nParticles) {
+	private boolean deepEquals(final String message, final int[][] numbers, final int[][] otherNumbers,
+			final int nScenarii, final int nParticles) {
 		if (numbers.length != nScenarii || otherNumbers.length != nScenarii) {
-			SimCaseManager.err(_simCase,
-					String.format("\nMessage[%s].  Incorrect number of scenarios " + //
-							"(expected[%d], found[%d and %d]).", //
-							message, nScenarii, numbers.length, otherNumbers.length));
+			SimCaseManager.err(_simCase, String.format("\nMessage[%s].  Incorrect number of scenarios " + //
+					"(expected[%d], found[%d and %d]).", //
+					message, nScenarii, numbers.length, otherNumbers.length));
 			return false;
 		}
 		for (int k0 = 0; k0 < nScenarii; ++k0) {
@@ -980,8 +895,9 @@ public class ParticlesFile {
 			final int[] otherRow = otherNumbers[k0];
 			if (row.length != nParticles || otherRow.length != nParticles) {
 				SimCaseManager.err(_simCase,
-						String.format("\nMessage[%s].  Incorrect number of " +
-								"particles for scenario (expected[%d], found[%d and %d]).",
+						String.format(
+								"\nMessage[%s].  Incorrect number of "
+										+ "particles for scenario (expected[%d], found[%d and %d]).",
 								message, nParticles, row.length, otherRow.length));
 				return false;
 			}
@@ -989,8 +905,7 @@ public class ParticlesFile {
 				if (row[k1] != otherRow[k1]) {
 					SimCaseManager.err(_simCase,
 							String.format(
-									"\nMessage[%s].  ScenarioIndex[%s], " +
-											"particleIndex[%d].  Found %d vs. %d.",
+									"\nMessage[%s].  ScenarioIndex[%s], " + "particleIndex[%d].  Found %d vs. %d.",
 									message, k0, k1, row[k1], otherRow[k1]));
 					return false;
 				}
@@ -999,14 +914,12 @@ public class ParticlesFile {
 		return true;
 	}
 
-	private boolean deepEquals(final String message, final long[][] numbers,
-			final long[][] otherNumbers, final int nScenarii,
-			final int nParticles) {
+	private boolean deepEquals(final String message, final long[][] numbers, final long[][] otherNumbers,
+			final int nScenarii, final int nParticles) {
 		if (numbers.length != nScenarii || otherNumbers.length != nScenarii) {
 			SimCaseManager.err(_simCase,
 					String.format(
-							"Message[%s].  Incorrect Number of Scenarios.  " +
-									"Expected[%d], found(%d] and %d]).",
+							"Message[%s].  Incorrect Number of Scenarios.  " + "Expected[%d], found(%d] and %d]).",
 							message, nScenarii, numbers.length, otherNumbers.length));
 			return false;
 		}
@@ -1015,8 +928,9 @@ public class ParticlesFile {
 			final long[] otherRow = otherNumbers[k0];
 			if (row.length != nParticles || otherRow.length != nParticles) {
 				SimCaseManager.err(_simCase,
-						String.format("Message[%s].  Incorrect Number of Particles " +
-								"for ScenarioIndex[%d].  Expected[%d], found(%d] and %d]).",
+						String.format(
+								"Message[%s].  Incorrect Number of Particles "
+										+ "for ScenarioIndex[%d].  Expected[%d], found(%d] and %d]).",
 								message, k0, nParticles, row.length, otherRow.length));
 				return false;
 			}
@@ -1024,8 +938,7 @@ public class ParticlesFile {
 				if (row[k1] != otherRow[k1]) {
 					SimCaseManager.err(_simCase,
 							String.format(
-									"\nMessage[%s].  ScenarioIndex[%d], " +
-											"ParticleIndex[%d].  Found (%d, vs %d).",
+									"\nMessage[%s].  ScenarioIndex[%d], " + "ParticleIndex[%d].  Found (%d, vs %d).",
 									message, k0, k1, row[k1], otherRow[k1]));
 					return false;
 				}
@@ -1034,15 +947,12 @@ public class ParticlesFile {
 		return true;
 	}
 
-	private boolean deepEquals(final String msg, final float[][][] array,
-			final float[][][] otherArray, final int numberOfTimeSteps,
-			final int nScenarii, final int nParticlesPerScenario) {
-		if (array.length != numberOfTimeSteps ||
-				otherArray.length != numberOfTimeSteps) {
+	private boolean deepEquals(final String msg, final float[][][] array, final float[][][] otherArray,
+			final int numberOfTimeSteps, final int nScenarii, final int nParticlesPerScenario) {
+		if (array.length != numberOfTimeSteps || otherArray.length != numberOfTimeSteps) {
 			SimCaseManager.err(_simCase,
 					String.format(
-							"\nMessage[%s].  Incorrect Number of TimeSteps.  " +
-									"Expected[%d], found(%d] and %d]).",
+							"\nMessage[%s].  Incorrect Number of TimeSteps.  " + "Expected[%d], found(%d] and %d]).",
 							msg, numberOfTimeSteps, array.length, otherArray.length));
 			return false;
 		}
@@ -1053,31 +963,27 @@ public class ParticlesFile {
 			if (numbers.length != nScenarii || otherNumbers.length != nScenarii) {
 				SimCaseManager.err(_simCase,
 						String.format(
-								"\nMessage[%s].  Incorrect Number of Scenarios.  " +
-										"Expected[%d], found(%d] and %d]).",
+								"\nMessage[%s].  Incorrect Number of Scenarios.  "
+										+ "Expected[%d], found(%d] and %d]).",
 								message, nScenarii, numbers.length, otherNumbers.length));
 				return false;
 			}
 			for (int k0 = 0; k0 < nScenarii; ++k0) {
 				final float[] row = numbers[k0];
 				final float[] otherRow = otherNumbers[k0];
-				if (row.length != nParticlesPerScenario ||
-						otherRow.length != nParticlesPerScenario) {
+				if (row.length != nParticlesPerScenario || otherRow.length != nParticlesPerScenario) {
 					SimCaseManager.err(_simCase,
 							String.format(
-									"\nMessage[%s].  Incorrect Number of " +
-											"Particles for ScenarioIndex[%d].  " +
-											"Expected[%d], found(%d] and %d]).",
-									message, k0, nParticlesPerScenario, row.length,
-									otherRow.length));
+									"\nMessage[%s].  Incorrect Number of " + "Particles for ScenarioIndex[%d].  "
+											+ "Expected[%d], found(%d] and %d]).",
+									message, k0, nParticlesPerScenario, row.length, otherRow.length));
 					return false;
 				}
 				for (int k1 = 0; k1 < nParticlesPerScenario; ++k1) {
 					if (row[k1] != otherRow[k1]) {
 						SimCaseManager.err(_simCase,
 								String.format(
-										"\nMessage[%s].  ScenarioIndex[%d], " +
-												"ParticleIndex, found(%d] and %d]).",
+										"\nMessage[%s].  ScenarioIndex[%d], " + "ParticleIndex, found(%d] and %d]).",
 										message, k0, k1, row[k1], otherRow[k1]));
 						return false;
 					}
@@ -1087,25 +993,24 @@ public class ParticlesFile {
 		return true;
 	}
 
-	private boolean deepEquals(final String msg, final float[][] array,
-			final float[][] otherArray, final int nScenarii,
+	private boolean deepEquals(final String msg, final float[][] array, final float[][] otherArray, final int nScenarii,
 			final int nParticlesPerScenario) {
-		final float[][][] array1 = new float[][][] { array };
-		final float[][][] otherArray1 = new float[][][] { otherArray };
-		return deepEquals(msg, array1, otherArray1, 1, nScenarii,
-				nParticlesPerScenario);
+		final float[][][] array1 = new float[][][] {
+				array
+		};
+		final float[][][] otherArray1 = new float[][][] {
+				otherArray
+		};
+		return deepEquals(msg, array1, otherArray1, 1, nScenarii, nParticlesPerScenario);
 	}
 
-	private boolean deepEquals(final String msg, final int[][][] array,
-			final int[][][] otherArray, final int numberOfTimeSteps,
-			final int nScenarii, final int nParticles) {
-		if (array.length != numberOfTimeSteps ||
-				otherArray.length != numberOfTimeSteps) {
-			final String formatString =
-					"\nMessage[%s].  Incorrect Number of TimeSteps.  " +
-							"Expected[%d], found(%d] and %d]).";
-			SimCaseManager.err(_simCase, String.format(formatString, msg,
-					numberOfTimeSteps, array.length, otherArray.length));
+	private boolean deepEquals(final String msg, final int[][][] array, final int[][][] otherArray,
+			final int numberOfTimeSteps, final int nScenarii, final int nParticles) {
+		if (array.length != numberOfTimeSteps || otherArray.length != numberOfTimeSteps) {
+			final String formatString = "\nMessage[%s].  Incorrect Number of TimeSteps.  "
+					+ "Expected[%d], found(%d] and %d]).";
+			SimCaseManager.err(_simCase,
+					String.format(formatString, msg, numberOfTimeSteps, array.length, otherArray.length));
 			return false;
 		}
 		for (int timeIdx = 0; timeIdx < numberOfTimeSteps; ++timeIdx) {
@@ -1115,8 +1020,8 @@ public class ParticlesFile {
 			if (numbers.length != nScenarii || otherNumbers.length != nScenarii) {
 				SimCaseManager.err(_simCase,
 						String.format(
-								"\nMessage[%s].  Incorrect Number of Scenarios.  " +
-										"Expected[%d], found(%d] and %d]).",
+								"\nMessage[%s].  Incorrect Number of Scenarios.  "
+										+ "Expected[%d], found(%d] and %d]).",
 								message, nScenarii, numbers.length, otherNumbers.length));
 				return false;
 			}
@@ -1131,9 +1036,9 @@ public class ParticlesFile {
 				}
 				for (int k1 = 0; k1 < nParticles; ++k1) {
 					if (row[k1] != otherRow[k1]) {
-						SimCaseManager.err(_simCase, String.format(
-								"\nMessage[%s].  ScenarioIndex[%d], ParticleIndex, found(%d] and %d]).",
-								message, k0, k1, row[k1], otherRow[k1]));
+						SimCaseManager.err(_simCase,
+								String.format("\nMessage[%s].  ScenarioIndex[%d], ParticleIndex, found(%d] and %d]).",
+										message, k0, k1, row[k1], otherRow[k1]));
 						return false;
 					}
 				}
@@ -1142,15 +1047,13 @@ public class ParticlesFile {
 		return true;
 	}
 
-	public void setAnchoringRefSecs(final ParticleIndexes prtclIndxs,
-			final long refSecs) {
+	public void setAnchoringRefSecs(final ParticleIndexes prtclIndxs, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_anchoringRefSecs[i][j] = refSecs;
 	}
 
-	public void setBirthRefSecs(final ParticleIndexes prtclIndxs,
-			final long refSecs) {
+	public void setBirthRefSecs(final ParticleIndexes prtclIndxs, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		if (j >= 0) {
@@ -1163,8 +1066,7 @@ public class ParticlesFile {
 		}
 	}
 
-	public void setLandingRefSecs(final ParticleIndexes prtclIndxs,
-			final long refSecs) {
+	public void setLandingRefSecs(final ParticleIndexes prtclIndxs, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		if (j >= 0) {
@@ -1177,22 +1079,19 @@ public class ParticlesFile {
 		}
 	}
 
-	public void setDistressRefSecs(final ParticleIndexes prtclIndxs,
-			final long refSecs) {
+	public void setDistressRefSecs(final ParticleIndexes prtclIndxs, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_distressRefSecs[i][j] = refSecs;
 	}
 
-	public void setExpirationRefSecs(final ParticleIndexes prtclIndxs,
-			final long refSecs) {
+	public void setExpirationRefSecs(final ParticleIndexes prtclIndxs, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_expirationRefSecs[i][j] = refSecs;
 	}
 
-	public void setPosition(final ParticleIndexes prtclIndxs,
-			final LatLng3 latLng, final long refSecs) {
+	public void setPosition(final ParticleIndexes prtclIndxs, final LatLng3 latLng, final long refSecs) {
 		final int timeIdx = getTimeIndexForSetting(refSecs);
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
@@ -1216,38 +1115,33 @@ public class ParticlesFile {
 		theseLngs[i][q] = (float) latLng.getLng();
 	}
 
-	public void setDistressLatLng(final ParticleIndexes prtclIndxs,
-			final LatLng3 latLng) {
+	public void setDistressLatLng(final ParticleIndexes prtclIndxs, final LatLng3 latLng) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_distressLats[i][j] = (float) latLng.getLat();
 		_distressLngs[i][j] = (float) latLng.getLng();
 	}
 
-	public void setSailorQuality(final ParticleIndexes prtclIndxs,
-			final Sdi sdi) {
+	public void setSailorQuality(final ParticleIndexes prtclIndxs, final Sdi sdi) {
 		if (sdi == null) {
 			return;
 		}
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		_sailorQualities[i][j] = (float) sdi._sailorQuality;
-		_sailorForbiddenAngleIncreases[i][j] =
-				(float) sdi._forbiddenAngleIncrease;
+		_sailorForbiddenAngleIncreases[i][j] = (float) sdi._forbiddenAngleIncrease;
 		_sailorSpeedMultipliers[i][j] = (float) sdi._speedMultiplier;
 		_zeroZeroMotor[i][j] = sdi._useZeroZeroMotoring;
 	}
 
-	public void setSvtOrdinal(final ParticleIndexes prtclIndxs,
-			final StateVectorType svt, final long refSecs) {
+	public void setSvtOrdinal(final ParticleIndexes prtclIndxs, final StateVectorType svt, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		final int timeIdx = getTimeIndexForSetting(refSecs);
 		_svtOrdinals[timeIdx][i][j] = svt.ordinal();
 	}
 
-	public void updateCumPFails(final ParticleIndexes prtclIndxs,
-			final double pFail, final long refSecs) {
+	public void updateCumPFails(final ParticleIndexes prtclIndxs, final double pFail, final long refSecs) {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int j = prtclIndxs.getParticleIndex();
 		final int nRefSecsS = _cumPFails.length;
@@ -1269,8 +1163,7 @@ public class ParticlesFile {
 		final int index;
 		if (!_model.getReverseDrift()) {
 			/**
-			 * For a regular run, the timeIndex is the earliest time at or AFTER
-			 * refSecs.
+			 * For a regular run, the timeIndex is the earliest time at or AFTER refSecs.
 			 */
 			index = CombinatoricTools.getLubIndex(_refSecsS, refSecs);
 		} else {
@@ -1282,8 +1175,7 @@ public class ParticlesFile {
 	public void normalizeProbabilities() {
 		final int nRefSecsS = _refSecsS.length;
 		for (int timeIdx = 0; timeIdx < nRefSecsS; ++timeIdx) {
-			final float ttlWeight =
-					NumericalRoutines.normalize2dMtx(_probabilities[timeIdx]);
+			final float ttlWeight = NumericalRoutines.normalize2dMtx(_probabilities[timeIdx]);
 			if (ttlWeight == 0f) {
 				System.err.printf("\n0 probabilities; using vanilla weights.");
 			}
@@ -1301,8 +1193,7 @@ public class ParticlesFile {
 					final float lng = _lngs[timeIdx][k0][k1];
 					if (Float.isNaN(lat) || Float.isNaN(lng)) {
 						SimCaseManager.err(_simCase,
-								String.format("TimeIdx[%d] iScenario[%d] iParticle[%d]",
-										timeIdx, k0, k1));
+								String.format("TimeIdx[%d] iScenario[%d] iParticle[%d]", timeIdx, k0, k1));
 						haveBadLatLng = true;
 						break TimeLoop;
 					}
@@ -1327,16 +1218,14 @@ public class ParticlesFile {
 					final double lat = _lats[iT][k0][k1];
 					final double lng = _lngs[iT][k0][k1];
 					final LatLng3 latLng = LatLng3.getLatLngB(lat, lng);
-					s += Constants._NewLine + timeString + " " + svt.name() + ":" +
-							svt.getColorName() + ":" + latLng.getString(4);
+					s += Constants._NewLine + timeString + " " + svt.name() + ":" + svt.getColorName() + ":"
+							+ latLng.getString(4);
 					/**
-					 * This is strictly for debugging; just do it for the first
-					 * particle.
+					 * This is strictly for debugging; just do it for the first particle.
 					 */
 					break;
 				} /**
-					 * This is strictly for debugging; just do it for the first
-					 * particle.
+					 * This is strictly for debugging; just do it for the first particle.
 					 */
 				break;
 			}
@@ -1344,19 +1233,15 @@ public class ParticlesFile {
 		return s;
 	}
 
-	public WeightedPairReDataAcc computeWeightedPairReDataAcc(
-			final TangentCylinder tangentCylinder, final long refSecs,
+	public WeightedPairReDataAcc computeWeightedPairReDataAcc(final TangentCylinder tangentCylinder, final long refSecs,
 			final int iScenario) {
 		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
 		final WeightedPairReDataAcc latLngAcc = new WeightedPairReDataAcc();
-		for (int iParticle = 0; iParticle < nParticlesPerScenario;
-				++iParticle) {
-			final ParticleIndexes prtclIndxs =
-					ParticleIndexes.getStandardOne(_model, iScenario, iParticle);
+		for (int iParticle = 0; iParticle < nParticlesPerScenario; ++iParticle) {
+			final ParticleIndexes prtclIndxs = ParticleIndexes.getStandardOne(_model, iScenario, iParticle);
 			final LatLng3 latLng = getLatLng(refSecs, prtclIndxs);
 			final double wt = getProbability(refSecs, prtclIndxs);
-			final TangentCylinder.FlatLatLng flatLatLng =
-					tangentCylinder.convertToMyFlatLatLng(latLng);
+			final TangentCylinder.FlatLatLng flatLatLng = tangentCylinder.convertToMyFlatLatLng(latLng);
 			final double eastOffset = flatLatLng.getEastOffset();
 			final double northOffset = flatLatLng.getNorthOffset();
 			latLngAcc.add(eastOffset, northOffset, wt);
@@ -1368,8 +1253,7 @@ public class ParticlesFile {
 		return _meanLats != null;
 	}
 
-	public float getOcLat(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcLat(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocLats == null) {
 			return Float.NaN;
 		}
@@ -1378,8 +1262,7 @@ public class ParticlesFile {
 		return _ocLats[timeIdx][i][j];
 	}
 
-	public float getOcLng(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcLng(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocLngs == null) {
 			return Float.NaN;
 		}
@@ -1388,8 +1271,7 @@ public class ParticlesFile {
 		return _ocLngs[timeIdx][i][j];
 	}
 
-	public float getOcEastDnWind(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcEastDnWind(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocEastDnWinds == null) {
 			return Float.NaN;
 		}
@@ -1398,8 +1280,7 @@ public class ParticlesFile {
 		return _ocEastDnWinds[timeIdx][i][j];
 	}
 
-	public float getOcNorthDnWind(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcNorthDnWind(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocNorthDnWinds == null) {
 			return Float.NaN;
 		}
@@ -1408,8 +1289,7 @@ public class ParticlesFile {
 		return _ocNorthDnWinds[timeIdx][i][j];
 	}
 
-	public float getOcEastDnCurrent(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcEastDnCurrent(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocEastDnCurrents == null) {
 			return Float.NaN;
 		}
@@ -1418,8 +1298,7 @@ public class ParticlesFile {
 		return _ocEastDnCurrents[timeIdx][i][j];
 	}
 
-	public float getOcNorthDnCurrent(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcNorthDnCurrent(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocNorthDnCurrents == null) {
 			return Float.NaN;
 		}
@@ -1428,8 +1307,7 @@ public class ParticlesFile {
 		return _ocNorthDnCurrents[timeIdx][i][j];
 	}
 
-	public float getOcEastBoat(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcEastBoat(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocEastBoats == null) {
 			return Float.NaN;
 		}
@@ -1438,8 +1316,7 @@ public class ParticlesFile {
 		return _ocEastBoats[timeIdx][i][j];
 	}
 
-	public float getOcNorthBoat(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public float getOcNorthBoat(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocNorthBoats == null) {
 			return Float.NaN;
 		}
@@ -1448,8 +1325,7 @@ public class ParticlesFile {
 		return _ocNorthBoats[timeIdx][i][j];
 	}
 
-	public int getOcSvtOrdinal(final int timeIdx,
-			final ParticleIndexes prtclIndxs) {
+	public int getOcSvtOrdinal(final int timeIdx, final ParticleIndexes prtclIndxs) {
 		if (_ocSvtOrdinals == null) {
 			return StateVectorType.UNDEFINED.ordinal();
 		}
@@ -1458,8 +1334,7 @@ public class ParticlesFile {
 		return _ocSvtOrdinals[timeIdx][i][j];
 	}
 
-	public void setItinerary(final ParticleIndexes prtclIndxs,
-			final Itinerary itinerary) {
+	public void setItinerary(final ParticleIndexes prtclIndxs, final Itinerary itinerary) {
 		if (itinerary == null || !(itinerary instanceof VoyageItinerary)) {
 			return;
 		}
@@ -1468,8 +1343,7 @@ public class ParticlesFile {
 		final VoyageItinerary voyageItinerary = (VoyageItinerary) itinerary;
 		final int nRefSecsS = _refSecsS.length;
 		for (int timeIdx = 0; timeIdx < nRefSecsS; ++timeIdx) {
-			final VoyageItinerary.OcInfo ocInfo =
-					voyageItinerary.getOcInfo(_refSecsS, timeIdx);
+			final VoyageItinerary.OcInfo ocInfo = voyageItinerary.getOcInfo(_refSecsS, timeIdx);
 			if (ocInfo != null) {
 				_ocEastDnWinds[timeIdx][k0][k1] = ocInfo._eastDnWind;
 				_ocNorthDnWinds[timeIdx][k0][k1] = ocInfo._northDnWind;

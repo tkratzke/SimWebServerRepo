@@ -131,7 +131,6 @@ public class Model {
 	private boolean _excludeInitialLandDraws;
 	private boolean _excludeInitialWaterDraws;
 	private boolean _reverseDrift;
-	private boolean _fgks;
 	final private TreeMap<ParticleIndexes, OutOfAreaIncident> _outOfAreaIncidents;
 	private double[] _containmentRequests;
 
@@ -1015,10 +1014,6 @@ public class Model {
 		_reverseDrift = reverseDrift;
 	}
 
-	public void setFgks(final boolean fgks) {
-		_fgks = fgks;
-	}
-
 	public Extent getExtent() {
 		return _extent;
 	}
@@ -1287,7 +1282,8 @@ public class Model {
 				final int lastIndex = stashedSimFileName.lastIndexOf(SimCaseManager._SimEndingLc);
 				final String sortiesWorkbookFileName = stashedSimFileName.substring(0, lastIndex) + "-sorties.xlsx";
 				final String modelFilePath = getSimFilePath();
-				final File stashResultDir = AbstractOutFilesManager.GetEngineFilesDir(simCase, modelFilePath, "SimResult");
+				final File stashResultDir = AbstractOutFilesManager.GetEngineFilesDir(simCase, modelFilePath,
+						"SimResult");
 				final File sortiesWorkbookFile = new File(stashResultDir, sortiesWorkbookFileName);
 				if (!sortiesWorkbookFile.exists() || sortiesWorkbookFile.delete()) {
 					try (final FileOutputStream stream = new FileOutputStream(sortiesWorkbookFile)) {

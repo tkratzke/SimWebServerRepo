@@ -72,7 +72,7 @@ import com.skagit.util.randomx.TimeDistribution;
 
 /**
  * This class uses Sim.properties and the two potential overriding versions of
- * this file to fill in or override values. Within the code, there is a
+ * this file to fill in or override values. Within the jarFile, there is a
  * Sim.properties, and within the data directory, there may be one that
  * overrides the one in the jar file. In addition, the user can specify one that
  * overrides these two.
@@ -287,7 +287,7 @@ public class ModelReader {
 
 	/**
 	 * Properties that have ".SRU." in them are duplicated, replacing ".SRU." with
-	 * ".PATTERN_VARIABLE" and ".PATTERN_VARIABLE_SEQUENCE.PATTERN_VARIABLE."
+	 * ".PATTERN_VARIABLE." and ".PATTERN_VARIABLE_SEQUENCE.PATTERN_VARIABLE."
 	 */
 	public static void addSruToPvSimProperties(final Properties simProperties) {
 		final Enumeration<?> e = simProperties.propertyNames();
@@ -837,9 +837,6 @@ public class ModelReader {
 		final boolean displayOnly = model.getDisplayOnly();
 		final String typeString = getStringNoDefault(simCase, requestElement, "type", stringPluses).toLowerCase();
 		model.setReverseDrift(typeString.contains("runreversedrift"));
-		// final String fgksString = getStringNoDefault(simCase, requestElement, "type",
-		// stringPluses).toLowerCase();
-		// model.setReverseDrift(typeString.contains("runreversedrift"));
 		final ElementIterator childIterator = new ElementIterator(requestElement);
 		String particlesFilePath = null;
 		long lastOutputTimeInRefSecs = _UnsetTime;
@@ -1109,7 +1106,8 @@ public class ModelReader {
 					firstOutputTimeRefSecs = TimeUtilities.dtgToRefSecs(firstOutputTimeString);
 					final String particlesFilePathFromXml = getStringNoDefault(simCase, child, "file", stringPluses);
 					SimCaseManager.out(simCase, String.format("ParticlesFilePath(0): %s", particlesFilePathFromXml));
-					particlesFilePath = AbstractOutFilesManager.GetParticlesFilePath(modelFilePath, particlesFilePathFromXml);
+					particlesFilePath = AbstractOutFilesManager.GetParticlesFilePath(modelFilePath,
+							particlesFilePathFromXml);
 					SimCaseManager.out(simCase, String.format("ParticlesFilePath(1): %s", particlesFilePath));
 					child.setAttribute("file", particlesFilePath);
 					/** Read in the containment questions. */

@@ -29,7 +29,7 @@ public class SimGlobalStrings {
 		 */
 		final String overrideSuffix = String.format("-%s", _productName);
 		final Set<String> origKeys = globalStrings.getAllKeys();
-		final int overrideSuffixLength = overrideSuffix == null ? 0 : overrideSuffix.length();
+		final int overrideSuffixLength = overrideSuffix.length();
 		_keyValue = new TreeMap<>();
 		for (final String key : origKeys) {
 			final String value = globalStrings.getString(key);
