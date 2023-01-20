@@ -42,7 +42,7 @@ import com.skagit.sarops.model.io.ModelReader;
 import com.skagit.sarops.model.preDistressModel.PreDistressModel;
 import com.skagit.sarops.simCaseManager.MainRunner;
 import com.skagit.sarops.simCaseManager.SimCaseManager;
-import com.skagit.sarops.studyController.AbstractStudyRunner;
+import com.skagit.sarops.studyRunner.AbstractStudyRunner;
 import com.skagit.sarops.util.SimGlobalStrings;
 import com.skagit.util.LsFormatter;
 import com.skagit.util.MathX;

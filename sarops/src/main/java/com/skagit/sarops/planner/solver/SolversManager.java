@@ -13,7 +13,7 @@ import com.skagit.sarops.planner.solver.pqSolver.PvValuePerturber;
 import com.skagit.sarops.planner.solver.pqSolver.deconflicter.Deconflicter;
 import com.skagit.sarops.planner.solver.pqSolver.pvPlacer.PvPlacerStatics;
 import com.skagit.sarops.simCaseManager.SimCaseManager;
-import com.skagit.sarops.studyController.AbstractStudyRunner;
+import com.skagit.sarops.studyRunner.AbstractStudyRunner;
 
 public class SolversManager {
 	final private static boolean _PqPlagiarizes = true;

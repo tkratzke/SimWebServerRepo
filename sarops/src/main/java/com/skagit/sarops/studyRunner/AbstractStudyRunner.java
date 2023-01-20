@@ -1,4 +1,4 @@
-package com.skagit.sarops.studyController;
+package com.skagit.sarops.studyRunner;
 
 import com.skagit.sarops.planner.Planner;
 import com.skagit.sarops.planner.solver.Solver;
