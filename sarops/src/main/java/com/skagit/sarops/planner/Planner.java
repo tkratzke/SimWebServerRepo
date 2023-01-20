@@ -47,7 +47,7 @@ import com.skagit.sarops.planner.writingUtils.PlannerSheets;
 import com.skagit.sarops.simCaseManager.MainRunner;
 import com.skagit.sarops.simCaseManager.SimCaseManager;
 import com.skagit.sarops.simCaseManager.SimCaseManager.SimCase;
-import com.skagit.sarops.studyController.AbstractStudyRunner;
+import com.skagit.sarops.studyRunner.AbstractStudyRunner;
 import com.skagit.sarops.tracker.CoverageToPodCurve;
 import com.skagit.sarops.tracker.ParticleIndexes;
 import com.skagit.sarops.tracker.ParticlesFile;
