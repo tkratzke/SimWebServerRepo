@@ -24,6 +24,7 @@ import com.skagit.util.randomx.TimeDistribution;
 
 public abstract class Scenario implements Comparable<Scenario> {
 	final public static String _RegularScenarioType = "Voyage";
+	final public static String _DebrisSightingType = "Debris_Sighting";
 	final public static String _LobType = "LOB";
 	final public static String _FlareType = "Flare";
 	final public static String _R21Type = "R21";
@@ -41,14 +42,11 @@ public abstract class Scenario implements Comparable<Scenario> {
 	private TimeDistribution _departureTimeDistribution = null;
 	private PreDistressModel _preDistressModel = null;
 	private SailData _sailData;
-	final private ArrayList<SotWithWt> _distressSotWithWts =
-			new ArrayList<>();
+	final private ArrayList<SotWithWt> _distressSotWithWts = new ArrayList<>();
 	private Map<Integer, Double> _distressSearchObjectIdToInitialPriorWithinScenario;
 
-	protected Scenario(final SimCaseManager.SimCase simCase, final int id,
-			final String name, final String type, final double scenarioWeight,
-			final int iScenario, final int baseParticleIndex,
-			final int nParticles) {
+	protected Scenario(final SimCaseManager.SimCase simCase, final int id, final String name, final String type,
+			final double scenarioWeight, final int iScenario, final int baseParticleIndex, final int nParticles) {
 		_simCase = simCase;
 		_id = id;
 		_name = name;
@@ -95,16 +93,13 @@ public abstract class Scenario implements Comparable<Scenario> {
 		return _preDistressModel == null ? false : _noDistress;
 	}
 
-	public double getInitialPriorWithinScenario(
-			final SearchObjectType searchObjectType) {
+	public double getInitialPriorWithinScenario(final SearchObjectType searchObjectType) {
 		final int searchObjectTypeId = searchObjectType.getId();
 		return getInitialPriorWithinScenario(searchObjectTypeId);
 	}
 
-	public double getInitialPriorWithinScenario(
-			final int searchObjectTypeId) {
-		final Double d = _distressSearchObjectIdToInitialPriorWithinScenario
-				.get(searchObjectTypeId);
+	public double getInitialPriorWithinScenario(final int searchObjectTypeId) {
+		final Double d = _distressSearchObjectIdToInitialPriorWithinScenario.get(searchObjectTypeId);
 		return d == null ? 0d : d.doubleValue();
 	}
 
@@ -132,8 +127,8 @@ public abstract class Scenario implements Comparable<Scenario> {
 		}
 		if (0.99 <= ttlWt && ttlWt <= 1.01f) {
 		} else {
-			SimCaseManager.err(_simCase, String.format(
-					"Cumulated object weight[%g] for scenario[%d].", ttlWt, getId()));
+			SimCaseManager.err(_simCase,
+					String.format("Cumulated object weight[%g] for scenario[%d].", ttlWt, getId()));
 		}
 		for (final SotWithWt sotWithWt : _distressSotWithWts) {
 			final double newWorkingWt = sotWithWt.getWorkingWeight() / ttlWt;
@@ -163,20 +158,16 @@ public abstract class Scenario implements Comparable<Scenario> {
 		return _preDistressModel;
 	}
 
-	public Element write(final LsFormatter formatter, final Element root,
-			final Model model) {
-		final Element element = formatter.newChild(root, "SCENARIO");
+	public Element write(final LsFormatter formatter, final Element root, final Model model) {
+		final boolean isDebrisSighting = this instanceof DebrisSighting;
+		final Element element = formatter.newChild(root, !isDebrisSighting ? "SCENARIO" : "DEBRIS_SIGHTING");
 		if (_preDistressModel != null) {
-			final long distressRefSecs =
-					_preDistressModel.getDistressRefSecsMean();
+			final long distressRefSecs = _preDistressModel.getDistressRefSecsMean();
 			if (distressRefSecs > 0) {
-				element.setAttribute("distressTime",
-						TimeUtilities.formatTime(distressRefSecs, false));
-				final double distressPlusMinusHrs =
-						_preDistressModel.getDistressPlusMinusHrs();
+				element.setAttribute("distressTime", TimeUtilities.formatTime(distressRefSecs, false));
+				final double distressPlusMinusHrs = _preDistressModel.getDistressPlusMinusHrs();
 				if (distressPlusMinusHrs > 0d) {
-					element.setAttribute("distressTimePlusOrMinus",
-							distressPlusMinusHrs + " hrs");
+					element.setAttribute("distressTimePlusOrMinus", distressPlusMinusHrs + " hrs");
 				}
 			}
 		}
@@ -186,21 +177,20 @@ public abstract class Scenario implements Comparable<Scenario> {
 		}
 		element.setAttribute("id", LsFormatter.StandardFormat(_id));
 		element.setAttribute("name", _name);
-		element.setAttribute("weight", _scenarioWeight * 100 + "%");
+		if (!isDebrisSighting) {
+			element.setAttribute("weight", _scenarioWeight * 100 + "%");
+		}
 		final Element pathElement = formatter.newChild(element, "PATH");
 		if (_departureArea != null && _departureTimeDistribution != null) {
-			final Element departureElement =
-					formatter.newChild(pathElement, "DEPARTURE_LOCATION");
-			final double truncateDistanceInNmi =
-					_departureArea.getTruncateDistanceInNmi();
+			final Element departureElement = formatter.newChild(pathElement,
+					!isDebrisSighting ? "DEPARTURE_LOCATION" : "DEBRIS_LOCATION");
+			final double truncateDistanceInNmi = _departureArea.getTruncateDistanceInNmi();
 			if (!Double.isInfinite(truncateDistanceInNmi)) {
-				departureElement.setAttribute("truncate_distance",
-						"" + truncateDistanceInNmi + " NM");
+				departureElement.setAttribute("truncate_distance", "" + truncateDistanceInNmi + " NM");
 			}
 			final String errorTag;
 			if (_departureArea instanceof EllipticalArea) {
-				final EllipticalArea bivariateNormal =
-						(EllipticalArea) _departureArea;
+				final EllipticalArea bivariateNormal = (EllipticalArea) _departureArea;
 				if (bivariateNormal.getIsUniform()) {
 					departureElement.setAttribute("uniform", "" + true);
 				}
@@ -209,8 +199,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 				errorTag = null;
 			}
 			_departureArea.write(formatter, departureElement, errorTag);
-			_departureTimeDistribution.write(formatter, departureElement, false,
-					"TIME");
+			_departureTimeDistribution.write(formatter, departureElement, false, "TIME");
 			for (final SotWithWt searchObjectTypeWithWeight : _distressSotWithWts) {
 				searchObjectTypeWithWeight.write(formatter, element, model);
 			}
@@ -247,8 +236,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 		_departureArea = area;
 	}
 
-	public void setDepartureTimeDistribution(
-			final TimeDistribution distribution) {
+	public void setDepartureTimeDistribution(final TimeDistribution distribution) {
 		_departureTimeDistribution = distribution;
 	}
 
@@ -256,9 +244,8 @@ public abstract class Scenario implements Comparable<Scenario> {
 		if ((_id != comparedScenario._id) || (getType() != comparedScenario.getType())) {
 			return false;
 		}
-		if (_name != null && _name.length() > 0 &&
-				comparedScenario._name != null &&
-				comparedScenario._name.length() > 0) {
+		if (_name != null && _name.length() > 0 && comparedScenario._name != null
+				&& comparedScenario._name.length() > 0) {
 			if (_name.compareTo(comparedScenario._name) != 0) {
 				return false;
 			}
@@ -269,8 +256,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 		if (!(_departureArea.deepEquals(comparedScenario._departureArea))) {
 			return false;
 		}
-		if (!(_departureTimeDistribution
-				.deepEquals(comparedScenario._departureTimeDistribution))) {
+		if (!(_departureTimeDistribution.deepEquals(comparedScenario._departureTimeDistribution))) {
 			return false;
 		}
 		if (_preDistressModel == null) {
@@ -278,8 +264,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 				return false;
 			}
 		} else {
-			if (!(_preDistressModel
-					.deepEquals(comparedScenario._preDistressModel))) {
+			if (!(_preDistressModel.deepEquals(comparedScenario._preDistressModel))) {
 				return false;
 			} else if (getNoDistress() != comparedScenario.getNoDistress()) {
 				return false;
@@ -295,13 +280,11 @@ public abstract class Scenario implements Comparable<Scenario> {
 				}
 			}
 		}
-		if (_distressSotWithWts.size() != comparedScenario._distressSotWithWts
-				.size()) {
+		if (_distressSotWithWts.size() != comparedScenario._distressSotWithWts.size()) {
 			return false;
 		}
 		final Iterator<SotWithWt> it = _distressSotWithWts.iterator();
-		final Iterator<SotWithWt> comparedIt =
-				comparedScenario._distressSotWithWts.iterator();
+		final Iterator<SotWithWt> comparedIt = comparedScenario._distressSotWithWts.iterator();
 		while (it.hasNext()) {
 			final SotWithWt searchObjectTypeWithWeight = it.next();
 			final SotWithWt compared = comparedIt.next();
@@ -332,8 +315,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 				} else {
 					final int id = distressSotWithWt.getSot().getId();
 					final double thisWt = wt / totalWeight;
-					_distressSearchObjectIdToInitialPriorWithinScenario.put(id,
-							thisWt);
+					_distressSearchObjectIdToInitialPriorWithinScenario.put(id, thisWt);
 				}
 			}
 			if (totalWeight == 0d) {
@@ -401,8 +383,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 		}
 	}
 
-	public static int getSotOrd(final int iParticle,
-			final int[] sotOrdToCount) {
+	public static int getSotOrd(final int iParticle, final int[] sotOrdToCount) {
 		final int nSots = sotOrdToCount.length;
 		int total = 0;
 		for (int sotOrd = 0; sotOrd < nSots; ++sotOrd) {
@@ -416,6 +397,10 @@ public abstract class Scenario implements Comparable<Scenario> {
 
 	public int[] getSotOrdToCount() {
 		return _sotOrdToCount;
+	}
+
+	public boolean isDebrisSighting() {
+		return false;
 	}
 
 }

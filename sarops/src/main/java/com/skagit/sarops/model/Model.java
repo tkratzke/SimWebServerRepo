@@ -86,11 +86,13 @@ public class Model {
 	private TreeSet<ModelReader.StringPlus> _stringPluses;
 
 	/** Scenarii: */
-	final private HashMap<Integer, Integer> _idToIndex;
+	final private HashMap<Integer, Integer> _idToScenarioIndex;
 	final private ArrayList<Scenario> _scenarii;
 
 	private SotWithWt.OriginatingSotWithWt _originatingSotWithWt;
 	final private List<Sortie> _sorties;
+	final private List<DebrisSighting> _debrisSightings;
+	final private HashMap<Integer, Integer> _idToDebrisSightingIndex;
 	final private List<FixHazard> _fixHazards;
 	final private Map<Integer, SearchObjectType> _searchObjectTypes;
 
@@ -155,13 +157,17 @@ public class Model {
 	public Model(final SimCaseManager.SimCase simCase, final String modelFilePath, final boolean displayOnly) {
 		_displayOnly = displayOnly;
 
-		/** Scenarii: */
+		/** Scenarii and DebrisSightings: */
 		if (_displayOnly) {
-			_idToIndex = null;
+			_idToScenarioIndex = null;
 			_scenarii = null;
+			_idToDebrisSightingIndex = null;
+			_debrisSightings = null;
 		} else {
-			_idToIndex = new HashMap<>();
+			_idToScenarioIndex = new HashMap<>();
 			_scenarii = new ArrayList<>();
+			_idToDebrisSightingIndex = new HashMap<>();
+			_debrisSightings = new ArrayList<>();
 		}
 
 		_sorties = new ArrayList<>();
@@ -312,6 +318,9 @@ public class Model {
 			return false;
 		}
 		if (!scenariiAreDeepEqual(model)) {
+			return false;
+		}
+		if (!debrisSightingsAreDeepEqual(model)) {
 			return false;
 		}
 		if (_sorties.size() != model._sorties.size()) {
@@ -1061,6 +1070,7 @@ public class Model {
 			_searchObjectTypes.put(specialSearchObjectId, searchObjectType);
 		}
 		clearScenarii();
+		clearDebrisSightings();
 	}
 
 	public String getEtopoShpFilePath() {
@@ -1517,19 +1527,19 @@ public class Model {
 	}
 
 	public RegularScenario addRegularScenario(final SimCaseManager.SimCase simCase, final int id, final String name,
-			final double scenarioWeight, final int nParticles) {
+			final double scenarioWeight) {
 		final int iScenario = getNScenarii();
 		int baseParticleIndex = 0;
 		for (final Scenario scenario : _scenarii) {
 			baseParticleIndex += scenario.getNParticles();
 		}
 		final RegularScenario regularScenario = new RegularScenario(simCase, id, name, Scenario._RegularScenarioType,
-				scenarioWeight, iScenario, baseParticleIndex, nParticles);
+				scenarioWeight, iScenario, baseParticleIndex, getNParticlesPerScenario());
 		return (RegularScenario) addScenario(scenarioWeight, regularScenario);
 	}
 
 	public LobScenario addLobScenario(final SimCaseManager.SimCase simCase, final short id, final String name,
-			final String type, final Thresholds wangsnessThresholds, final double scenarioWeight, final int nParticles,
+			final String type, final Thresholds wangsnessThresholds, final double scenarioWeight,
 			final TimeDistribution timeDistribution) {
 		final int iScenario = getNScenarii();
 		int baseParticleIndex = 0;
@@ -1537,7 +1547,7 @@ public class Model {
 			baseParticleIndex += scenario.getNParticles();
 		}
 		final LobScenario lobScenario = new LobScenario(simCase, id, name, type, wangsnessThresholds, scenarioWeight,
-				iScenario, baseParticleIndex, nParticles, timeDistribution);
+				iScenario, baseParticleIndex, getNParticlesPerScenario(), timeDistribution);
 		return (LobScenario) addScenario(scenarioWeight, lobScenario);
 	}
 
@@ -1550,6 +1560,13 @@ public class Model {
 			return null;
 		}
 		return _scenarii.get(iScenario);
+	}
+
+	public DebrisSighting getDebrisSighting(final int iDebrisSighting) {
+		if (iDebrisSighting < 0 || iDebrisSighting >= _scenarii.size()) {
+			return null;
+		}
+		return _debrisSightings.get(iDebrisSighting);
 	}
 
 	public boolean checkAndNormalizeScenarioWeights(final SimCaseManager.SimCase simCase, final Model model) {
@@ -1583,17 +1600,33 @@ public class Model {
 	}
 
 	public void clearScenarii() {
+		_idToScenarioIndex.clear();
 		_scenarii.clear();
 	}
 
-	/** Close the scenarii and establish _idToIndex. */
+	public void clearDebrisSightings() {
+		_idToDebrisSightingIndex.clear();
+		_debrisSightings.clear();
+	}
+
+	/**
+	 * Close the scenarii and debrisSightings and establish _idToScenarioIndex and
+	 * _idToDebrisSightingIndex.
+	 */
 	public void close(final SimCaseManager.SimCase simCase) {
 		final int nScenarii = _scenarii.size();
 		for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 			final Scenario scenario = _scenarii.get(iScenario);
 			final int id = scenario.getId();
 			scenario.close(simCase);
-			_idToIndex.put(id, iScenario);
+			_idToScenarioIndex.put(id, iScenario);
+		}
+		final int nDebrisSightings = _debrisSightings.size();
+		for (int iDebrisSighting = 0; iDebrisSighting < nDebrisSightings; ++iDebrisSighting) {
+			final DebrisSighting debrisSighting = _debrisSightings.get(iDebrisSighting);
+			final int id = debrisSighting.getId();
+			debrisSighting.close(simCase);
+			_idToDebrisSightingIndex.put(id, iDebrisSighting);
 		}
 	}
 
@@ -1630,7 +1663,7 @@ public class Model {
 	}
 
 	public int scenarioIdToIndex(final int scenarioId) {
-		final Integer index = _idToIndex.get(scenarioId);
+		final Integer index = _idToScenarioIndex.get(scenarioId);
 		return index == null ? -1 : index;
 	}
 
@@ -1639,6 +1672,18 @@ public class Model {
 			return Integer.MIN_VALUE;
 		}
 		return _scenarii.get(iScenario).getId();
+	}
+
+	public int debrisSightingIdToIndex(final int debrisSightingId) {
+		final Integer index = _idToDebrisSightingIndex.get(debrisSightingId);
+		return index == null ? -1 : index;
+	}
+
+	public int debrisSightingIndexToId(final int iDebrisSighting) {
+		if (iDebrisSighting < 0 || iDebrisSighting >= _debrisSightings.size()) {
+			return Integer.MIN_VALUE;
+		}
+		return _debrisSightings.get(iDebrisSighting).getId();
 	}
 
 	public boolean scenariiAreDeepEqual(final Model model) {
@@ -1656,6 +1701,31 @@ public class Model {
 			}
 		}
 		return true;
+	}
+
+	public boolean debrisSightingsAreDeepEqual(final Model model) {
+		if (_debrisSightings.size() != model._debrisSightings.size()) {
+			return false;
+		}
+		final Iterator<DebrisSighting> debrisSightingIterator = _debrisSightings.iterator();
+		final Iterator<DebrisSighting> comparedDebrisSightingIterator = model._debrisSightings.iterator();
+		while (debrisSightingIterator.hasNext() && comparedDebrisSightingIterator.hasNext()) {
+			final DebrisSighting debrisSighting = debrisSightingIterator.next();
+			final DebrisSighting comparedDebrisSighting = comparedDebrisSightingIterator.next();
+			if ((debrisSighting.getId() != comparedDebrisSighting.getId())
+					|| !debrisSighting.deepEquals(comparedDebrisSighting)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public int getNDebrisSightings() {
+		return _debrisSightings.size();
+	}
+
+	public void addDebrisSighting(final DebrisSighting debrisSighting) {
+		_debrisSightings.add(debrisSighting);
 	}
 
 }

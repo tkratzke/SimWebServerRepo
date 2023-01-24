@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.skagit.sarops.AbstractOutFilesManager;
+import com.skagit.sarops.model.DebrisSighting;
 import com.skagit.sarops.model.ExtraGraphicsClass;
 import com.skagit.sarops.model.LobScenario;
 import com.skagit.sarops.model.Model;
@@ -521,12 +522,15 @@ public class ModelReader {
 		final ArrayList<Element> graphicsElements = new ArrayList<>();
 		it0 = new ElementIterator(root);
 		final HashSet<Short> usedScenarioIds = new HashSet<>();
+		final HashSet<Short> usedDebrisSightingIds = new HashSet<>();
 		while (it0.hasNextElement()) {
 			final Element child = it0.nextElement();
 			final String childTag = child.getTagName();
 			if ("SCENARIO".equals(childTag)) {
-				readScenario(simCase, usedScenarioIds, child, model, stringPluses);
+				readScenarioOrDebrisSighting(simCase, usedScenarioIds, child, model, stringPluses);
 				scenarioRead = true;
+			} else if ("DEBRIS_SIGHTING".equals(childTag)) {
+				readScenarioOrDebrisSighting(simCase, usedDebrisSightingIds, child, model, stringPluses);
 			} else if ("COMPLETED_SEARCH".equals(childTag)) {
 				readCompletedSearch(simCase, child, model, /* addToModel= */true, stringPluses);
 			} else if ("GRAPHICS".equals(childTag)) {
@@ -1573,20 +1577,18 @@ public class ModelReader {
 		}
 	}
 
-	/** Reads the scenario and updates the model. */
-	private static void readScenario(final SimCaseManager.SimCase simCase, final HashSet<Short> usedScenarioIds,
+	/** Reads the scenario or debrisSighting and updates the model. */
+	private static void readScenarioOrDebrisSighting(final SimCaseManager.SimCase simCase, final HashSet<Short> usedIds,
 			final Element element, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
-		final int nParticlesPerScenario = model.getNParticlesPerScenario();
-		final String unit = null;
-		short idX = getShort(simCase, element, "id", unit, stringPluses);
-		while (!usedScenarioIds.add(idX)) {
+		short idX = getShort(simCase, element, "id", /* unit= */null, stringPluses);
+		while (!usedIds.add(idX)) {
 			idX *= 10;
 		}
 		final short id = idX;
 		final String name = getString(simCase, element, "name", "", stringPluses);
 		final String preType = getString(simCase, element, "type", "", /* stringPluses= */null);
 		final String type;
-		if (preType.equalsIgnoreCase(Scenario._RegularScenarioType) || preType.length() == 0) {
+		if (preType.equalsIgnoreCase(Scenario._RegularScenarioType)) {
 			type = Scenario._RegularScenarioType;
 		} else if (preType.equalsIgnoreCase(Scenario._LobType)) {
 			getString(simCase, element, "type", "", stringPluses);
@@ -1597,15 +1599,19 @@ public class ModelReader {
 		} else if (preType.equalsIgnoreCase(Scenario._R21Type)) {
 			getString(simCase, element, "type", "", stringPluses);
 			type = Scenario._R21Type;
+		} else if (element.getTagName().equalsIgnoreCase(Scenario._DebrisSightingType)) {
+			type = Scenario._DebrisSightingType;
+		} else if (preType.length() == 0) {
+			type = Scenario._RegularScenarioType;
 		} else {
 			type = null;
 		}
-		final double scenarioWeight = getWeight(simCase, element, "weight", stringPluses);
+		final boolean isDebrisSighting = type == Scenario._DebrisSightingType;
+		final double scenarioWeight = !isDebrisSighting ? getWeight(simCase, element, "weight", stringPluses) : 1d;
 		if (scenarioWeight > 0d) {
 			if (type == Scenario._RegularScenarioType) {
 				/** A Regular (Voyage, DR, LKP, etc) scenario. */
-				final RegularScenario regularScenario = model.addRegularScenario(simCase, id, name, scenarioWeight,
-						nParticlesPerScenario);
+				final RegularScenario regularScenario = model.addRegularScenario(simCase, id, name, scenarioWeight);
 				/** Check to see if there IS a SailElement. */
 				boolean sailElementExists = false;
 				final ElementIterator childIterator0 = new ElementIterator(element);
@@ -1631,9 +1637,7 @@ public class ModelReader {
 							distressPlusMinusHrs = getDouble(simCase, element, "distressTimePlusOrMinus", " hrs", -1d,
 									/* stringPluses= */null);
 						} catch (final Exception e) {
-							/**
-							 * This exception indicates no distress time given.
-							 */
+							/** This exception indicates no distress time given. */
 						}
 						if (((distressRefSecsMean < 0) || (distressPlusMinusHrs < 0d))) {
 							distressRefSecsMean = -1;
@@ -1660,9 +1664,7 @@ public class ModelReader {
 				}
 			} else if (type == Scenario._LobType || type == Scenario._FlareType || type == Scenario._R21Type) {
 				final boolean isR21Type = type == Scenario._R21Type;
-				/**
-				 * LOB and Flare scenario. Verify that we have a decent Scenario.
-				 */
+				/** LOB and Flare scenario. Verify that we have a decent Scenario. */
 				ElementIterator childIterator = new ElementIterator(element);
 				TimeDistribution timeDistribution = null;
 				boolean haveSighting = isR21Type;
@@ -1672,7 +1674,7 @@ public class ModelReader {
 					final String tagName = child.getTagName();
 					if ("TIME".equals(tagName)) {
 						timeDistribution = readTimeDistribution(simCase, child, /* readAsDuration= */false,
-								stringPluses);
+								/* isDebrisSighting= */false, stringPluses);
 					} else if ("SIGHTING".equals(tagName) || "BEARING_CALL".equals(tagName)
 							|| "ELLIPSE".equals(tagName)) {
 						haveSighting = true;
@@ -1683,9 +1685,7 @@ public class ModelReader {
 					}
 				}
 				if (timeDistribution != null && haveSighting && haveSearchObjectType) {
-					/**
-					 * Create the Scenario and add the bearing calls and ellipses to it.
-					 */
+					/** Create the Scenario and add the bearing calls and ellipses to it. */
 					final double areaThresholdSqNmi = getDouble(simCase, element, "wangsnessAreaThreshold", "NMSq",
 							Double.NaN, stringPluses);
 					final double distanceThresholdNmi = getDouble(simCase, element, "wangsnessDistanceThreshold", "NM",
@@ -1706,7 +1706,7 @@ public class ModelReader {
 					}
 					final LobScenario lobScenario = model.addLobScenario(simCase, id, name,
 							isR21Type ? Scenario._LobType : type, wangsnessThresholds, scenarioWeight,
-							nParticlesPerScenario, timeDistribution);
+							timeDistribution);
 					if (isR21Type) {
 						final double bearingSd = getDouble(simCase, element, "r21BearingStandardDeviation", " Degs",
 								Double.NaN, stringPluses);
@@ -1729,6 +1729,23 @@ public class ModelReader {
 						}
 					}
 				}
+			} else if (type == Scenario._DebrisSightingType) {
+				final int iDebrisSighting = model.getNDebrisSightings();
+				final DebrisSighting debrisSighting = new DebrisSighting(simCase, id, name, iDebrisSighting);
+				final ElementIterator childIterator = new ElementIterator(element);
+				while (childIterator.hasNextElement()) {
+					final Element child = childIterator.nextElement();
+					final String tagName = child.getTagName();
+					if ("PATH".equals(tagName)) {
+						readPath(simCase, model, child, debrisSighting, /* sightingRefSecsMean= */-1L,
+								/* sightingPlusMinusHrs= */-1d, /* sailElementExists= */ false, stringPluses);
+					} else if ("SCEN_OBJECT_TYPE".equals(tagName)) {
+						readSearchObject(simCase, child, debrisSighting, model, stringPluses);
+					} else {
+						AnnounceIgnoreTag(simCase, tagName);
+					}
+				}
+				model.addDebrisSighting(debrisSighting);
 			}
 		}
 	}
@@ -1754,7 +1771,7 @@ public class ModelReader {
 		if (distressSot == null) {
 			throw new ReaderException("Unknown search object type " + id);
 		}
-		final double weight = getWeight(simCase, element, "weight", stringPluses);
+		final double weight = !scenario.isDebrisSighting() ? getWeight(simCase, element, "weight", stringPluses) : 1d;
 		final SotWithWt searchObjectTypeWithWeight = new SotWithWt(distressSot, weight);
 		scenario.add(searchObjectTypeWithWeight);
 	}
@@ -1778,11 +1795,17 @@ public class ModelReader {
 		 * location. There will be at most one subsequent element and it will be either
 		 * a VOYAGE or a DEAD_RECKON tag.
 		 */
+		final boolean isDebrisSighting = regularScenario.isDebrisSighting();
 		while (childIterator.hasNextElement()) {
 			final Element child = childIterator.nextElement();
 			final String childTag = child.getTagName();
-			if ("DEPARTURE_LOCATION".equals(childTag)) {
+			if (("DEPARTURE_LOCATION".equals(childTag) && !isDebrisSighting)
+					|| (isDebrisSighting && "DEBRIS_LOCATION".equals(childTag))) {
 				readDepartureArea(simCase, child, regularScenario, stringPluses);
+				if (isDebrisSighting) {
+					/** We're all done. */
+					return;
+				}
 			} else if ("VOYAGE".equals(childTag)) {
 				final boolean noDistress = getBoolean(simCase, child, "NoDistress", false, /* stringPluses= */null);
 				if (noDistress) {
@@ -1877,7 +1900,7 @@ public class ModelReader {
 				} else {
 					if (!last) {
 						dwellTimeDistributionForLeg = readTimeDistribution(simCase, grandChild,
-								/* readAsDuration= */true, stringPluses);
+								/* readAsDuration= */true, scenario.isDebrisSighting(), stringPluses);
 					} else {
 						dwellTimeDistributionForLeg = null;
 					}
@@ -1957,12 +1980,10 @@ public class ModelReader {
 					continue;
 				}
 			}
-			/**
-			 * We did not successfully read in the departureArea with child.
-			 */
+			/** We did not successfully read in the departureArea with child. */
 			if (departureTimeDistribution == null) {
 				departureTimeDistribution = readTimeDistribution(simCase, child, /* readAsDuration= */false,
-						stringPluses);
+						scenario.isDebrisSighting(), stringPluses);
 				if (departureTimeDistribution != null) {
 					continue;
 				}
@@ -1978,17 +1999,9 @@ public class ModelReader {
 		scenario.setDepartureTimeDistribution(departureTimeDistribution);
 	}
 
-	/**
-	 * Reads an absolute or relative time distribution.
-	 *
-	 * @param element        the node containing the information.
-	 * @param model          the model to be populated.
-	 * @param readAsDuration a flag indicating that we read a time or a duration.
-	 * @return the corresponding distribution description.
-	 * @throws ReaderException when an incorrect definition is given.
-	 */
 	private static TimeDistribution readTimeDistribution(final SimCaseManager.SimCase simCase, final Element element,
-			final boolean readAsDuration, final TreeSet<StringPlus> stringPluses) throws ReaderException {
+			final boolean readAsDuration, final boolean isDebrisSighting, final TreeSet<StringPlus> stringPluses)
+			throws ReaderException {
 		final String tagName = element.getTagName();
 		if (readAsDuration) {
 			if (!"DWELL_TIME".equals(tagName)) {
@@ -1999,7 +2012,9 @@ public class ModelReader {
 				return null;
 			}
 		}
-		final int plusMinusInMinutes = getDurationMinutes(simCase, element, "plus_minus", stringPluses);
+		final int plusMinusInMinutes = !isDebrisSighting
+				? getDurationMinutes(simCase, element, "plus_minus", stringPluses)
+				: 0;
 		int timeInMinutes;
 		if (readAsDuration) {
 			timeInMinutes = getDurationMinutes(simCase, element, "duration", stringPluses);
