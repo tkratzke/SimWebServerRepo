@@ -204,7 +204,7 @@ public class Planner implements MainSaropsObject {
 	}
 
 	/** This is strictly for running a real Planner problem. */
-	public static void main(final SimCaseManager.SimCase simCase,
+	public static void runPlanner(final SimCaseManager.SimCase simCase,
 			final String[] args) {
 		/** Boilerplate. */
 		final String versionName = SimGlobalStrings.getStaticVersionName();

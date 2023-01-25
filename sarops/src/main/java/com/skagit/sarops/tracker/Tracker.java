@@ -26,8 +26,8 @@ import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.w3c.dom.Element;
 
-import com.skagit.sarops.MainSaropsObject;
 import com.skagit.sarops.AbstractOutFilesManager;
+import com.skagit.sarops.MainSaropsObject;
 import com.skagit.sarops.computePFail.ComputePFail;
 import com.skagit.sarops.computePFail.DetectValues;
 import com.skagit.sarops.environment.BoxDefinition;
@@ -101,6 +101,7 @@ public class Tracker implements MainSaropsObject {
 	final private SummaryStatistics _summaryStatistics;
 	/** The ParticleSets (one per scenario). */
 	final private ParticleSet[] _particleSets;
+	final private Randomx[][] _randoms;
 	/**
 	 * The original model, containing all the information needed to run a
 	 * simulation.
@@ -114,6 +115,7 @@ public class Tracker implements MainSaropsObject {
 	final private String[] _particlesFileWriterChunks;
 	final private String[] _wrapUpChunks;
 
+	/** For Display-only. */
 	private Tracker(final SimCaseManager.SimCase simCase, final Model model) {
 		_simCase = simCase;
 		final MyLogger logger = SimCaseManager.getLogger(_simCase);
@@ -143,7 +145,7 @@ public class Tracker implements MainSaropsObject {
 		final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy MMM dd  hh.mm.ss a.z");
 		final String timeString = simpleDateFormat.format(currentDate);
 		logger.out(String.format("Finished initializing Display at %s: %s", timeString, versionName));
-		/** Catch up (if necessary) with the chunk reporting. */
+		_randoms = null;
 	}
 
 	private Tracker(final SimCaseManager.SimCase simCase, final long entryTimeInMillis, final Model model) {
@@ -228,6 +230,7 @@ public class Tracker implements MainSaropsObject {
 		final String[] sectionNames = new String[] {
 				"Intro", "Motion", "Legs", "ParticlesFileWrite", "WrapUp"
 		};
+
 		/**
 		 * Before we can announce anything, we have to set up the progress directory.
 		 */
@@ -287,6 +290,7 @@ public class Tracker implements MainSaropsObject {
 			_particleSets = null;
 			_summaryStatistics = null;
 			_logElement1 = _logElement2 = null;
+			_randoms = null;
 			return;
 		}
 		/** Write out the echo, now that the environment has been set. */
@@ -321,6 +325,7 @@ public class Tracker implements MainSaropsObject {
 				_summaryStatistics = null;
 				_logElement1 = _logElement2 = null;
 				simCase.runOutChunks();
+				_randoms = null;
 				return;
 			}
 		}
@@ -347,31 +352,34 @@ public class Tracker implements MainSaropsObject {
 				_summaryStatistics = null;
 				_logElement1 = _logElement2 = null;
 				simCase.runOutChunks();
+				_randoms = null;
 				return;
 			}
 		}
 		/** Finish creating the Scenarios. */
 		_model.close(simCase);
+
 		/**
 		 * Before we set the particles, set their random number generators; there's one
 		 * for each particle.
 		 */
 		final long coreSeed = model.getRandomSeed();
 		final Randomx r = new Randomx(coreSeed);
-		final Random r2 = new Random(coreSeed);
+		final Random r2 = new Random(r.nextLong());
 		final int nScenarii = _model.getNScenarii();
 		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
-		final Randomx[][] randoms = new Randomx[nScenarii][nParticlesPerScenario];
+		_randoms = new Randomx[nScenarii][nParticlesPerScenario];
 		HashSet<Long> seeds = new HashSet<>();
 		for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 			for (int iParticle = 0; iParticle < nParticlesPerScenario; ++iParticle) {
 				long seed;
 				for (seed = r.nextLong() + r2.nextLong(); !seeds.add(seed); seed = r.nextLong() + r2.nextLong()) {
 				}
-				randoms[iScenario][iParticle] = new Randomx(seed);
+				_randoms[iScenario][iParticle] = new Randomx(seed);
 			}
 		}
 		seeds = null;
+
 		/**
 		 * Build the particles, and from them, get the real start time and end time.
 		 */
@@ -388,7 +396,7 @@ public class Tracker implements MainSaropsObject {
 			_particleSets[iScenario] = new ParticleSet(this, scenario, nParticlesPerScenario);
 			final ParticleSet particleSet = _particleSets[iScenario];
 			itineraries[iScenario] = createInitialCloud(particleSet, iScenario, nParticlesPerScenario,
-					randoms[iScenario]);
+					_randoms[iScenario]);
 			SimCaseManager.out(simCase,
 					"Finished Setting initial cloud for scenario # " + iScenario + " of " + nScenarii + " scenarii.");
 			for (int iParticle = 0; iParticle < nParticlesPerScenario; ++iParticle) {
@@ -596,10 +604,10 @@ public class Tracker implements MainSaropsObject {
 				return;
 			}
 		}
-		/** Catch up (if necessary) with the chunk reporting. */
 		_simCase.reportChunksDone(nIntroChunks + nMotioningChunks);
 		logger.out("Did all Time Updates.");
-		/** Do the sorties next. */
+
+		/** Sorties. */
 		final List<Sortie> sorties = _model.getSorties();
 		int nLegsTotal = 0;
 		for (final Sortie element : sorties) {
@@ -2044,7 +2052,7 @@ public class Tracker implements MainSaropsObject {
 		return _particlesFile;
 	}
 
-	public static void main(final SimCaseManager.SimCase simCase, final String[] args) {
+	public static void runSimulator(final SimCaseManager.SimCase simCase, final String[] args) {
 		final long entryTimeMs = System.currentTimeMillis();
 		final SimCaseManager simCaseManager = simCase.getSimCaseManager();
 		final String modelFilePathX = args.length > 0 ? args[0] : null;
@@ -2093,7 +2101,8 @@ public class Tracker implements MainSaropsObject {
 			final int lastIndex = modelStashedSimFileName.lastIndexOf(SimCaseManager._SimEndingLc);
 			final String stashedTimesFileName = modelStashedSimFileName.substring(0, lastIndex) + "-simTimes.txt";
 			final String thisModelFilePath = model.getSimFilePath();
-			final File stashResultDir = AbstractOutFilesManager.GetEngineFilesDir(simCase, thisModelFilePath, "SimResult");
+			final File stashResultDir = AbstractOutFilesManager.GetEngineFilesDir(simCase, thisModelFilePath,
+					"SimResult");
 			final int nForExcelDump = model.getNForExcelDump();
 			final int totalNParticles = model.getTotalNParticles();
 			if (totalNParticles <= nForExcelDump) {
@@ -2107,8 +2116,8 @@ public class Tracker implements MainSaropsObject {
 			}
 		} else {
 			/**
-			 * displayOnly = true. The following ctor will create a Tracker and it will be
-			 * the mainSaropsObject.
+			 * The following ctor will create a Tracker and it will be the mainSaropsObject
+			 * for a display-only.
 			 */
 			@SuppressWarnings("unused")
 			final Tracker tracker = new Tracker(simCase, model);

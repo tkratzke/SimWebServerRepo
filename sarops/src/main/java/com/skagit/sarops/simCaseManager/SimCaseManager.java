@@ -377,9 +377,9 @@ public class SimCaseManager {
 				}
 				SimCaseManager.LogMemory(this);
 				if (currentClassName.equals(_TrackerClassName)) {
-					Tracker.main(this, _runnerArgs);
+					Tracker.runSimulator(this, _runnerArgs);
 				} else if (currentClassName.equals(_PlannerClassName)) {
-					Planner.main(this, _runnerArgs);
+					Planner.runPlanner(this, _runnerArgs);
 				}
 				_logger.out(String.format("%s/%s completed successfully.",
 						currentClassName, getName()));
