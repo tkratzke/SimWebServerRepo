@@ -12,16 +12,13 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 	final private int _sotOrd;
 	final private int _overallIndex;
 
-	public static ParticleIndexes getStandardOne(final Model model,
-			final int iScenario, final int iParticle) {
+	public static ParticleIndexes getStandardOne(final Model model, final int iScenario, final int iParticle) {
 		return new ParticleIndexes(model, iScenario, iParticle, -1);
 	}
 
-	public static ParticleIndexes getStandardOne(final Model model,
-			final String readableStringA) {
+	public static ParticleIndexes getStandardOne(final Model model, final String readableStringA) {
 
-		final String readableString =
-				readableStringA.trim().replaceAll("[()]+", "");
+		final String readableString = readableStringA.trim().replaceAll("[()]+", "");
 		final String[] fields = readableString.trim().split("[\\s,]+");
 		final int nFields = fields.length;
 		if (nFields < 1 || nFields > 2) {
@@ -36,24 +33,20 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 		}
 	}
 
-	public ParticleIndexes(final Model model, final int overallIndex,
-			final int sotOrd) {
+	public ParticleIndexes(final Model model, final int overallIndex, final int sotOrd) {
 		_overallIndex = overallIndex;
 		final int nParticlesPerScenario = model.getNParticlesPerScenario();
 		_iScenario = _overallIndex / nParticlesPerScenario;
 		_iParticle = _overallIndex % nParticlesPerScenario;
 		_sotOrd = sotOrd;
-		_nDigits =
-				Math.max(1, (int) Math.ceil(Math.log10(nParticlesPerScenario - 1)));
+		_nDigits = Math.max(1, (int) Math.ceil(Math.log10(nParticlesPerScenario - 1)));
 	}
 
-	public static ParticleIndexes getMeanOne(final Model model,
-			final int iScenario, final int sotOrd) {
+	public static ParticleIndexes getMeanOne(final Model model, final int iScenario, final int sotOrd) {
 		return new ParticleIndexes(model, iScenario, -1, sotOrd);
 	}
 
-	private ParticleIndexes(final Model model, final int iScenario,
-			final int iParticle, final int sotOrd) {
+	private ParticleIndexes(final Model model, final int iScenario, final int iParticle, final int sotOrd) {
 		_iScenario = iScenario;
 		_iParticle = iParticle;
 		_sotOrd = sotOrd;
@@ -66,29 +59,24 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 			final int base = nScenarii * nParticlesPerScenario;
 			_overallIndex = base + _iScenario * nSearchObjectTypes + sotOrd;
 		}
-		_nDigits =
-				Math.max(1, (int) Math.ceil(Math.log10(nParticlesPerScenario - 1)));
+		_nDigits = Math.max(1, (int) Math.ceil(Math.log10(nParticlesPerScenario - 1)));
 	}
 
 	public String getString(final boolean includeScenario) {
 		if (_iParticle >= 0) {
 			if (includeScenario) {
-				final String f = "(%d,%0" + _nDigits + "d):%d";
-				return String.format(f, _iScenario, _iParticle, _overallIndex);
+				return String.format("(%d,%0" + _nDigits + "d):%d", _iScenario, _iParticle, _overallIndex);
 			}
-			final String f = "%0" + _nDigits + "d";
-			return String.format(f, _iParticle);
+			return String.format("%0" + _nDigits + "d", _iParticle);
 		}
 		return String.format("Sc[%d]", _iScenario);
 	}
 
 	public String getReadableString(final boolean includeScenario) {
 		if (includeScenario) {
-			final String f = "(%d,%0" + _nDigits + "d)";
-			return String.format(f, _iScenario, _iParticle);
+			return String.format("(%d,%0" + _nDigits + "d)", _iScenario, _iParticle);
 		}
-		final String f = "%0" + _nDigits + "d";
-		return String.format(f, _iParticle);
+		return String.format("%0" + _nDigits + "d", _iParticle);
 	}
 
 	public String getString() {
@@ -100,8 +88,7 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 		return getString();
 	}
 
-	public ParticleIndexesState refSecsToPrtclIndxsState(
-			final ParticlesManager particlesManager, final long refSecs) {
+	public ParticleIndexesState refSecsToPrtclIndxsState(final ParticlesManager particlesManager, final long refSecs) {
 		return particlesManager.computePrtclIndxsState(this, refSecs);
 	}
 
@@ -136,12 +123,10 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 
 	@Override
 	public int compareTo(final ParticleIndexes prtclIndxs) {
-		return _overallIndex > prtclIndxs._overallIndex ? 1 :
-				(_overallIndex < prtclIndxs._overallIndex ? -1 : 0);
+		return _overallIndex > prtclIndxs._overallIndex ? 1 : (_overallIndex < prtclIndxs._overallIndex ? -1 : 0);
 	}
 
-	public static int compare(final ParticleIndexes[] prtclIndxsS1,
-			final ParticleIndexes[] prtclIndxsS2) {
+	public static int compare(final ParticleIndexes[] prtclIndxsS1, final ParticleIndexes[] prtclIndxsS2) {
 		if (prtclIndxsS1 == prtclIndxsS2) {
 			return 0;
 		}
@@ -162,15 +147,14 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 		return _sotOrd >= 0;
 	}
 
-	public class ParticleIndexesState
-			implements Comparable<ParticleIndexesState> {
+	public class ParticleIndexesState implements Comparable<ParticleIndexesState> {
 		final private LatLng3 _latLng;
 		final private long _refSecs;
 		final private int _objectType;
 		final private boolean _landed;
 
-		public ParticleIndexesState(final LatLng3 latLng, final long refSecs,
-				final int objectType, final boolean landed) {
+		public ParticleIndexesState(final LatLng3 latLng, final long refSecs, final int objectType,
+				final boolean landed) {
 			_latLng = latLng;
 			_objectType = objectType;
 			_refSecs = refSecs;
@@ -199,8 +183,7 @@ public class ParticleIndexes implements Comparable<ParticleIndexes> {
 
 		@Override
 		public int compareTo(final ParticleIndexesState stateVector) {
-			final int compareValue =
-					getPrtclIndxs().compareTo(stateVector.getPrtclIndxs());
+			final int compareValue = getPrtclIndxs().compareTo(stateVector.getPrtclIndxs());
 			if (compareValue != 0) {
 				return compareValue;
 			}

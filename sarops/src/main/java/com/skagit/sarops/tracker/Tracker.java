@@ -393,10 +393,9 @@ public class Tracker implements MainSaropsObject {
 		final PreDistressModel.Itinerary[][] itineraries = new PreDistressModel.Itinerary[nScenarii][];
 		for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 			final Scenario scenario = model.getScenario(iScenario);
-			_particleSets[iScenario] = new ParticleSet(this, scenario, nParticlesPerScenario);
+			_particleSets[iScenario] = new ParticleSet(this, scenario);
 			final ParticleSet particleSet = _particleSets[iScenario];
-			itineraries[iScenario] = createInitialCloud(particleSet, iScenario, nParticlesPerScenario,
-					_randoms[iScenario]);
+			itineraries[iScenario] = createInitialCloud(particleSet, iScenario);
 			SimCaseManager.out(simCase,
 					"Finished Setting initial cloud for scenario # " + iScenario + " of " + nScenarii + " scenarii.");
 			for (int iParticle = 0; iParticle < nParticlesPerScenario; ++iParticle) {
@@ -1203,8 +1202,7 @@ public class Tracker implements MainSaropsObject {
 	final private static int _SufficientSample = 1000;
 	final private static double _MinimumSuccessRate = 0.01;
 
-	private PreDistressModel.Itinerary[] createInitialCloud(final ParticleSet particleSet, final int iScenario,
-			final int nParticlesPerScenario, final Randomx[] randoms) {
+	private PreDistressModel.Itinerary[] createInitialCloud(final ParticleSet particleSet, final int iScenario) {
 		final MyLogger logger = SimCaseManager.getLogger(_simCase);
 		final Scenario scenario = particleSet._scenario;
 		final ShorelineFinder shorelineFinder = _model.getShorelineFinder();
@@ -1232,6 +1230,7 @@ public class Tracker implements MainSaropsObject {
 			final int count = sotOrdToCount[sotOrd];
 			particleSet.setSotCount(sotId, count);
 		}
+		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
 		final SotWithWt[] particleDistressSotWithWts = new SotWithWt[nParticlesPerScenario];
 		int iParticle0 = 0;
 		for (final SotWithWt sotWithWt : scenarioSotWithWtList) {
@@ -1255,6 +1254,7 @@ public class Tracker implements MainSaropsObject {
 		}
 
 		final PreDistressModel preDistressModel = scenario.getPreDistressModel();
+		final Randomx[] randoms = _randoms[iScenario];
 		if (preDistressModel == null || _model.getReverseDrift()) {
 			setImmediateDistress(randoms, particleSet, particleDistressSotWithWts);
 			return null;

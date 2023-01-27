@@ -16,44 +16,34 @@ import com.skagit.util.randomx.Randomx;
 /** A ParticleSet holds the particles for a given scenario. */
 public class ParticleSet {
 	final public Tracker _tracker;
-	/**
-	 * The scenario corresponding to the ParticleSet. Not a back-pointer since
-	 * _scenario does not contain "this" as a field.
-	 */
 	final public Scenario _scenario;
 	/**
-	 * The storage of the particles.
-	 * <p>
-	 * The ctor creates the array, but does not populate it. That occurs in
-	 * {@link Tracker#createInitialCollectionOfParticles()}.
+	 * The storage of the particles. The ctor creates the array, but does not
+	 * populate it. That occurs in Tracker.createInitialCollectionOfParticles().
 	 */
 	final public Particle[] _particles;
 	final private Particle[] _envMeanParticles;
 	final private TreeMap<Integer, Integer> _distressTypeToCount;
 
 	/** Simple constructor; does not initialize _particles. */
-	ParticleSet(final Tracker tracker, final Scenario scenario,
-			final int numberOfParticles) {
+	ParticleSet(final Tracker tracker, final Scenario scenario, final int nParticles) {
 		_scenario = scenario;
-		_particles = new Particle[numberOfParticles];
+		_particles = new Particle[nParticles];
 		_distressTypeToCount = new TreeMap<>();
-		final int nSearchObjectTypes =
-				tracker.getModel().getNSearchObjectTypes();
+		final int nSearchObjectTypes = tracker.getModel().getNSearchObjectTypes();
 		_envMeanParticles = new Particle[nSearchObjectTypes];
 		_tracker = tracker;
 	}
 
 	public int getNParticles(final int sotId) {
-		final Integer numberOfParticles = _distressTypeToCount.get(sotId);
-		return numberOfParticles == null ? 0 : numberOfParticles;
+		final Integer nParticles = _distressTypeToCount.get(sotId);
+		return nParticles == null ? 0 : nParticles;
 	}
 
 	/** Advances all particles to simSecsS[iT]. */
-	void timeUpdate(final long[] simSecsS, final int iT,
-			final ParticlesFile particlesFile) {
+	void timeUpdate(final long[] simSecsS, final int iT, final ParticlesFile particlesFile) {
 		/**
-		 * Create and start the threads, saving one "slice" for the current
-		 * thread.
+		 * Create and start the threads, saving one "slice" for the current thread.
 		 */
 		final int nToCompute = _particles.length;
 		final SimCaseManager.SimCase simCase = _tracker.getSimCase();
@@ -61,16 +51,14 @@ public class ParticleSet {
 		final SimGlobalStrings simGlobalStrings = simCase.getSimGlobalStrings();
 		/** Boilerplate for multithreading... */
 		final int minNPerSlice = simGlobalStrings.getMinNPerSliceInTracker();
-		final Object lockOnWorkersThreadPool =
-				simCaseManager.getLockOnWorkersThreadPool();
+		final Object lockOnWorkersThreadPool = simCaseManager.getLockOnWorkersThreadPool();
 		Future<?>[] futures = null;
 		final ArrayList<Integer> notTaskedISlices = new ArrayList<>();
 		int nSlices = (nToCompute + (minNPerSlice - 1)) / minNPerSlice;
 		int nWorkers = 0;
 		if (nSlices > 1) {
 			synchronized (lockOnWorkersThreadPool) {
-				final int nFreeWorkers = simCaseManager
-						.getNFreeWorkerThreads(simCase, "Time Update In ParticleSet");
+				final int nFreeWorkers = simCaseManager.getNFreeWorkerThreads(simCase, "Time Update In ParticleSet");
 				nWorkers = Math.max(0, Math.min(nSlices - 1, nFreeWorkers));
 				if (nWorkers < 2) {
 					nWorkers = 0;
@@ -84,12 +72,10 @@ public class ParticleSet {
 							@Override
 							public void run() {
 								/** ... to here. */
-								runTimeUpdateSlice(finalIWorker, finalNSlices, simSecsS, iT,
-										particlesFile);
+								runTimeUpdateSlice(finalIWorker, finalNSlices, simSecsS, iT, particlesFile);
 							}
 						};
-						futures[iWorker] =
-								simCaseManager.submitToWorkers(simCase, runnable);
+						futures[iWorker] = simCaseManager.submitToWorkers(simCase, runnable);
 						if (futures[iWorker] == null) {
 							notTaskedISlices.add(iWorker);
 						}
@@ -119,16 +105,14 @@ public class ParticleSet {
 		}
 	}
 
-	private void runTimeUpdateSlice(final int iWorker, final int nSlices,
-			final long[] simSecsS, final int iT,
+	private void runTimeUpdateSlice(final int iWorker, final int nSlices, final long[] simSecsS, final int iT,
 			final ParticlesFile particlesFile) {
 		final int nCoreParticles = _particles.length;
 		final Model model = _tracker.getModel();
 		final int nSearchObjectTypes = model.getNSearchObjectTypes();
 		final int nAllParticles = nCoreParticles + nSearchObjectTypes;
 		final int iScenario = _scenario.getIScenario();
-		for (int iParticleX = iWorker; iParticleX < nAllParticles;
-				iParticleX += nSlices) {
+		for (int iParticleX = iWorker; iParticleX < nAllParticles; iParticleX += nSlices) {
 			final Particle particle;
 			final ParticleIndexes prtclIndxs;
 			/** sotOrd stands for searchObjectTypeOrdinal. */
@@ -136,9 +120,7 @@ public class ParticleSet {
 			final int sotOrd;
 			if (iParticleX < nCoreParticles) {
 				particle = _particles[iParticleX];
-				prtclIndxs =
-						ParticleIndexes.getStandardOne(model, iScenario, iParticleX);
-
+				prtclIndxs = ParticleIndexes.getStandardOne(model, iScenario, iParticleX);
 				iParticle = iParticleX;
 				sotOrd = -1;
 			} else {
@@ -150,8 +132,7 @@ public class ParticleSet {
 				}
 				prtclIndxs = ParticleIndexes.getMeanOne(model, iScenario, sotOrd);
 			}
-			final StateVector latestStateVectorA =
-					particle.getLatestStateVector();
+			final StateVector latestStateVectorA = particle.getLatestStateVector();
 			timeUpdateOneParticle(simSecsS, iT, latestStateVectorA);
 			if (!_tracker.getKeepGoing()) {
 				return;
@@ -159,8 +140,8 @@ public class ParticleSet {
 			final StateVector latestStateVector = particle.getLatestStateVector();
 			if (latestStateVector.isStuckOnLand()) {
 				/**
-				 * Does not override if it had previously landed. Also, returns true
-				 * iff it is newly stuck.
+				 * Does not override if it had previously landed. Also, returns true iff it is
+				 * newly stuck.
 				 */
 				final long thisSimSecs = latestStateVector.getSimSecs();
 				final long birthSimSecs = particle.getBirthSimSecs();
@@ -171,8 +152,7 @@ public class ParticleSet {
 					landingSimSecs = Math.max(thisSimSecs, birthSimSecs);
 				}
 				if (particle.setLandingSimSecs(landingSimSecs)) {
-					particlesFile.setLandingRefSecs(prtclIndxs,
-							model.getRefSecs(landingSimSecs));
+					particlesFile.setLandingRefSecs(prtclIndxs, model.getRefSecs(landingSimSecs));
 				}
 			}
 			final LatLng3 position = latestStateVector.getLatLng();
@@ -184,34 +164,30 @@ public class ParticleSet {
 				particlesFile.setSvtOrdinal(prtclIndxs, svt, refSecs);
 			}
 			/**
-			 * The next warning is just an "FYI." It's not critical, but it is the
-			 * only place that causes an incident to be reported in the logfile.
+			 * The next warning is just an "FYI." It's not critical, but it is the only
+			 * place that causes an incident to be reported in the logfile.
 			 */
 			if (model.isOutOfArea(position)) {
 				final String typeOfParticle = latestStateVector.getDescription();
-				model.logOutOfArea(refSecs, particle.getParticleIndexes(),
-						typeOfParticle, position);
+				model.logOutOfArea(refSecs, particle.getParticleIndexes(), typeOfParticle, position);
 			}
 		}
 	}
 
 	/** Advances one particle to simSecs. */
-	private void timeUpdateOneParticle(final long[] simSecsS, final int iT,
-			final StateVector previousStateVector) {
+	private void timeUpdateOneParticle(final long[] simSecsS, final int iT, final StateVector previousStateVector) {
 		final boolean updateParticleTail = true;
 		final long simSecs = simSecsS[iT];
 		if (previousStateVector.isStuckOnLand()) {
-			final StateVector stateVector = new DistressStateVector(
-					previousStateVector, simSecs, updateParticleTail);
+			final StateVector stateVector = new DistressStateVector(previousStateVector, simSecs, updateParticleTail);
 			stateVector.setIsStuckOnLand();
 		} else if (previousStateVector.isAnchored()) {
-			final StateVector stateVector = new DistressStateVector(
-					previousStateVector, simSecs, updateParticleTail);
+			final StateVector stateVector = new DistressStateVector(previousStateVector, simSecs, updateParticleTail);
 			stateVector.setIsAnchored();
 		} else {
 			/**
-			 * The side effect updates the particle. That's all we need here, we
-			 * don't need the return value from timeUpdate.
+			 * The side effect updates the particle. That's all we need here, we don't need
+			 * the return value from timeUpdate.
 			 */
 			previousStateVector.timeUpdate(_tracker, _scenario, simSecsS, iT);
 		}
@@ -221,16 +197,14 @@ public class ParticleSet {
 		_distressTypeToCount.put(id, count);
 	}
 
-	public Particle getEnvMeanParticle(final Tracker tracker,
-			final int searchObjectTypeId) {
+	public Particle getEnvMeanParticle(final Tracker tracker, final int searchObjectTypeId) {
 		final Model model = tracker.getModel();
 		final int sotOrd = model.getSotOrd(searchObjectTypeId);
 		return _envMeanParticles[sotOrd];
 	}
 
-	public void setInitialMeanPosition(final Tracker tracker,
-			final SearchObjectType originatingSot, final SearchObjectType sot,
-			final long refSecs, final LatLng3 meanLatLng) {
+	public void setInitialMeanPosition(final Tracker tracker, final SearchObjectType originatingSot,
+			final SearchObjectType sot, final long refSecs, final LatLng3 meanLatLng) {
 		final Model model = tracker.getModel();
 		final int iScenario = _scenario.getIScenario();
 		final int searchObjectTypeId = sot.getId();
@@ -240,19 +214,17 @@ public class ParticleSet {
 		final long simSecs = model.getSimSecs(refSecs);
 		final long birthSimSecs = simSecs;
 		final long distressSimSecs = simSecs;
-		final ParticleIndexes prtclIndxs =
-				ParticleIndexes.getMeanOne(model, iScenario, sotOrd);
-		final Particle particle = new Particle(tracker, _scenario, prtclIndxs,
-				originatingSot, birthSimSecs, sot, distressSimSecs, r);
+		final ParticleIndexes prtclIndxs = ParticleIndexes.getMeanOne(model, iScenario, sotOrd);
+		final Particle particle = new Particle(tracker, _scenario, prtclIndxs, originatingSot, birthSimSecs, sot,
+				distressSimSecs, r);
 		@SuppressWarnings("unused")
-		final DistressStateVector distressStateVector = new DistressStateVector(
-				particle, simSecs, meanLatLng, /* updateParticleTail= */true);
+		final DistressStateVector distressStateVector = new DistressStateVector(particle, simSecs, meanLatLng,
+				/* updateParticleTail= */true);
 		_envMeanParticles[sotOrd] = particle;
 	}
 
 	public static void freeMemory(final ParticleSet[] _particleSets) {
-		final int nParticleSets =
-				_particleSets == null ? 0 : _particleSets.length;
+		final int nParticleSets = _particleSets == null ? 0 : _particleSets.length;
 		for (int k = 0; k < nParticleSets; ++k) {
 			_particleSets[k].freeMemory();
 		}
@@ -263,8 +235,7 @@ public class ParticleSet {
 		for (int k = 0; k < nParticles; ++k) {
 			_particles[k].freeMemory();
 		}
-		final int nEnvParticles =
-				_envMeanParticles == null ? 0 : _envMeanParticles.length;
+		final int nEnvParticles = _envMeanParticles == null ? 0 : _envMeanParticles.length;
 		for (int k = 0; k < nEnvParticles; ++k) {
 			final Particle envMeanParticle = _envMeanParticles[k];
 			if (envMeanParticle != null) {
