@@ -163,7 +163,7 @@ public class ComputePFail {
 					final LatLng3 prtclLatLng1 =
 							particlesFile.getLatLng(refSecs1, prtclIndxs);
 					final int objectTypeId =
-							particlesFile.getObjectTypeId(refSecs0, prtclIndxs);
+							particlesFile.getSotId(refSecs0, prtclIndxs);
 					final boolean closeEnoughToCompute = leg.closeEnoughToCompute(
 							objectTypeId, prtclLatLng0, prtclLatLng1);
 					if (!closeEnoughToCompute) {

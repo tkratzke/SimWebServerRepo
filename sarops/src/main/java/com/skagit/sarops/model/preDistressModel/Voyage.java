@@ -149,8 +149,8 @@ public class Voyage extends PreDistressModel {
 			final boolean last = !legIterator.hasNext();
 			final Element element =
 					formatter.newChild(voyageElement, last ? "FINAL_LEG" : "LEG");
-			final String errorTag = "x_error";
-			leg._destination.write(formatter, element, errorTag);
+			final String spreadAttributeName = "x_error";
+			leg._destination.write(formatter, element, spreadAttributeName);
 			if (leg._dwellTimeDistribution != null) {
 				leg._dwellTimeDistribution.write(formatter, element, !last,
 						last ? "TIME" : "DWELL_TIME");

@@ -27,7 +27,7 @@ public class UnderwayParticle extends Particle {
 	}
 
 	@Override
-	public Sdi getPsd() {
+	public Sdi getSdi() {
 		return _itinerary.getSdi();
 	}
 

@@ -15,8 +15,7 @@ public class FixHazard {
 	final private long _startRefSecs;
 	final private long _durationSecs;
 
-	public FixHazard(final double intensity, final List<Area> areas,
-			final long startRefSecs, final long durationSecs) {
+	public FixHazard(final double intensity, final List<Area> areas, final long startRefSecs, final long durationSecs) {
 		_intensity = intensity;
 		_areas = areas;
 		_startRefSecs = startRefSecs;
@@ -24,10 +23,8 @@ public class FixHazard {
 	}
 
 	public boolean deepEquals(final FixHazard hazard) {
-		if (_intensity != hazard._intensity
-				|| _areas.size() != hazard._areas.size()
-				|| _startRefSecs != hazard._startRefSecs
-				|| _durationSecs != hazard._durationSecs) {
+		if (_intensity != hazard._intensity || _areas.size() != hazard._areas.size()
+				|| _startRefSecs != hazard._startRefSecs || _durationSecs != hazard._durationSecs) {
 			return false;
 		}
 		final Iterator<Area> areaIterator = _areas.iterator();
@@ -44,17 +41,13 @@ public class FixHazard {
 
 	public void write(final LsFormatter formatter, final Element element) {
 		final Element hazardElement = formatter.newChild(element, "FIX_HAZARD");
-		hazardElement.setAttribute("intensity",
-				LsFormatter.StandardFormat(_intensity));
+		hazardElement.setAttribute("intensity", LsFormatter.StandardFormat(_intensity));
 		if (_startRefSecs > 0) {
-			hazardElement.setAttribute("start",
-					TimeUtilities.formatTime(_startRefSecs, false));
-			hazardElement.setAttribute("end",
-					TimeUtilities.formatTime(_startRefSecs + _durationSecs, false));
+			hazardElement.setAttribute("start", TimeUtilities.formatTime(_startRefSecs, false));
+			hazardElement.setAttribute("end", TimeUtilities.formatTime(_startRefSecs + _durationSecs, false));
 		}
-		final String errorTag = null;
 		for (final Area area : _areas) {
-			area.write(formatter, hazardElement, errorTag);
+			area.write(formatter, hazardElement, /* spreadAttributeName= */null);
 		}
 	}
 

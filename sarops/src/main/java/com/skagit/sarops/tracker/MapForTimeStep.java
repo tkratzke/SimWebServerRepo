@@ -111,9 +111,9 @@ public class MapForTimeStep {
 				final ParticleIndexes prtclIndxs =
 						ParticleIndexes.getStandardOne(model, iScenario, iParticle);
 				final int searchObjectTypeId =
-						particlesFile.getObjectTypeId(refSecs, prtclIndxs);
+						particlesFile.getSotId(refSecs, prtclIndxs);
 				final SearchObjectType searchObjectType =
-						model.getSearchObjectType(searchObjectTypeId);
+						model.sotIdToSot(searchObjectTypeId);
 				final double origPrior = particlesFile.getInitPrior(prtclIndxs);
 				final double cumPFail =
 						particlesFile.getCumPFail(refSecs, prtclIndxs);

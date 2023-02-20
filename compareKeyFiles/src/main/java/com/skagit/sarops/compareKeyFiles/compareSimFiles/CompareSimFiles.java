@@ -204,7 +204,7 @@ public class CompareSimFiles {
 					final int refSecsIdx = (int) refSecsIdxS[k0];
 					final long refSecs = refSecsS[refSecsIdx];
 					final int sotId =
-							particlesFile.getObjectTypeId(refSecs, prtclIndxs);
+							particlesFile.getSotId(refSecs, prtclIndxs);
 					final double[] latLngPair =
 							particlesFile.getLatLngPair(refSecsIdx, prtclIndxs);
 					final double lat = latLngPair[0];

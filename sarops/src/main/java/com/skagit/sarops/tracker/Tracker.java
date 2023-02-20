@@ -37,12 +37,12 @@ import com.skagit.sarops.model.Model;
 import com.skagit.sarops.model.Scenario;
 import com.skagit.sarops.model.SearchObjectType;
 import com.skagit.sarops.model.Sortie;
-import com.skagit.sarops.model.SotWithWt;
+import com.skagit.sarops.model.SotWithDbl;
 import com.skagit.sarops.model.io.ModelReader;
 import com.skagit.sarops.model.preDistressModel.PreDistressModel;
 import com.skagit.sarops.simCaseManager.MainRunner;
 import com.skagit.sarops.simCaseManager.SimCaseManager;
-import com.skagit.sarops.studyRunner.AbstractStudyRunner;
+import com.skagit.sarops.studyRunner.StudyRunner;
 import com.skagit.sarops.util.SimGlobalStrings;
 import com.skagit.util.LsFormatter;
 import com.skagit.util.MathX;
@@ -77,9 +77,9 @@ public class Tracker implements MainSaropsObject {
 	final private static boolean _WritePolylines = true;
 
 	final private static double _NmiToR = MathX._NmiToR;
-	final public static DetectValues.PFailType _TrackerPFailType = DetectValues.PFailType.AIFT;
+	final private static DetectValues.PFailType _TrackerPFailType = DetectValues.PFailType.AIFT;
 	final private static boolean _TrackerForOptnOnly = false;
-	final public static long _RefSecsForNoDistress = 100L * Integer.MAX_VALUE;
+	final private static long _RefSecsForNoDistress = 100L * Integer.MAX_VALUE;
 	final private static double _NParticleTimeStepsPerChunk = 10000d;
 	final private static double _NParticleLegsPerChunk = 2d * _NParticleTimeStepsPerChunk;
 
@@ -99,19 +99,16 @@ public class Tracker implements MainSaropsObject {
 	final private Element _logElement2;
 	/** For collecting statistics for each object type and scenario. */
 	final private SummaryStatistics _summaryStatistics;
-	/** The ParticleSets (one per scenario). */
+	/** One ParticleSet per scenario and one Randomx per Particle. */
 	final private ParticleSet[] _particleSets;
-	final private Randomx[][] _randoms;
-	/**
-	 * The original model, containing all the information needed to run a
-	 * simulation.
-	 */
+	final Randomx[][] _randoms;
+	/** _model contains all the information needed to run a simulation. */
 	final private Model _model;
 	/** The location where execution progress is being reported. */
 	final private File _progressDirectory;
 	final private String[] _introChunks;
 	final private String[] _motioningChunks;
-	final private String[] _legChunks;
+	final private String[] _likelihoodChunks;
 	final private String[] _particlesFileWriterChunks;
 	final private String[] _wrapUpChunks;
 
@@ -128,7 +125,7 @@ public class Tracker implements MainSaropsObject {
 		/** Set up the ChunkReporter. */
 		_introChunks = null;
 		_motioningChunks = null;
-		_legChunks = null;
+		_likelihoodChunks = null;
 		_particlesFileWriterChunks = null;
 		_wrapUpChunks = null;
 		_progressDirectory = null;
@@ -205,17 +202,21 @@ public class Tracker implements MainSaropsObject {
 			_motioningChunks[iChunk] = String.format("Motioning chunk %d of %d", //
 					iChunk, nMotioningChunks);
 		}
-		/** Set up the Leg chunks. */
+		/** Set up the Likelihood chunks. */
 		final List<Sortie> sorties = _model.getSorties();
 		int nLegsTotal = 0;
 		for (final Sortie element : sorties) {
 			nLegsTotal += element.getDistinctInputLegs().size();
 		}
-		final int nLegChunks = (int) Math.round((_model.getTotalNParticles() * nLegsTotal) / _NParticleLegsPerChunk);
-		_legChunks = new String[nLegChunks];
-		for (int iChunk = 0; iChunk < nLegChunks; ++iChunk) {
-			_legChunks[iChunk] = String.format("Sortie-Legs Chunk %d of %d", //
-					iChunk, nLegChunks);
+		final int nTtlPrtcls = _model.getTotalNParticles();
+		final int nDebrisChunks = (int) ((_model.getNDebrisSightings() * _model.getNDebrisObjectTypes() * nTtlPrtcls)
+				/ _NParticleTimeStepsPerChunk);
+		final int nSortieChunks = (int) Math.round((nTtlPrtcls * nLegsTotal) / _NParticleLegsPerChunk);
+		final int nLikelihoodChunks = nDebrisChunks + nSortieChunks;
+		_likelihoodChunks = new String[nLikelihoodChunks];
+		for (int iChunk = 0; iChunk < nLikelihoodChunks; ++iChunk) {
+			_likelihoodChunks[iChunk] = String.format("Likelihood Chunk %d of %d", //
+					iChunk, nLikelihoodChunks);
 		}
 		/** Set up the last two chunks. */
 		_particlesFileWriterChunks = new String[] {
@@ -225,18 +226,15 @@ public class Tracker implements MainSaropsObject {
 				"Write Xml"
 		};
 		final String[][] sections = new String[][] {
-				_introChunks, _motioningChunks, _legChunks, _particlesFileWriterChunks, _wrapUpChunks
+				_introChunks, _motioningChunks, _likelihoodChunks, _particlesFileWriterChunks, _wrapUpChunks
 		};
 		final String[] sectionNames = new String[] {
 				"Intro", "Motion", "Legs", "ParticlesFileWrite", "WrapUp"
 		};
 
-		/**
-		 * Before we can announce anything, we have to set up the progress directory.
-		 */
+		/** Set up the progress directory. */
 		final String particlesFilePathCore = _model.getParticlesFilePathCore();
 		_progressDirectory = new File(particlesFilePathCore + "_progress/");
-		/** Clean up the progress directory. */
 		_progressDirectory.mkdirs();
 		final File[] filesX = _progressDirectory.listFiles(new FilenameFilter() {
 			@Override
@@ -279,9 +277,7 @@ public class Tracker implements MainSaropsObject {
 		}
 		simCase.reportChunkDone();
 		_model.setShorelineFinderAndEtopo(simCase);
-		/**
-		 * Two chunks are now done because ShorelineFinder and Etopo are both set.
-		 */
+		/** ShorelineFinder and Etopo are both set. */
 		simCase.reportChunkDone();
 		simCase.reportChunkDone();
 		if (!getKeepGoing()) {
@@ -295,9 +291,8 @@ public class Tracker implements MainSaropsObject {
 		}
 		/** Write out the echo, now that the environment has been set. */
 		_model.writeEcho(_simCase);
-		/**
-		 * Record what we are using about Land and Etopo in shape files here.
-		 */
+
+		/** Record Land and Etopo in shape files. */
 		final String gshhsShpFilePath = _model.getGshhsShpFilePath();
 		StaticUtilities.deleteAnyFile(new File(gshhsShpFilePath));
 		final ShorelineFinder shorelineFinder = _model.getShorelineFinder();
@@ -356,8 +351,8 @@ public class Tracker implements MainSaropsObject {
 				return;
 			}
 		}
-		/** Finish creating the Scenarios. */
-		_model.close(simCase);
+		/** Wrap up everything. */
+		_model.close();
 
 		/**
 		 * Before we set the particles, set their random number generators; there's one
@@ -380,9 +375,7 @@ public class Tracker implements MainSaropsObject {
 		}
 		seeds = null;
 
-		/**
-		 * Build the particles, and from them, get the real start time and end time.
-		 */
+		/** From the particles, get the real start time and end time. */
 		_particleSets = new ParticleSet[nScenarii];
 		long firstOutputRefSecsY = _model.getFirstOutputRefSecs();
 		long lastOutputRefSecsY = _model.getLastOutputRefSecs();
@@ -393,7 +386,7 @@ public class Tracker implements MainSaropsObject {
 		final PreDistressModel.Itinerary[][] itineraries = new PreDistressModel.Itinerary[nScenarii][];
 		for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 			final Scenario scenario = model.getScenario(iScenario);
-			_particleSets[iScenario] = new ParticleSet(this, scenario);
+			_particleSets[iScenario] = new ParticleSet(this, scenario, nParticlesPerScenario);
 			final ParticleSet particleSet = _particleSets[iScenario];
 			itineraries[iScenario] = createInitialCloud(particleSet, iScenario);
 			SimCaseManager.out(simCase,
@@ -452,7 +445,7 @@ public class Tracker implements MainSaropsObject {
 					if (distressLatLng != null) {
 						_particlesFile.setDistressLatLng(prtclIndxs, distressLatLng);
 					}
-					_particlesFile.setSailorQuality(prtclIndxs, particle.getPsd());
+					_particlesFile.setSailorQuality(prtclIndxs, particle.getSdi());
 				}
 				final int distressTypeId = particle.getDistressObjectType().getId();
 				_particlesFile.setDistressType(prtclIndxs, distressTypeId);
@@ -461,7 +454,7 @@ public class Tracker implements MainSaropsObject {
 					_particlesFile.setItinerary(prtclIndxs, itineraries[iScenario][iParticle]);
 				}
 			}
-			final Collection<SearchObjectType> searchObjectTypes = _model.getSearchObjectTypes();
+			final ArrayList<SearchObjectType> searchObjectTypes = _model.getSearchObjectTypes();
 			for (final SearchObjectType sot : searchObjectTypes) {
 				final int sotId = sot.getId();
 				if (sotId >= 0) {
@@ -560,7 +553,7 @@ public class Tracker implements MainSaropsObject {
 		final int nRefSecsS = refSecsS.length;
 		final int nIntroChunks = _introChunks.length;
 		final int nMotioningChunks = _motioningChunks == null ? 0 : _motioningChunks.length;
-		final int nLegChunks = _legChunks == null ? 0 : _legChunks.length;
+		final int nLikelihoodChunks = _likelihoodChunks == null ? 0 : _likelihoodChunks.length;
 		final int nParticlesFileWriterChunks = _particlesFileWriterChunks.length;
 		final int nWrapUpChunks = _wrapUpChunks.length;
 		/**
@@ -606,38 +599,15 @@ public class Tracker implements MainSaropsObject {
 		_simCase.reportChunksDone(nIntroChunks + nMotioningChunks);
 		logger.out("Did all Time Updates.");
 
-		/** Sorties. */
-		final List<Sortie> sorties = _model.getSorties();
-		int nLegsTotal = 0;
-		for (final Sortie element : sorties) {
-			nLegsTotal += element.getDistinctInputLegs().size();
-		}
-		int nLegsDone = 0;
-		int nLegChunksReported = 0;
-		for (final Sortie sortie : sorties) {
-			final String id = sortie.getId() == null ? "Null-Id" : sortie.getId();
-			final String name = sortie.getName() == null ? "Null-Name" : sortie.getName();
-			updateParticlesFileForSortie(sortie);
-			logger.out(String.format("Did Sortie[%s/%s].", id, name));
-			nLegsDone += sortie.getDistinctInputLegs().size();
-			final int nLegChunksDone = (int) Math.round(((double) nLegsDone / nLegsTotal) * nLegChunks);
-			if (nLegChunksDone > nLegChunksReported) {
-				_simCase.reportChunksDone(nIntroChunks + nMotioningChunks + nLegChunksDone);
-				nLegChunksReported = nLegChunksDone;
-			}
-			if (!getKeepGoing()) {
-				_simCase.runOutChunks();
-				return;
-			}
-		}
-
+		/** Likelihoods. */
+		updateParticlesFileForLikelihoods();
+		_simCase.reportChunksDone(nIntroChunks + nMotioningChunks + nLikelihoodChunks);
 		if (!getKeepGoing()) {
 			_simCase.runOutChunks();
 			return;
 		}
-		/** Catch up (if necessary) with the chunk reporting. */
-		_simCase.reportChunksDone(nIntroChunks + nMotioningChunks + nLegChunks);
-		logger.out("Did all Sorties.");
+		logger.out("Did all Likelihoods.");
+
 		/** A minor step; normalize the probabilities. */
 		_particlesFile.normalizeProbabilities();
 		logger.out("Probabilities Normalized.");
@@ -702,7 +672,6 @@ public class Tracker implements MainSaropsObject {
 		try {
 			particlesFileWriter.writeNetCdfFile(nParticlesFileWriterChunks);
 		} catch (final Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -905,8 +874,8 @@ public class Tracker implements MainSaropsObject {
 		final long[] refSecsS = _particlesFile.getRefSecsS();
 		final int nRefSecsS = refSecsS.length;
 		final long lastRefSecs = refSecsS[nRefSecsS - 1];
-		final List<Sortie> allSorties = _model.getSorties();
-		final int nSorties = allSorties == null ? 0 : allSorties.size();
+		final List<Sortie> sorties = _model.getSorties();
+		final int nSorties = sorties == null ? 0 : sorties.size();
 		try (final XSSFWorkbook particlesWorkbook = new XSSFWorkbook()) {
 			final XSSFCellStyle centerStyle = particlesWorkbook.createCellStyle();
 			centerStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -925,7 +894,7 @@ public class Tracker implements MainSaropsObject {
 				if (firstDataJx < 0) {
 					firstDataJx = lastDataJx;
 				}
-				final String hdg = SaropsClmnType.getHdg(j, allSorties);
+				final String hdg = SaropsClmnType.getHdg(j, sorties);
 				cell.setCellValue(hdg);
 				hdgs[j] = hdg;
 				cell.setCellStyle(centerStyle);
@@ -942,7 +911,7 @@ public class Tracker implements MainSaropsObject {
 					double pfAlpha = 1d;
 					final double[] pFails = new double[nSorties];
 					for (int iSortie = 0; iSortie < nSorties; ++iSortie) {
-						final Sortie sortie = allSorties.get(iSortie);
+						final Sortie sortie = sorties.get(iSortie);
 						pFails[iSortie] = ComputePFail.computeFtPFail(_simCase, _particlesFile, prtclIndxs, sortie,
 								_TrackerForOptnOnly, _TrackerPFailType, /* updateParticlesFile= */false);
 						pfAlpha *= pFails[iSortie];
@@ -959,7 +928,7 @@ public class Tracker implements MainSaropsObject {
 						if (j == SaropsClmnType.PARTICLE.ordinal()) {
 							cell.setCellValue(prtclIndxs.getString());
 						} else if (j == SaropsClmnType.OT.ordinal()) {
-							cell.setCellValue(_particlesFile.getObjectTypeId(lastRefSecs, prtclIndxs));
+							cell.setCellValue(_particlesFile.getSotId(lastRefSecs, prtclIndxs));
 						} else if (j == SaropsClmnType.ALPHA_PRIOR.ordinal()) {
 							cell.setCellValue(_particlesFile.getInitPrior(prtclIndxs));
 							cell.setCellStyle(centerStyle);
@@ -1015,7 +984,7 @@ public class Tracker implements MainSaropsObject {
 	 * For TimeUpdate, we turned the task over to the ParticleSet. We don't do that
 	 * here because we don't do it scenario by scenario.
 	 */
-	private void updateParticlesFileForSortie(final Sortie sortie) {
+	private void updateParticlesFileForLikelihoods() {
 		final int nScenarii = _model.getNScenarii();
 		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
 		final int nParticles = nParticlesPerScenario * nScenarii;
@@ -1024,6 +993,8 @@ public class Tracker implements MainSaropsObject {
 		}
 		final SimGlobalStrings simGlobalStrings = _simCase.getSimGlobalStrings();
 		final SimCaseManager simCaseManager = _simCase.getSimCaseManager();
+		final DebrisLikelihoodCalculator dlc = new DebrisLikelihoodCalculator(this);
+
 		/** Boilerplate for multithreading... */
 		final int minNPerSlice = simGlobalStrings.getMinNPerSliceInTracker();
 		int nSlices = (nParticles + (minNPerSlice - 1)) / minNPerSlice;
@@ -1048,7 +1019,7 @@ public class Tracker implements MainSaropsObject {
 							@Override
 							public void run() {
 								/** ... to here. */
-								runSliceForSortie(sortie, finalIWorker, finalNSlices);
+								runSliceForLikelihoods(dlc, finalIWorker, finalNSlices);
 							}
 						};
 						futures[iWorker] = simCaseManager.submitToWorkers(_simCase, runnable);
@@ -1063,7 +1034,7 @@ public class Tracker implements MainSaropsObject {
 			notTaskedISlices.add(iSlice);
 		}
 		for (final int iSlice : notTaskedISlices) {
-			runSliceForSortie(sortie, iSlice, nSlices);
+			runSliceForLikelihoods(dlc, iSlice, nSlices);
 		}
 		try {
 			for (int iWorker = 0; iWorker < nWorkers; ++iWorker) {
@@ -1094,17 +1065,29 @@ public class Tracker implements MainSaropsObject {
 		}
 	}
 
-	private void runSliceForSortie(final Sortie sortie, final int myStartIndex, final int nSlices) {
+	private void runSliceForLikelihoods(final DebrisLikelihoodCalculator dlc, final int myStartIndex,
+			final int nSlices) {
 		final int nScenarii = _model.getNScenarii();
 		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
 		final int nParticles = nParticlesPerScenario * nScenarii;
+		final List<Sortie> sorties = _model.getSorties();
 		for (int iParticle = myStartIndex; iParticle < nParticles; iParticle += nSlices) {
 			final int iScenario = iParticle / nParticlesPerScenario;
 			final int iParticleThisScenario = iParticle % nParticlesPerScenario;
 			final ParticleIndexes prtclIndxs = ParticleIndexes.getStandardOne(_model, iScenario, iParticleThisScenario);
-			@SuppressWarnings("unused")
-			final double pFail = ComputePFail.computeFtPFail(_simCase, _particlesFile, prtclIndxs, sortie,
-					_TrackerForOptnOnly, _TrackerPFailType, /* updateParticlesFile= */true);
+			/** Completed Searches. */
+			for (final Sortie sortie : sorties) {
+				@SuppressWarnings("unused")
+				final double pFail = ComputePFail.computeFtPFail(_simCase, _particlesFile, prtclIndxs, sortie,
+						_TrackerForOptnOnly, _TrackerPFailType, /* updateParticlesFile= */true);
+			}
+			/** Debris. */
+			final double[] latLngPair = _particlesFile.getDistressLatLngPair(prtclIndxs);
+			final LatLng3 distressLatLng = LatLng3.getLatLngB(latLngPair[0], latLngPair[1]);
+			final long distressSecs = _particlesFile.getDistressRefSecs(prtclIndxs);
+			final Randomx r = _randoms[iScenario][iParticleThisScenario];
+			final double debrisLikelihood = dlc.computeLikelihood(r, distressLatLng, distressSecs);
+			_particlesFile.updateFromLikelihood(prtclIndxs, debrisLikelihood, distressSecs);
 		}
 	}
 
@@ -1212,7 +1195,7 @@ public class Tracker implements MainSaropsObject {
 		final LatLng3 meanLatLng = departureArea.getFlatCenterOfMass();
 		final Particle[] particles = particleSet._particles;
 		final int[] sotOrdToCount = scenario.getSotOrdToCount();
-		for (final SotWithWt distressSotWithWt : scenario.getDistressSotWithWts()) {
+		for (final SotWithDbl distressSotWithWt : scenario.getDistressSotWithWts()) {
 			final int sotId = distressSotWithWt.getSot().getId();
 			final int sotOrd = _model.getSotOrd(sotId);
 			final int count = sotOrdToCount[sotOrd];
@@ -1222,31 +1205,31 @@ public class Tracker implements MainSaropsObject {
 		/**
 		 * Record the number of particles per search object type in the ParticleSet.
 		 */
-		final List<SotWithWt> scenarioSotWithWtList = scenario.getDistressSotWithWts();
-		for (final SotWithWt sotWithWt : scenarioSotWithWtList) {
-			final SearchObjectType sot = sotWithWt.getSot();
+		final List<SotWithDbl> scenarioSotWithWtList = scenario.getDistressSotWithWts();
+		for (final SotWithDbl sotWithDbl : scenarioSotWithWtList) {
+			final SearchObjectType sot = sotWithDbl.getSot();
 			final int sotId = sot.getId();
 			final int sotOrd = _model.getSotOrd(sotId);
 			final int count = sotOrdToCount[sotOrd];
 			particleSet.setSotCount(sotId, count);
 		}
 		final int nParticlesPerScenario = _model.getNParticlesPerScenario();
-		final SotWithWt[] particleDistressSotWithWts = new SotWithWt[nParticlesPerScenario];
+		final SotWithDbl[] particleDistressSotWithWts = new SotWithDbl[nParticlesPerScenario];
 		int iParticle0 = 0;
-		for (final SotWithWt sotWithWt : scenarioSotWithWtList) {
-			final SearchObjectType sot = sotWithWt.getSot();
+		for (final SotWithDbl sotWithDbl : scenarioSotWithWtList) {
+			final SearchObjectType sot = sotWithDbl.getSot();
 			final int sotId = sot.getId();
 			final int sotOrd = _model.getSotOrd(sotId);
 			final int count = sotOrdToCount[sotOrd];
 			for (int k = 0; k < count; ++k) {
-				particleDistressSotWithWts[iParticle0++] = sotWithWt;
+				particleDistressSotWithWts[iParticle0++] = sotWithDbl;
 			}
 		}
 		/**
 		 * Create the initial mean particle for each distress type in this scenario.
 		 */
-		for (final SotWithWt sotWithWt : scenarioSotWithWtList) {
-			final SearchObjectType sot = sotWithWt.getSot();
+		for (final SotWithDbl sotWithDbl : scenarioSotWithWtList) {
+			final SearchObjectType sot = sotWithDbl.getSot();
 			final int sotId = sot.getId();
 			if (sotId >= 0) {
 				particleSet.setInitialMeanPosition(this, originatingSot, sot, meanRefSecs, meanLatLng);
@@ -1357,7 +1340,7 @@ public class Tracker implements MainSaropsObject {
 	}
 
 	private void setImmediateDistress(final Randomx[] randoms, final ParticleSet particleSet,
-			final SotWithWt[] sotWithWts) {
+			final SotWithDbl[] sotWithWts) {
 		/**
 		 * We are already adrift. The random draws for time are N(0,sigma), where sigma
 		 * = 1/3 of the given plus-or-minus. This time will also be our distress time.
@@ -1767,7 +1750,7 @@ public class Tracker implements MainSaropsObject {
 				}
 				if (isLastRefSecs && doingStashCopy && debugLevel > 0) {
 					/** Do the individual POS values. */
-					final List<Sortie> allSorties = _model.getSorties();
+					final List<Sortie> sorties = _model.getSorties();
 					final Element particlesElement = _logFormatter2.newChild(element2, "Particles");
 					for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 						final ParticleSet particleSet = _particleSets[iScenario];
@@ -1783,7 +1766,7 @@ public class Tracker implements MainSaropsObject {
 									iParticle);
 							final double origPrior = _particlesFile.getInitPrior(prtclIndxs);
 							double totalPFail = 1d;
-							for (final Sortie sortie : allSorties) {
+							for (final Sortie sortie : sorties) {
 								final double pFail = ComputePFail.computeFtPFail(_simCase, _particlesFile, prtclIndxs,
 										sortie, _TrackerForOptnOnly, _TrackerPFailType,
 										/* updateParticlesFile= */false);
@@ -2067,7 +2050,8 @@ public class Tracker implements MainSaropsObject {
 		final String stashedSimFilePath;
 		stashedSimFilePath = ModelReader.stashEngineFile(simCase, modelFilePath, modelFilePath,
 				SimCaseManager._SimEndingLc, "SimInput", /* overwrite= */false);
-		/** Start working. */
+
+		/** Non Particle-related. */
 		final Model model = ModelReader.readModel(simCase, caseDirFile, modelFilePath);
 		model.setStashedSimFilePath(stashedSimFilePath);
 		final long oldUsedMemory = SizeOf.usedMemory();
@@ -2116,16 +2100,19 @@ public class Tracker implements MainSaropsObject {
 			}
 		} else {
 			/**
-			 * The following ctor will create a Tracker and it will be the mainSaropsObject
-			 * for a display-only.
+			 * Display-Only: The following ctor creates a Tracker, which will be the
+			 * mainSaropsObject.
 			 */
-			@SuppressWarnings("unused")
-			final Tracker tracker = new Tracker(simCase, model);
+			new Tracker(simCase, model);
 		}
 		final long newUsedMemory = SizeOf.usedMemory();
 		SimCaseManager.out(simCase, "oldUsedMemory[" + oldUsedMemory + "] newUsedMemory[" + newUsedMemory
 				+ "] difference[" + (newUsedMemory - oldUsedMemory) + "]");
-		AbstractStudyRunner.RunStudy(simCase);
+		/**
+		 * If we wish to run a study on the ParticlesFile, the following does it. The
+		 * default is to do nothing.
+		 */
+		StudyRunner.RunStudy(simCase);
 	}
 
 	private void freeMemory() {

@@ -7,11 +7,11 @@ import com.skagit.util.navigation.LatLng3;
 
 public abstract class StateVector {
 	final private long _simSecs;
-	private LatLng3 _latLng;
+	protected LatLng3 _latLng;
 	private StateVectorType _svt;
 	private StateVector _predecessor;
 	private StateVector _successor = null;
-	final private Particle _particle;
+	final protected Particle _particle;
 	private boolean _stuckOnLand;
 	private boolean _anchored;
 
@@ -34,9 +34,8 @@ public abstract class StateVector {
 
 	public abstract boolean isDistress();
 
-	protected StateVector(final Particle particle, final long simSecs,
-			final LatLng3 latLng, final StateVectorType stateVectorType,
-			final boolean updateParticleTail) {
+	protected StateVector(final Particle particle, final long simSecs, final LatLng3 latLng,
+			final StateVectorType stateVectorType, final boolean updateParticleTail) {
 		_simSecs = simSecs;
 		_latLng = latLng;
 		_svt = stateVectorType;
@@ -67,10 +66,9 @@ public abstract class StateVector {
 		_anchored = true;
 	}
 
-	protected StateVector(final StateVector predecessor,
-			final StateVectorType stateVectorType, final long simSecs,
+	protected StateVector(final StateVector predecessor, final StateVectorType stateVectorType, final long simSecs,
 			final boolean updateParticleTail) {
-		_particle = predecessor.getParticle();
+		_particle = predecessor._particle;
 		_simSecs = simSecs;
 		_latLng = predecessor._latLng;
 		_svt = stateVectorType;
@@ -79,10 +77,6 @@ public abstract class StateVector {
 			_predecessor._successor = this;
 			_particle.setLatestStateVector(this);
 		}
-	}
-
-	public Particle getParticle() {
-		return _particle;
 	}
 
 	public Particle.LeewayCalculator getLeewayCalculator() {
@@ -139,8 +133,7 @@ public abstract class StateVector {
 		_svt = stateVectorType;
 	}
 
-	abstract public StateVector timeUpdate(Tracker tracker, Scenario scenario,
-			long[] simSecsS, int iT);
+	abstract public StateVector timeUpdate(Tracker tracker, Scenario scenario, long[] simSecsS, int iT);
 
 	abstract public String getDescription();
 

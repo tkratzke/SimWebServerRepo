@@ -10,12 +10,12 @@ import com.skagit.util.etopo.Etopo;
 import com.skagit.util.navigation.LatLng3;
 import com.skagit.util.randomx.Randomx;
 
-/**
- * The class that represents the different search object types. A search
- * object type has name, etc., and a @link {#LeewayData}.
- */
-public class SearchObjectType
-		implements Comparable<SearchObjectType>, Cloneable {
+public class SearchObjectType implements Comparable<SearchObjectType>, Cloneable {
+	final static NumberFormat _Format = java.text.NumberFormat.getInstance();
+	static {
+		_Format.setMaximumFractionDigits(8);
+	}
+
 	final private int _id;
 	final private String _name;
 	private LeewayData _leewayData;
@@ -38,13 +38,10 @@ public class SearchObjectType
 		final public double _nominalSpeed;
 		final public boolean _useRayleigh;
 
-		public LeewayData(final double gibingFrequencyPerSecond,
-				final double dwlSlope, final double dwlConstant,
-				final double dwlStandardDeviation, final double cwlPlusSlope,
-				final double cwlPlusConstant, final double cwlPlusStandardDeviation,
-				final double cwlMinusSlope, final double cwlMinusConstant,
-				final double cwlMinusStandardDeviation, final double nominalSpeed,
-				final boolean useRayleigh) {
+		public LeewayData(final double gibingFrequencyPerSecond, final double dwlSlope, final double dwlConstant,
+				final double dwlStandardDeviation, final double cwlPlusSlope, final double cwlPlusConstant,
+				final double cwlPlusStandardDeviation, final double cwlMinusSlope, final double cwlMinusConstant,
+				final double cwlMinusStandardDeviation, final double nominalSpeed, final boolean useRayleigh) {
 			_gibingFrequencyPerSecond = gibingFrequencyPerSecond;
 			_dwlSlope = dwlSlope;
 			_dwlConstant = dwlConstant;
@@ -60,21 +57,14 @@ public class SearchObjectType
 		}
 
 		public boolean deepEquals(final LeewayData leewayData) {
-			return _gibingFrequencyPerSecond == leewayData._gibingFrequencyPerSecond &&
-					_dwlSlope == leewayData._dwlSlope &&
-					_dwlConstant == leewayData._dwlConstant &&
-					Math.abs(_dwlStandardDeviation -
-							leewayData._dwlStandardDeviation) < 1.E-6 &&
-					_cwlPlusSlope == leewayData._cwlPlusSlope &&
-					_cwlPlusConstant == leewayData._cwlPlusConstant &&
-					Math.abs(_cwlPlusStandardDeviation -
-							leewayData._cwlPlusStandardDeviation) < 1.E-6 &&
-					_cwlMinusSlope == leewayData._cwlMinusSlope &&
-					_cwlMinusConstant == leewayData._cwlMinusConstant &&
-					Math.abs(_cwlMinusStandardDeviation -
-							leewayData._cwlMinusStandardDeviation) < 1.E-6 &&
-					_nominalSpeed == leewayData._nominalSpeed &&
-					_useRayleigh == leewayData._useRayleigh;
+			return _gibingFrequencyPerSecond == leewayData._gibingFrequencyPerSecond
+					&& _dwlSlope == leewayData._dwlSlope && _dwlConstant == leewayData._dwlConstant
+					&& Math.abs(_dwlStandardDeviation - leewayData._dwlStandardDeviation) < 1.E-6
+					&& _cwlPlusSlope == leewayData._cwlPlusSlope && _cwlPlusConstant == leewayData._cwlPlusConstant
+					&& Math.abs(_cwlPlusStandardDeviation - leewayData._cwlPlusStandardDeviation) < 1.E-6
+					&& _cwlMinusSlope == leewayData._cwlMinusSlope && _cwlMinusConstant == leewayData._cwlMinusConstant
+					&& Math.abs(_cwlMinusStandardDeviation - leewayData._cwlMinusStandardDeviation) < 1.E-6
+					&& _nominalSpeed == leewayData._nominalSpeed && _useRayleigh == leewayData._useRayleigh;
 		}
 
 	}
@@ -85,24 +75,25 @@ public class SearchObjectType
 		final public double _shape;
 
 		public SurvivalData(final double scaleInHours, final double shape) {
-			_scaleInHours = scaleInHours;
-			_shape = shape;
+			if (Double.isFinite(scaleInHours) && Double.isFinite(shape)) {
+				_scaleInHours = scaleInHours;
+				_shape = shape;
+			} else {
+				_scaleInHours = _shape = Double.MAX_VALUE;
+			}
 		}
 
 		public boolean deepEquals(final SurvivalData survivalData) {
-			return _scaleInHours == survivalData._scaleInHours &&
-					_shape == survivalData._shape;
+			return _scaleInHours == survivalData._scaleInHours && _shape == survivalData._shape;
 		}
 
 		public long getLifeLengthAfterDistressSecs(final Randomx random) {
-			if (random == null) {
+			if (random == null || _scaleInHours == Double.MAX_VALUE || _shape == Double.MAX_VALUE) {
 				return Math.round(Math.sqrt(Integer.MAX_VALUE));
 			}
 			/** Make a draw for lifeLengthInHours, but cap it at 1 year. */
-			final double lifeLengthInHoursX =
-					random.getWeibullDraw(_scaleInHours, _shape);
-			final double lifeLengthInHours =
-					Math.min(365 * 24, lifeLengthInHoursX);
+			final double lifeLengthInHoursX = random.getWeibullDraw(_scaleInHours, _shape);
+			final double lifeLengthInHours = Math.min(365 * 24, lifeLengthInHoursX);
 			final double seconds = 3600.0 * lifeLengthInHours;
 			if (seconds >= _MaxDraw) {
 				return _MaxDraw;
@@ -121,27 +112,21 @@ public class SearchObjectType
 		_survivalData = null;
 	}
 
-	public void setLeewayData(final double gibingFrequencyPerSecond,
-			final double dwlSlope, final double dwlConstant,
-			final double dwlStandardDeviation, final double cwlPlusSlope,
-			final double cwlPlusConstant, final double cwlPlusStandardDeviation,
-			final double cwlMinusSlope, final double cwlMinusConstant,
-			final double cwlMinusStandardDeviation, final double nominalSpeed,
-			final boolean useRayleigh) {
-		_leewayData = new LeewayData(gibingFrequencyPerSecond, dwlSlope,
-				dwlConstant, dwlStandardDeviation, cwlPlusSlope, cwlPlusConstant,
-				cwlPlusStandardDeviation, cwlMinusSlope, cwlMinusConstant,
-				cwlMinusStandardDeviation, nominalSpeed, useRayleigh);
+	public boolean isDebris() {
+		return false;
 	}
 
-	public void setSurvivalData(final double scaleInHours,
-			final double shape) {
+	public void setLeewayData(final LeewayData leewayData) {
+		_leewayData = leewayData;
+	}
+
+	public void setSurvivalData(final double scaleInHours, final double shape) {
 		_survivalData = new SurvivalData(scaleInHours, shape);
 	}
 
 	@Override
 	public int compareTo(final SearchObjectType other) {
-		return _id - other._id;
+		return _id < other._id ? -1 : (_id > other._id ? 1 : 0);
 	}
 
 	public LeewayData getLeewayData() {
@@ -152,94 +137,71 @@ public class SearchObjectType
 		return _survivalData;
 	}
 
-	private static Element createComponentElement(final LsFormatter formatter,
-			final Element leewayElement, final NumberFormat format,
-			final String elementName, final double slope, final double constant,
-			final double standardDeviation, final boolean useRayleigh) {
-		final Element componentElement =
-				formatter.newChild(leewayElement, elementName);
-		componentElement.setAttribute("slope",
-				LsFormatter.StandardFormat(slope));
-		componentElement.setAttribute("constant",
-				LsFormatter.StandardFormat(constant) + " kts");
-		componentElement.setAttribute("useRayleigh",
-				LsFormatter.StandardFormat(useRayleigh));
-		componentElement.setAttribute("Syx",
-				format.format(standardDeviation) + " kts");
+	static Element createComponentElement(final LsFormatter formatter, final Element leewayElement,
+			final String elementName, final double slope, final double constant, final double standardDeviation,
+			final boolean useRayleigh, final boolean writeRayleighBoolean) {
+		final Element componentElement = formatter.newChild(leewayElement, elementName);
+		componentElement.setAttribute("slope", LsFormatter.StandardFormat(slope));
+		componentElement.setAttribute("constant", LsFormatter.StandardFormat(constant) + " kts");
+		if (writeRayleighBoolean) {
+			componentElement.setAttribute("useRayleigh", LsFormatter.StandardFormat(useRayleigh));
+		}
+		componentElement.setAttribute("Syx", _Format.format(standardDeviation) + " kts");
 		return componentElement;
 	}
 
-	private static Element createComponentElement(final LsFormatter formatter,
-			final Element leewayElement, final NumberFormat format,
-			final String elementName, final double slope, final double constant,
-			final double standardDeviation) {
-		final Element componentElement =
-				formatter.newChild(leewayElement, elementName);
-		componentElement.setAttribute("slope",
-				LsFormatter.StandardFormat(slope));
-		componentElement.setAttribute("constant",
-				LsFormatter.StandardFormat(constant) + " kts");
-		componentElement.setAttribute("Syx",
-				format.format(standardDeviation) + " kts");
-		return componentElement;
+	static Element createLeewayElement(final LsFormatter formatter, final Element element, final LeewayData leewayData,
+			final int id) {
+		final Element leewayElement = formatter.newChild(element, "LEEWAY");
+		if (leewayData == null || id < 0) {
+			leewayElement.setAttribute("LeewayData", "false");
+		} else {
+			leewayElement.setAttribute("nominalSpeed", LsFormatter.StandardFormat(leewayData._nominalSpeed) + " kts");
+			leewayElement.setAttribute("gibingRate",
+					String.valueOf(leewayData._gibingFrequencyPerSecond * 3600.0f * 100.0f) + "% perHr");
+			SearchObjectType.createComponentElement(formatter, leewayElement, "DWL", leewayData._dwlSlope,
+					leewayData._dwlConstant, leewayData._dwlStandardDeviation, leewayData._useRayleigh,
+					/* writeRayleigh= */true);
+			SearchObjectType.createComponentElement(formatter, leewayElement, "CWLPOS", leewayData._cwlPlusSlope,
+					leewayData._cwlPlusConstant, leewayData._cwlPlusStandardDeviation, /* useRayleigh= */false,
+					/* writeRayleigh= */false);
+			SearchObjectType.createComponentElement(formatter, leewayElement, "CWLNEG", leewayData._cwlMinusSlope,
+					leewayData._cwlMinusConstant, leewayData._cwlMinusStandardDeviation, /* useRayleigh= */false,
+					/* writeRayleigh= */false);
+		}
+		return leewayElement;
 	}
 
 	public void write(final LsFormatter formatter, final Element root) {
-		final NumberFormat format = java.text.NumberFormat.getInstance();
-		format.setMaximumFractionDigits(8);
 		final String tag;
 		if (_leewayData == null && _id < 0) {
 			tag = "ORIGINATING_CRAFT";
-		} else {
+		} else if (!isDebris()) {
 			tag = "SEARCH_OBJECT_TYPE";
+		} else {
+			tag = "DEBRIS_OBJECT_TYPE";
 		}
 		final Element element = formatter.newChild(root, tag);
 		element.setAttribute("id", LsFormatter.StandardFormat(_id));
 		if (_name != null) {
 			element.setAttribute("name", _name);
 		}
-		/** ProbabilityOfAnchoring and maximumAnchorableDepthInMeters */
-		final String probabilityOfAnchoringString =
-				String.format("%.2f %%", _probabilityOfAnchoring * 100);
-		element.setAttribute("probabilityOfAnchoring",
-				probabilityOfAnchoringString);
-		final String maximumAnchorDepthString =
-				String.format("%f M", _maximumAnchorDepthInM);
-		element.setAttribute("maximumAnchorDepth", maximumAnchorDepthString);
-		final String alwaysAnchorString = _alwaysAnchor ? "true" : "false";
-		element.setAttribute("alwaysAnchor", alwaysAnchorString);
-		/**
-		 * Survival data goes in the object tag; leeway data goes in its own
-		 * subtags.
-		 */
-		if (_survivalData == null && _id < 0) {
-			element.setAttribute("SurvivalData", "false");
-		} else {
-			element.setAttribute("scale",
-					LsFormatter.StandardFormat(_survivalData._scaleInHours) + " hrs");
-			element.setAttribute("shape",
-					LsFormatter.StandardFormat(_survivalData._shape));
+		if (!isDebris()) {
+			/** ProbabilityOfAnchoring and maximumAnchorableDepthInMeters */
+			final String probabilityOfAnchoringString = String.format("%.2f %%", _probabilityOfAnchoring * 100);
+			element.setAttribute("probabilityOfAnchoring", probabilityOfAnchoringString);
+			final String maximumAnchorDepthString = String.format("%f M", _maximumAnchorDepthInM);
+			element.setAttribute("maximumAnchorDepth", maximumAnchorDepthString);
+			final String alwaysAnchorString = _alwaysAnchor ? "true" : "false";
+			element.setAttribute("alwaysAnchor", alwaysAnchorString);
+			if (_survivalData == null && _id < 0) {
+				element.setAttribute("SurvivalData", "false");
+			} else {
+				element.setAttribute("scale", LsFormatter.StandardFormat(_survivalData._scaleInHours) + " hrs");
+				element.setAttribute("shape", LsFormatter.StandardFormat(_survivalData._shape));
+			}
 		}
-		final Element leewayElement = formatter.newChild(element, "LEEWAY");
-		if (_leewayData == null && _id < 0) {
-			leewayElement.setAttribute("LeewayData", "false");
-		} else {
-			leewayElement.setAttribute("nominalSpeed",
-					LsFormatter.StandardFormat(_leewayData._nominalSpeed) + " kts");
-			leewayElement.setAttribute("gibingRate",
-					String.valueOf(
-							_leewayData._gibingFrequencyPerSecond * 3600.0f * 100.0f) +
-							"% perHr");
-			createComponentElement(formatter, leewayElement, format, "DWL",
-					_leewayData._dwlSlope, _leewayData._dwlConstant,
-					_leewayData._dwlStandardDeviation, _leewayData._useRayleigh);
-			createComponentElement(formatter, leewayElement, format, "CWLPOS",
-					_leewayData._cwlPlusSlope, _leewayData._cwlPlusConstant,
-					_leewayData._cwlPlusStandardDeviation);
-			createComponentElement(formatter, leewayElement, format, "CWLNEG",
-					_leewayData._cwlMinusSlope, _leewayData._cwlMinusConstant,
-					_leewayData._cwlMinusStandardDeviation);
-		}
+		createLeewayElement(formatter, element, _leewayData, _id);
 	}
 
 	public int getId() {
@@ -250,26 +212,25 @@ public class SearchObjectType
 		return _name;
 	}
 
-	public boolean deepEquals(final SearchObjectType compared) {
-		if (((_leewayData == null) != (compared._leewayData == null)) || (_leewayData != null &&
-				!_leewayData.deepEquals(compared._leewayData))) {
+	public boolean deepEquals(final SearchObjectType other) {
+		if (_id != other._id || !_name.equals(other._name) || isDebris() != other.isDebris()) {
 			return false;
 		}
-
-		if (_id == compared._id) {
-			if (_probabilityOfAnchoring == compared._probabilityOfAnchoring &&
-					_maximumAnchorDepthInM == compared._maximumAnchorDepthInM &&
-					_alwaysAnchor == compared._alwaysAnchor) {
-				return true;
-			}
+		if (((_leewayData == null) != (other._leewayData == null))
+				|| (_leewayData != null && !_leewayData.deepEquals(other._leewayData))) {
+			return false;
 		}
-		return false;
+		if (isDebris()) {
+			return true;
+		}
+		return _probabilityOfAnchoring == other._probabilityOfAnchoring
+				&& _maximumAnchorDepthInM == other._maximumAnchorDepthInM && _alwaysAnchor == other._alwaysAnchor;
 	}
 
 	public boolean check(final SimCaseManager.SimCase simCase) {
 		if (_leewayData == null) {
-			SimCaseManager.err(simCase, String
-					.format("No leeway defined for search object type[%d]", _id));
+			SimCaseManager.err(simCase,
+					String.format("No leeway defined for " + (isDebris() ? "DOT" : "SOT") + "[%d]", _id));
 			return false;
 		}
 		return true;
@@ -279,8 +240,7 @@ public class SearchObjectType
 		_maximumAnchorDepthInM = maximumAnchorDepthInM;
 	}
 
-	public void setProbabilityOfAnchoring(
-			final double probabilityOfAnchoring) {
+	public void setProbabilityOfAnchoring(final double probabilityOfAnchoring) {
 		_probabilityOfAnchoring = probabilityOfAnchoring;
 	}
 
@@ -292,8 +252,7 @@ public class SearchObjectType
 		return _alwaysAnchor || _probabilityOfAnchoring > 0d;
 	}
 
-	public boolean anchors(final LatLng3 latLng, final double randomDraw,
-			final Etopo etopo) {
+	public boolean anchors(final LatLng3 latLng, final double randomDraw, final Etopo etopo) {
 		if (_alwaysAnchor) {
 			return true;
 		}

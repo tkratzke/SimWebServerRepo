@@ -28,52 +28,51 @@ import com.skagit.util.NumericalRoutines;
 import com.skagit.util.StringUtilities;
 import com.skagit.util.TimeUtilities;
 import com.skagit.util.gshhs.CircleOfInterest;
+import com.skagit.util.myLogger.MyLogger;
 import com.skagit.util.navigation.Extent;
 import com.skagit.util.navigation.LatLng3;
 
 import ucar.nc2.NetcdfFile;
 
 /**
- * Maintains the sets of BoxDefinitions, including finding a BoxDefinition
- * big enough for a particular time,LatLng.
+ * Maintains the sets of BoxDefinitions, including finding a BoxDefinition big
+ * enough for a particular time,LatLng.
  */
 abstract public class DynamicEnvUvGetter {
-	final static Comparator<BoxDefinition> _IgnoreLastAccessTime =
-			new Comparator<>() {
-				@Override
-				public int compare(final BoxDefinition o0, final BoxDefinition o1) {
-					final long lowRefSecs0 = o0._lowRefSecs;
-					final long lowRefSecs1 = o1._lowRefSecs;
-					if (lowRefSecs0 != lowRefSecs1) {
-						return lowRefSecs0 < lowRefSecs1 ? -1 : 1;
-					}
-					final long highRefSecs0 = o0._highRefSecs;
-					final long highRefSecs1 = o1._highRefSecs;
-					if (highRefSecs0 != highRefSecs1) {
-						return highRefSecs0 < highRefSecs1 ? -1 : 1;
-					}
-					return Extent._SouthToNorth.compare(o0._extent, o1._extent);
-				}
-			};
-	final static Comparator<BoxDefinition> _ConsiderLastAccessTime =
-			new Comparator<>() {
-				@Override
-				public int compare(final BoxDefinition o1, final BoxDefinition o2) {
-					/**
-					 * To make sure the FIRST one is not useful, we sort by increasing
-					 * timeOfLastAccess and then the old way.
-					 */
-					if (o1._lastAccessTimeInMillis < o2._lastAccessTimeInMillis) {
-						return -1;
-					} else if (o1._lastAccessTimeInMillis > o2._lastAccessTimeInMillis) {
-						return 1;
-					}
-					return _IgnoreLastAccessTime.compare(o1, o2);
-				}
-			};
+	final static Comparator<BoxDefinition> _IgnoreLastAccessTime = new Comparator<>() {
+		@Override
+		public int compare(final BoxDefinition o0, final BoxDefinition o1) {
+			final long lowRefSecs0 = o0._lowRefSecs;
+			final long lowRefSecs1 = o1._lowRefSecs;
+			if (lowRefSecs0 != lowRefSecs1) {
+				return lowRefSecs0 < lowRefSecs1 ? -1 : 1;
+			}
+			final long highRefSecs0 = o0._highRefSecs;
+			final long highRefSecs1 = o1._highRefSecs;
+			if (highRefSecs0 != highRefSecs1) {
+				return highRefSecs0 < highRefSecs1 ? -1 : 1;
+			}
+			return Extent._SouthToNorth.compare(o0._extent, o1._extent);
+		}
+	};
+	final static Comparator<BoxDefinition> _ConsiderLastAccessTime = new Comparator<>() {
+		@Override
+		public int compare(final BoxDefinition o1, final BoxDefinition o2) {
+			/**
+			 * To make sure the FIRST one is not useful, we sort by increasing
+			 * timeOfLastAccess and then the old way.
+			 */
+			if (o1._lastAccessTimeInMillis < o2._lastAccessTimeInMillis) {
+				return -1;
+			} else if (o1._lastAccessTimeInMillis > o2._lastAccessTimeInMillis) {
+				return 1;
+			}
+			return _IgnoreLastAccessTime.compare(o1, o2);
+		}
+	};
 	/**
-	 * For combining boxes. If the "Big Rectangle" divided by the sum of the
-	 * two "Small Rectangles" is smaller than CriticalRatio, do not combine.
+	 * For combining boxes. If the "Big Rectangle" divided by the sum of the two
+	 * "Small Rectangles" is smaller than CriticalRatio, do not combine.
 	 */
 	final private static double _CriticalRatio = 1.1;
 	/** Standard backpointers. */
@@ -112,14 +111,12 @@ abstract public class DynamicEnvUvGetter {
 	protected final TreeSet<BoxDefinition> _activeBoxDefinitionsByLastAccessTime;
 	protected final TreeMap<BoxDefinition, NetCdfUvGetter> _uvGetters;
 
-	protected DynamicEnvUvGetter(final SimCase simCase, final Model model,
-			final String tag, final int maxUvGettersToKeep,
-			final String interpolationMode, final long halfLifeSecs,
-			final long preDistressHalfLifeSecs, final double dU, final double dV,
-			final String scheme, final String userInfo, final String host,
-			final int port, final String path, final String clientKey,
-			final String sourceID, final String sourceName, final int outputType,
-			final int timeOut, final boolean zipped) {
+	protected DynamicEnvUvGetter(final SimCase simCase, final Model model, final String tag,
+			final int maxUvGettersToKeep, final String interpolationMode, final long halfLifeSecs,
+			final long preDistressHalfLifeSecs, final double dU, final double dV, final String scheme,
+			final String userInfo, final String host, final int port, final String path, final String clientKey,
+			final String sourceID, final String sourceName, final int outputType, final int timeOut,
+			final boolean zipped) {
 		super();
 		_simCase = simCase;
 		_model = model;
@@ -141,15 +138,12 @@ abstract public class DynamicEnvUvGetter {
 		_outputType = outputType;
 		_timeOut = timeOut;
 		_zipped = zipped;
-		_fixedPartOfQuery = String.format(
-				"clientKey=%s&sourceID=%s&sourceName=%s" +
-						"&outputType=%d&timeout=%03d", //
+		_fixedPartOfQuery = String.format("clientKey=%s&sourceID=%s&sourceName=%s" + "&outputType=%d&timeout=%03d", //
 				clientKey, sourceID, sourceName, outputType, timeOut);
 		_allBoxDefinitions = new TreeSet<>(_IgnoreLastAccessTime);
 		_pendingBoxDefinitions = new TreeSet<>(_IgnoreLastAccessTime);
 		_requiredBoxDefinitions = new TreeSet<>(_IgnoreLastAccessTime);
-		_activeBoxDefinitionsByLastAccessTime =
-				new TreeSet<>(_ConsiderLastAccessTime);
+		_activeBoxDefinitionsByLastAccessTime = new TreeSet<>(_ConsiderLastAccessTime);
 		_pendingBoxDefinitions.clear();
 		_requiredBoxDefinitions.clear();
 		_uvGetters = new TreeMap<>(_IgnoreLastAccessTime);
@@ -157,14 +151,13 @@ abstract public class DynamicEnvUvGetter {
 		_isValid = true;
 	}
 
-	public URI getUriForLastTry(final BoxDefinition boxDefinition,
-			final boolean zipped, final boolean debug, final boolean giveDetails)
-			throws URISyntaxException {
+	public URI getUriForLastTry(final BoxDefinition boxDefinition, final boolean zipped, final boolean debug,
+			final boolean giveDetails) throws URISyntaxException {
 		/**
 		 * <pre>
-		 * fixedPartOfQuery has: clientKey, sourceID, sourceName, outputType,
-		 * and timeout all built into it. scheme, userInfo, host, port, and path
-		 * are different sections of the URI.
+		 * fixedPartOfQuery has: clientKey, sourceID, sourceName, outputType, and
+		 * timeout all built into it. scheme, userInfo, host, port, and path are
+		 * different sections of the URI.
 		 */
 		final String fixedPartOfQuery = getFixedPartOfQuery();
 		final String scheme = getScheme();
@@ -172,15 +165,14 @@ abstract public class DynamicEnvUvGetter {
 		final String host = getHost();
 		final int port = getPort();
 		final String path = getPath();
-		final String variablePartOfQuery = createVariablePartOfQueryForLastTry(
-				boxDefinition, zipped, debug, giveDetails);
+		final String variablePartOfQuery = createVariablePartOfQueryForLastTry(boxDefinition, zipped, debug,
+				giveDetails);
 		final String fragment = null;
 		final String query = fixedPartOfQuery + variablePartOfQuery;
 		return new URI(scheme, userInfo, host, port, path, query, fragment);
 	}
 
-	private String createVariablePartOfQueryForLastTry(
-			final BoxDefinition boxDefinition, final boolean zipped,
+	private String createVariablePartOfQueryForLastTry(final BoxDefinition boxDefinition, final boolean zipped,
 			final boolean debugx, final boolean giveDetails) {
 		final BoxDefinition lastTry = boxDefinition._tries.lastElement();
 		final long lowRefSecs = lastTry._lowRefSecs;
@@ -194,8 +186,7 @@ abstract public class DynamicEnvUvGetter {
 		/** "2014-03-05T00:00:00" */
 		final String coreDateFormat = "%sDate=%04d-%02d-%02dT%02d:%02d:00";
 		final String coreBoxFormat = "x1=%.2f&x2=%.2f&y1=%.2f&y2=%.2f";
-		final String startDateString =
-				String.format(coreDateFormat, "start", y1a, m1a, d1a, h1a, mm1a);
+		final String startDateString = String.format(coreDateFormat, "start", y1a, m1a, d1a, h1a, mm1a);
 		final int[] timeArray1b = TimeUtilities.getTimeArray(highRefSecs);
 		final int y1b = timeArray1b[0];
 		final int m1b = timeArray1b[1];
@@ -210,20 +201,16 @@ abstract public class DynamicEnvUvGetter {
 		final double e1 = extent1.getRightLng();
 		final double n1 = extent1.getMaxLat();
 		final String boxString1 = String.format(coreBoxFormat, w1, e1, s1, n1);
-		final String zippedString =
-				String.format("zipped=%s", zipped ? "true" : "false");
-		final String query = "&" + startDateString + "&" + endDateString1 +
-				"&" + boxString1 + "&" + zippedString;
+		final String zippedString = String.format("zipped=%s", zipped ? "true" : "false");
+		final String query = "&" + startDateString + "&" + endDateString1 + "&" + boxString1 + "&" + zippedString;
 
 		if (giveDetails) {
 			final String startDateString1X = String.format(coreDateFormat, //
 					"start", y1a, m1a, d1a, h1a, mm1a);
 			final String endDateString1X = String.format(coreDateFormat, //
 					"end", y1b, m1b, d1b, h1b, mm1b);
-			final String boxString1X =
-					String.format(coreBoxFormat, w1, e1, s1, n1);
-			final int[] timeArray2a =
-					TimeUtilities.getTimeArray(boxDefinition._lowRefSecs);
+			final String boxString1X = String.format(coreBoxFormat, w1, e1, s1, n1);
+			final int[] timeArray2a = TimeUtilities.getTimeArray(boxDefinition._lowRefSecs);
 			final int y2a = timeArray2a[0];
 			final int m2a = timeArray2a[1];
 			final int d2a = timeArray2a[2];
@@ -243,13 +230,10 @@ abstract public class DynamicEnvUvGetter {
 					"start", y2a, m2a, d2a, h2a, mm2a);
 			final String endDateString2 = String.format(coreDateFormat, //
 					"end", y2b, m2b, d2b, h2b, mm2b);
-			final String boxString2 =
-					String.format(coreBoxFormat, w2, e2, s2, n2);
+			final String boxString2 = String.format(coreBoxFormat, w2, e2, s2, n2);
 			final String details = String.format(
-					"\n\n\tStubborn case:\n\t" +
-							"%s:%s covers(?) %s:%s\n\t%s covers(?) %s",
-					startDateString1X, endDateString1X, startDateString2,
-					endDateString2, boxString1X, boxString2);
+					"\n\n\tStubborn case:\n\t" + "%s:%s covers(?) %s:%s\n\t%s covers(?) %s", startDateString1X,
+					endDateString1X, startDateString2, endDateString2, boxString1X, boxString2);
 			SimCaseManager.out(_simCase, details);
 		}
 		return query;
@@ -295,9 +279,8 @@ abstract public class DynamicEnvUvGetter {
 		return _fixedPartOfQuery;
 	}
 
-	private void cacheNecessaryBoxDefinition(final long refSecs,
-			final LatLng3 latLng, final BoxDefinition inputBoxDefinition,
-			final double criticalRatio) {
+	private void cacheNecessaryBoxDefinition(final long refSecs, final LatLng3 latLng,
+			final BoxDefinition inputBoxDefinition, final double criticalRatio) {
 		final boolean pointIsOfInterest = refSecs >= 0 && latLng != null;
 		/** Is there an active one that will do? */
 		for (final BoxDefinition boxDefinition : _activeBoxDefinitionsByLastAccessTime) {
@@ -309,10 +292,8 @@ abstract public class DynamicEnvUvGetter {
 				haveLowTime = haveHighTime = boxDefinition.contains(refSecs);
 				haveLatLng = boxDefinition.contains(latLng);
 			} else {
-				haveLowTime =
-						boxDefinition.contains(inputBoxDefinition.getLowRefSecs());
-				haveHighTime =
-						boxDefinition.contains(inputBoxDefinition.getHighRefSecs());
+				haveLowTime = boxDefinition.contains(inputBoxDefinition.getLowRefSecs());
+				haveHighTime = boxDefinition.contains(inputBoxDefinition.getHighRefSecs());
 				haveLatLng = boxDefinition.contains(inputBoxDefinition.getExtent());
 			}
 			if (haveLowTime && haveHighTime && haveLatLng) {
@@ -332,10 +313,8 @@ abstract public class DynamicEnvUvGetter {
 				haveLowTime = haveHighTime = boxDefinition.contains(refSecs);
 				haveLatLng = boxDefinition.contains(latLng);
 			} else {
-				haveLowTime =
-						boxDefinition.contains(inputBoxDefinition.getLowRefSecs());
-				haveHighTime =
-						boxDefinition.contains(inputBoxDefinition.getHighRefSecs());
+				haveLowTime = boxDefinition.contains(inputBoxDefinition.getLowRefSecs());
+				haveHighTime = boxDefinition.contains(inputBoxDefinition.getHighRefSecs());
 				haveLatLng = boxDefinition.contains(inputBoxDefinition.getExtent());
 			}
 			if (haveLowTime && haveHighTime && haveLatLng) {
@@ -343,14 +322,13 @@ abstract public class DynamicEnvUvGetter {
 			}
 		}
 		/**
-		 * Need a new one. At this point, always appeal to inputBoxDefinition,
-		 * and union it into an existing pending one if advantageous.
+		 * Need a new one. At this point, always appeal to inputBoxDefinition, and union
+		 * it into an existing pending one if advantageous.
 		 */
 		BoxDefinition winner = null;
 		double bestRatio = criticalRatio;
 		for (final BoxDefinition pendingBoxDefinition : _pendingBoxDefinitions) {
-			final double thisRatio =
-					pendingBoxDefinition.getRatio(inputBoxDefinition);
+			final double thisRatio = pendingBoxDefinition.getRatio(inputBoxDefinition);
 			if (thisRatio < bestRatio) {
 				winner = pendingBoxDefinition;
 				bestRatio = thisRatio;
@@ -359,8 +337,7 @@ abstract public class DynamicEnvUvGetter {
 		if (winner != null) {
 			_pendingBoxDefinitions.remove(winner);
 			final BoxDefinition union = winner.union(inputBoxDefinition);
-			final String winnerString = String.format(
-					"Combining:%s with%s to get:%s", winner.getString(false),
+			final String winnerString = String.format("Combining:%s with%s to get:%s", winner.getString(false),
 					inputBoxDefinition.getString(false), union.getString(false));
 			SimCaseManager.out(_simCase, winnerString);
 			_pendingBoxDefinitions.add(union);
@@ -369,10 +346,9 @@ abstract public class DynamicEnvUvGetter {
 		}
 	}
 
-	protected void cacheNecessaryBoxDefinition(final long refSecs,
-			final LatLng3 latLng, final BoxDefinition inputBoxDefinition) {
-		cacheNecessaryBoxDefinition(refSecs, latLng, inputBoxDefinition,
-				_CriticalRatio);
+	protected void cacheNecessaryBoxDefinition(final long refSecs, final LatLng3 latLng,
+			final BoxDefinition inputBoxDefinition) {
+		cacheNecessaryBoxDefinition(refSecs, latLng, inputBoxDefinition, _CriticalRatio);
 	}
 
 	protected void writeFixedPart(final Element element) {
@@ -396,15 +372,13 @@ abstract public class DynamicEnvUvGetter {
 		protected final long _refSecs;
 		protected final DataForOnePointAndTime _dataForOnePointAndTime;
 
-		protected TimeAndUvDuDv(final long refSecs,
-				final DataForOnePointAndTime dataForOnePointAndTime) {
+		protected TimeAndUvDuDv(final long refSecs, final DataForOnePointAndTime dataForOnePointAndTime) {
 			_refSecs = refSecs;
 			_dataForOnePointAndTime = dataForOnePointAndTime;
 		}
 	}
 
-	private NetCdfUvGetter createUvGetter(final BoxDefinition boxDefinition,
-			final boolean debug) {
+	private NetCdfUvGetter createUvGetter(final BoxDefinition boxDefinition, final boolean debug) {
 		final long lowTimeRefSecs = boxDefinition.getLowRefSecs();
 		final long highTimeRefSecs = boxDefinition.getHighRefSecs();
 		final Extent extent = boxDefinition.getExtent();
@@ -417,27 +391,23 @@ abstract public class DynamicEnvUvGetter {
 			for (int kk = 0; kk < 5 && !success; ++kk) {
 				URI uri = null;
 				try {
-					uri =
-							getUriForLastTry(boxDefinition, _zipped, debug, giveDetails);
+					uri = getUriForLastTry(boxDefinition, _zipped, debug, giveDetails);
 				} catch (final URISyntaxException e1) {
 					e1.printStackTrace();
 					e = e1;
 					continue;
 				}
-				try (final NetcdfFile netCdfFile =
-						boxDefinition.getNetCdfFile(uri, _zipped)) {
+				try (final NetcdfFile netCdfFile = boxDefinition.getNetCdfFile(uri, _zipped)) {
 					final String uriString = uri.toASCIIString();
 					netCdfUvGetter = buildNetCdfUvGetter(uriString, netCdfFile);
 					closeNetCdfUvGetter(netCdfUvGetter);
 					/**
-					 * How much MORE do we have to push out to cover the original?
-					 * Note that netCdfUvGetter was built with the most recent
-					 * BoxDefinition.
+					 * How much MORE do we have to push out to cover the original? Note that
+					 * netCdfUvGetter was built with the most recent BoxDefinition.
 					 */
-					final double[] requiredBuffers = netCdfUvGetter
-							.getRequiredBuffers(lowTimeRefSecs, highTimeRefSecs, extent);
-					final NetCdfUvGetter.Summary uvGetterSummary =
-							netCdfUvGetter.new Summary();
+					final double[] requiredBuffers = netCdfUvGetter.getRequiredBuffers(lowTimeRefSecs, highTimeRefSecs,
+							extent);
+					final NetCdfUvGetter.Summary uvGetterSummary = netCdfUvGetter.new Summary();
 					boxDefinition.addUvGetterSummary(uvGetterSummary);
 					boolean allDone = requiredBuffers == null;
 					/**
@@ -447,8 +417,7 @@ abstract public class DynamicEnvUvGetter {
 						allDone = true;
 						for (int k1 = 0; k1 < requiredBuffers.length; ++k1) {
 							final double buffer = requiredBuffers[k1];
-							if (buffer == 0 || (oldRequiredBuffers != null &&
-									buffer == oldRequiredBuffers[k1])) {
+							if (buffer == 0 || (oldRequiredBuffers != null && buffer == oldRequiredBuffers[k1])) {
 								continue;
 							}
 							allDone = false;
@@ -456,14 +425,11 @@ abstract public class DynamicEnvUvGetter {
 						}
 					}
 					if (allDone || k > 3) {
-						SimCaseManager.out(_simCase,
-								"\n\n" + boxDefinition.getString(true));
+						SimCaseManager.out(_simCase, "\n\n" + boxDefinition.getString(true));
 						if (k > 3) {
-							SimCaseManager.out(_simCase,
-									String.format(
-											"Problem here though; Note that this is our " +
-													"%dth try and we simply gave up.",
-											k));
+							SimCaseManager.out(_simCase, String.format(
+									"Problem here though; Note that this is our " + "%dth try and we simply gave up.",
+									k));
 						}
 						if (allDone) {
 							success = true;
@@ -475,12 +441,11 @@ abstract public class DynamicEnvUvGetter {
 					final long lowRefSecs2 = thisTry.getLowRefSecs();
 					final long highRefSecs2 = thisTry.getHighRefSecs();
 					final Extent extent2 = thisTry.getExtent();
-					final BoxDefinition nextTry = new BoxDefinition(lowRefSecs2,
-							highRefSecs2, extent2, requiredBuffers);
+					final BoxDefinition nextTry = new BoxDefinition(lowRefSecs2, highRefSecs2, extent2,
+							requiredBuffers);
 					boxDefinition.addTry(nextTry);
 					oldRequiredBuffers = requiredBuffers;
-				} catch (IOException | DOMException |
-						NetCdfUvGetter.NetCdfUvGetterException e1) {
+				} catch (IOException | DOMException | NetCdfUvGetter.NetCdfUvGetterException e1) {
 					e = e1;
 					SimCaseManager.standardLogError(_simCase, e1);
 				}
@@ -488,9 +453,7 @@ abstract public class DynamicEnvUvGetter {
 		}
 		if (!success) {
 			/** Do something that crashes this case. */
-			final String s = String.format(
-					"Failed on Environmental Data Pull.\n" +
-							"Message[%s]:  StackTrace:%s",
+			final String s = String.format("Failed on Environmental Data Pull.\n" + "Message[%s]:  StackTrace:%s",
 					e.toString(), StringUtilities.getStackTraceString(e));
 			SimCaseManager.err(_simCase, s);
 			MainRunner.HandleFatal(_simCase, new RuntimeException(s));
@@ -499,42 +462,34 @@ abstract public class DynamicEnvUvGetter {
 	}
 
 	/**
-	 * Named with an XYZ to avoid confusing it with the Interface requirements
-	 * of this guy's derived classes.
+	 * Named with an XYZ to avoid confusing it with the Interface requirements of
+	 * this guy's derived classes.
 	 */
 
-	protected SummaryRefSecs getSummaryForRefSecsSXYZ(
-			final CircleOfInterest coi, final long refSecs, final int iView) {
+	protected SummaryRefSecs getSummaryForRefSecsSXYZ(final CircleOfInterest coi, final long refSecs, final int iView) {
 		/** No interpolation in time here. */
 		/**
-		 * For each LatLng latLng that appears anywhere, find the first
-		 * BoxDefinition that contains refSecs and latLng. Use the corresponding
-		 * uvGetter to assign its u,v for refSecs.
+		 * For each LatLng latLng that appears anywhere, find the first BoxDefinition
+		 * that contains refSecs and latLng. Use the corresponding uvGetter to assign
+		 * its u,v for refSecs.
 		 */
-		final Map<LatLng3, TimeAndUvDuDv> latLngToTimeAndUvDuDv =
-				new HashMap<>();
-		final Map<BoxDefinition, NetCdfUvGetter> uvGettersInUse =
-				new TreeMap<>(_uvGetters.comparator());
+		final Map<LatLng3, TimeAndUvDuDv> latLngToTimeAndUvDuDv = new HashMap<>();
+		final Map<BoxDefinition, NetCdfUvGetter> uvGettersInUse = new TreeMap<>(_uvGetters.comparator());
 		for (final BoxDefinition boxDefinition : _uvGetters.keySet()) {
 			if (boxDefinition.contains(refSecs)) {
 				final long thisLowTime = boxDefinition.getLowRefSecs();
 				final NetCdfUvGetter netCdfUvGetter = _uvGetters.get(boxDefinition);
-				final PointCollection pointCollection =
-						netCdfUvGetter.getPointCollection();
-				final List<NetCdfDataPoint> netCdfDataPoints =
-						pointCollection.getDataPoints();
+				final PointCollection pointCollection = netCdfUvGetter.getPointCollection();
+				final List<NetCdfDataPoint> netCdfDataPoints = pointCollection.getDataPoints();
 				for (final NetCdfDataPoint netCdfDataPoint : netCdfDataPoints) {
 					final LatLng3 latLng = netCdfDataPoint.getLatLng();
 					if (boxDefinition.contains(latLng)) {
 						uvGettersInUse.put(boxDefinition, netCdfUvGetter);
-						final DataForOnePointAndTime dataForOnePointAndTime =
-								netCdfUvGetter.getDataForOnePointAndTime(_simCase, refSecs,
-										latLng, getInterpolationMode());
-						final TimeAndUvDuDv incumbent =
-								latLngToTimeAndUvDuDv.get(latLng);
+						final DataForOnePointAndTime dataForOnePointAndTime = netCdfUvGetter
+								.getDataForOnePointAndTime(_simCase, refSecs, latLng, getInterpolationMode());
+						final TimeAndUvDuDv incumbent = latLngToTimeAndUvDuDv.get(latLng);
 						if (incumbent == null) {
-							final TimeAndUvDuDv timeAndUvDuDv =
-									new TimeAndUvDuDv(refSecs, dataForOnePointAndTime);
+							final TimeAndUvDuDv timeAndUvDuDv = new TimeAndUvDuDv(refSecs, dataForOnePointAndTime);
 							latLngToTimeAndUvDuDv.put(latLng, timeAndUvDuDv);
 						} else {
 							if (thisLowTime < incumbent._refSecs) {
@@ -551,38 +506,29 @@ abstract public class DynamicEnvUvGetter {
 		final float[] u = new float[nLatLngs];
 		final float[] v = new float[nLatLngs];
 		int k = 0;
-		for (final Map.Entry<LatLng3, TimeAndUvDuDv> entry : latLngToTimeAndUvDuDv
-				.entrySet()) {
+		for (final Map.Entry<LatLng3, TimeAndUvDuDv> entry : latLngToTimeAndUvDuDv.entrySet()) {
 			latLngs[k] = entry.getKey();
-			final DataForOnePointAndTime dataForOnePointAndTime =
-					entry.getValue()._dataForOnePointAndTime;
-			u[k] =
-					dataForOnePointAndTime.getValue(NetCdfUvGetter.DataComponent.U);
-			v[k] =
-					dataForOnePointAndTime.getValue(NetCdfUvGetter.DataComponent.V);
+			final DataForOnePointAndTime dataForOnePointAndTime = entry.getValue()._dataForOnePointAndTime;
+			u[k] = dataForOnePointAndTime.getValue(NetCdfUvGetter.DataComponent.U);
+			v[k] = dataForOnePointAndTime.getValue(NetCdfUvGetter.DataComponent.V);
 			++k;
 		}
-		final long unixSecs =
-				TimeUtilities.getUnixTimeInMillis(refSecs * 1000) / 1000;
+		final long unixSecs = TimeUtilities.getUnixTimeInMillis(refSecs * 1000) / 1000;
 		final String explanatoryDetails;
 		if (uvGettersInUse.size() > 1) {
-			String s =
-					String.format("Dynamic, using %d Boxes:", uvGettersInUse.size());
+			String s = String.format("Dynamic, using %d Boxes:", uvGettersInUse.size());
 			for (final NetCdfUvGetter netCdfUvGetter : uvGettersInUse.values()) {
-				final long[] unixSecsS =
-						TimeUtilities.convertToUnixSecs(netCdfUvGetter.getRefSecsS());
-				final String s2 = NumericalRoutines.getInterpolationDetailsL(
-						unixSecs, unixSecsS, /* interpolateInTime= */false);
+				final long[] unixSecsS = TimeUtilities.convertToUnixSecs(netCdfUvGetter.getRefSecsS());
+				final String s2 = NumericalRoutines.getInterpolationDetailsL(unixSecs, unixSecsS,
+						/* interpolateInTime= */false);
 				s += String.format("\n\t%s", s2);
 			}
 			explanatoryDetails = s;
 		} else {
 			String s = "";
 			for (final NetCdfUvGetter netCdfUvGetter : uvGettersInUse.values()) {
-				final long[] unixSecS =
-						TimeUtilities.convertToUnixSecs(netCdfUvGetter.getRefSecsS());
-				s += NumericalRoutines.getInterpolationDetailsL(unixSecs, unixSecS,
-						/* interpolateInTime= */false);
+				final long[] unixSecS = TimeUtilities.convertToUnixSecs(netCdfUvGetter.getRefSecsS());
+				s += NumericalRoutines.getInterpolationDetailsL(unixSecs, unixSecS, /* interpolateInTime= */false);
 			}
 			explanatoryDetails = s;
 		}
@@ -590,12 +536,11 @@ abstract public class DynamicEnvUvGetter {
 	}
 
 	/**
-	 * Under normal circumstances, we should not have to build new
-	 * BoxDefinitions; that should be done long before getUv is called. Hence,
-	 * the buffers sent here should be small.
+	 * Under normal circumstances, we should not have to build new BoxDefinitions;
+	 * that should be done long before getUv is called. Hence, the buffers sent here
+	 * should be small.
 	 */
-	protected DataForOnePointAndTime getDataForOnePointAndTime(
-			final long refSecs, final LatLng3 latLng,
+	protected DataForOnePointAndTime getDataForOnePointAndTime(final long refSecs, final LatLng3 latLng,
 			final String interpolationMode) {
 		NetCdfUvGetter winner = null;
 		for (final BoxDefinition boxDefinition : _uvGetters.keySet()) {
@@ -606,21 +551,17 @@ abstract public class DynamicEnvUvGetter {
 		}
 		if (winner == null) {
 			/**
-			 * We get here only if we didn't build sufficient BoxDefinitions, so
-			 * we have to now. But since this routine is called in parallel, we
-			 * have to synchronize this block of code. We make "emergency
-			 * preparations that are small.
+			 * We get here only if we didn't build sufficient BoxDefinitions, so we have to
+			 * now. But since this routine is called in parallel, we have to synchronize
+			 * this block of code. We make "emergency preparations that are small.
 			 */
 			synchronized (this) {
-				final BoxDefinition newBoxDefinition =
-						new BoxDefinition(_simCase, _model, refSecs, latLng, 15.0);
+				final BoxDefinition newBoxDefinition = new BoxDefinition(_simCase, _model, refSecs, latLng, 15.0);
 				/**
-				 * We want this one for sure, and there should be no pending ones
-				 * anyway.
+				 * We want this one for sure, and there should be no pending ones anyway.
 				 */
 				final double criticalRatio = 1.0;
-				cacheNecessaryBoxDefinition(-1L, null, newBoxDefinition,
-						criticalRatio);
+				cacheNecessaryBoxDefinition(-1L, null, newBoxDefinition, criticalRatio);
 				finishPrepareXYZ();
 				/** Now try again. */
 				for (final BoxDefinition boxDefinition : _uvGetters.keySet()) {
@@ -632,24 +573,22 @@ abstract public class DynamicEnvUvGetter {
 			}
 		}
 		/**
-		 * Take the last one you see if you can't get a perfect fit. We should
-		 * get a perfect fit unless, for example, we're up against a coast and
-		 * there's no data on one side of us.
+		 * Take the last one you see if you can't get a perfect fit. We should get a
+		 * perfect fit unless, for example, we're up against a coast and there's no data
+		 * on one side of us.
 		 */
 		if (winner == null) {
 			winner = _uvGetters.lastEntry().getValue();
 		}
-		return winner.getDataForOnePointAndTime(_simCase, refSecs, latLng,
-				interpolationMode);
+		return winner.getDataForOnePointAndTime(_simCase, refSecs, latLng, interpolationMode);
 	}
 
-	abstract protected NetCdfUvGetter buildNetCdfUvGetter(String uriString,
-			NetcdfFile netCdfFile) throws NetCdfUvGetter.NetCdfUvGetterException;
+	abstract protected NetCdfUvGetter buildNetCdfUvGetter(String uriString, NetcdfFile netCdfFile)
+			throws NetCdfUvGetter.NetCdfUvGetterException;
 
 	protected void finishPrepareXYZ() {
 		/** Delete the oldest ones that are not required. */
-		final int nToDelete = _pendingBoxDefinitions.size() +
-				_uvGetters.size() - _maxUvGettersToKeep;
+		final int nToDelete = _pendingBoxDefinitions.size() + _uvGetters.size() - _maxUvGettersToKeep;
 		final ArrayList<BoxDefinition> toDelete = new ArrayList<>();
 		for (final BoxDefinition boxDefinition : _activeBoxDefinitionsByLastAccessTime) {
 			if (toDelete.size() >= nToDelete) {
@@ -664,21 +603,19 @@ abstract public class DynamicEnvUvGetter {
 			_activeBoxDefinitionsByLastAccessTime.remove(boxDefinition);
 		}
 		/**
-		 * It's ok if we don't get as much deleted as we wanted to. But now it's
-		 * time to go get the data.
+		 * It's ok if we don't get as much deleted as we wanted to. But now it's time to
+		 * go get the data.
 		 */
 		for (final BoxDefinition boxDefinition : _pendingBoxDefinitions) {
 			final boolean debug = false;
 			final NetCdfUvGetter uvGetter = createUvGetter(boxDefinition, debug);
 			/**
-			 * Get the best that we can do with this NetCdfUvGetter; it's the
-			 * union of boxDefinition and the "innerEdge" of the uvGetter.
+			 * Get the best that we can do with this NetCdfUvGetter; it's the union of
+			 * boxDefinition and the "innerEdge" of the uvGetter.
 			 */
-			final BoxDefinition newBoxDefinition =
-					boxDefinition.union(uvGetter.getInnerEdge());
+			final BoxDefinition newBoxDefinition = boxDefinition.union(uvGetter.getInnerEdge());
 			_uvGetters.put(newBoxDefinition, uvGetter);
-			newBoxDefinition
-					.setLastAccessTimeInMillis(System.currentTimeMillis());
+			newBoxDefinition.setLastAccessTimeInMillis(System.currentTimeMillis());
 			_activeBoxDefinitionsByLastAccessTime.add(newBoxDefinition);
 			_allBoxDefinitions.add(newBoxDefinition);
 			addBoxDefinitionToModel(newBoxDefinition);
@@ -691,9 +628,9 @@ abstract public class DynamicEnvUvGetter {
 
 	abstract void closeNetCdfUvGetter(NetCdfUvGetter netCdfUvGetter);
 
-	protected boolean isEmpty(final SimCaseManager.SimCase simCase) {
+	protected boolean isEmpty(final MyLogger logger) {
 		for (final NetCdfUvGetter uvGetter : _uvGetters.values()) {
-			if (!uvGetter.isEmpty(simCase)) {
+			if (!uvGetter.isEmpty(logger)) {
 				return false;
 			}
 		}
@@ -707,8 +644,7 @@ abstract public class DynamicEnvUvGetter {
 		_activeBoxDefinitionsByLastAccessTime.clear();
 		final int nLittleOnes = _uvGetters == null ? 0 : _uvGetters.size();
 		if (nLittleOnes > 0) {
-			final NetCdfUvGetter[] littleOnes =
-					_uvGetters.values().toArray(new NetCdfUvGetter[nLittleOnes]);
+			final NetCdfUvGetter[] littleOnes = _uvGetters.values().toArray(new NetCdfUvGetter[nLittleOnes]);
 			_uvGetters.clear();
 			for (int k = 0; k < nLittleOnes; ++k) {
 				littleOnes[k].freePointCollectionMemory();

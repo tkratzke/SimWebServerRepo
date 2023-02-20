@@ -2,6 +2,7 @@ package com.skagit.sarops.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +25,6 @@ import com.skagit.util.randomx.TimeDistribution;
 
 public abstract class Scenario implements Comparable<Scenario> {
 	final public static String _RegularScenarioType = "Voyage";
-	final public static String _DebrisSightingType = "Debris_Sighting";
 	final public static String _LobType = "LOB";
 	final public static String _FlareType = "Flare";
 	final public static String _R21Type = "R21";
@@ -42,7 +42,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 	private TimeDistribution _departureTimeDistribution = null;
 	private PreDistressModel _preDistressModel = null;
 	private SailData _sailData;
-	final private ArrayList<SotWithWt> _distressSotWithWts = new ArrayList<>();
+	final private ArrayList<SotWithDbl> _distressSotWithWts = new ArrayList<>();
 	private Map<Integer, Double> _distressSearchObjectIdToInitialPriorWithinScenario;
 
 	protected Scenario(final SimCaseManager.SimCase simCase, final int id, final String name, final String type,
@@ -118,22 +118,22 @@ public abstract class Scenario implements Comparable<Scenario> {
 	public boolean checkAndFinalize(final Model model) {
 		boolean result = specificCheckAndFinalize(model);
 		double ttlWt = 0d;
-		for (final SotWithWt sotWithWt : _distressSotWithWts) {
-			final double workingWt = sotWithWt.getWorkingWeight();
+		for (final SotWithDbl sotWithDbl : _distressSotWithWts) {
+			final double workingWt = sotWithDbl.getWorkingDbl();
 			if (workingWt < 0d) {
 				return false;
 			}
-			ttlWt += sotWithWt.getWorkingWeight();
+			ttlWt += sotWithDbl.getWorkingDbl();
 		}
 		if (0.99 <= ttlWt && ttlWt <= 1.01f) {
 		} else {
 			SimCaseManager.err(_simCase,
 					String.format("Cumulated object weight[%g] for scenario[%d].", ttlWt, getId()));
 		}
-		for (final SotWithWt sotWithWt : _distressSotWithWts) {
-			final double newWorkingWt = sotWithWt.getWorkingWeight() / ttlWt;
+		for (final SotWithDbl sotWithDbl : _distressSotWithWts) {
+			final double newWorkingWt = sotWithDbl.getWorkingDbl() / ttlWt;
 			if (newWorkingWt >= 0d) {
-				sotWithWt.setWorkingWeight(newWorkingWt);
+				sotWithDbl.setWorkingDbl(newWorkingWt);
 			} else {
 				return false;
 			}
@@ -145,12 +145,18 @@ public abstract class Scenario implements Comparable<Scenario> {
 
 	public abstract boolean specificCheckAndFinalize(final Model model);
 
-	public synchronized void add(final SotWithWt distressSotWithWt) {
+	public synchronized SotWithDbl addSotWithWt(final SotWithDbl distressSotWithWt) {
+		final int idx = Collections.binarySearch(_distressSotWithWts, distressSotWithWt);
+		if (idx >= 0) {
+			return _distressSotWithWts.get(idx);
+		}
 		_distressSotWithWts.add(distressSotWithWt);
+		Collections.sort(_distressSotWithWts);
 		_distressSearchObjectIdToInitialPriorWithinScenario = null;
+		return distressSotWithWt;
 	}
 
-	public List<SotWithWt> getDistressSotWithWts() {
+	public List<SotWithDbl> getDistressSotWithWts() {
 		return _distressSotWithWts;
 	}
 
@@ -159,8 +165,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 	}
 
 	public Element write(final LsFormatter formatter, final Element root, final Model model) {
-		final boolean isDebrisSighting = this instanceof DebrisSighting;
-		final Element element = formatter.newChild(root, !isDebrisSighting ? "SCENARIO" : "DEBRIS_SIGHTING");
+		final Element element = formatter.newChild(root, "SCENARIO");
 		if (_preDistressModel != null) {
 			final long distressRefSecs = _preDistressModel.getDistressRefSecsMean();
 			if (distressRefSecs > 0) {
@@ -177,31 +182,28 @@ public abstract class Scenario implements Comparable<Scenario> {
 		}
 		element.setAttribute("id", LsFormatter.StandardFormat(_id));
 		element.setAttribute("name", _name);
-		if (!isDebrisSighting) {
-			element.setAttribute("weight", _scenarioWeight * 100 + "%");
-		}
+		element.setAttribute("weight", _scenarioWeight * 100 + "%");
 		final Element pathElement = formatter.newChild(element, "PATH");
 		if (_departureArea != null && _departureTimeDistribution != null) {
-			final Element departureElement = formatter.newChild(pathElement,
-					!isDebrisSighting ? "DEPARTURE_LOCATION" : "DEBRIS_LOCATION");
+			final Element departureElement = formatter.newChild(pathElement, "DEPARTURE_LOCATION");
 			final double truncateDistanceInNmi = _departureArea.getTruncateDistanceInNmi();
 			if (!Double.isInfinite(truncateDistanceInNmi)) {
 				departureElement.setAttribute("truncate_distance", "" + truncateDistanceInNmi + " NM");
 			}
-			final String errorTag;
+			final String spreadAttributeName;
 			if (_departureArea instanceof EllipticalArea) {
 				final EllipticalArea bivariateNormal = (EllipticalArea) _departureArea;
 				if (bivariateNormal.getIsUniform()) {
 					departureElement.setAttribute("uniform", "" + true);
 				}
-				errorTag = "x_error";
+				spreadAttributeName = "x_error";
 			} else {
-				errorTag = null;
+				spreadAttributeName = null;
 			}
-			_departureArea.write(formatter, departureElement, errorTag);
+			_departureArea.write(formatter, departureElement, spreadAttributeName);
 			_departureTimeDistribution.write(formatter, departureElement, false, "TIME");
-			for (final SotWithWt searchObjectTypeWithWeight : _distressSotWithWts) {
-				searchObjectTypeWithWeight.write(formatter, element, model);
+			for (final SotWithDbl searchObjectTypeWithWeight : _distressSotWithWts) {
+				searchObjectTypeWithWeight.write(formatter, element);
 			}
 			if (_preDistressModel != null) {
 				_preDistressModel.write(formatter, pathElement, model);
@@ -283,11 +285,11 @@ public abstract class Scenario implements Comparable<Scenario> {
 		if (_distressSotWithWts.size() != comparedScenario._distressSotWithWts.size()) {
 			return false;
 		}
-		final Iterator<SotWithWt> it = _distressSotWithWts.iterator();
-		final Iterator<SotWithWt> comparedIt = comparedScenario._distressSotWithWts.iterator();
+		final Iterator<SotWithDbl> it = _distressSotWithWts.iterator();
+		final Iterator<SotWithDbl> comparedIt = comparedScenario._distressSotWithWts.iterator();
 		while (it.hasNext()) {
-			final SotWithWt searchObjectTypeWithWeight = it.next();
-			final SotWithWt compared = comparedIt.next();
+			final SotWithDbl searchObjectTypeWithWeight = it.next();
+			final SotWithDbl compared = comparedIt.next();
 			if (!searchObjectTypeWithWeight.deepEquals(compared)) {
 				return false;
 			}
@@ -300,7 +302,7 @@ public abstract class Scenario implements Comparable<Scenario> {
 		return other._id - _id;
 	}
 
-	public void close(final SimCaseManager.SimCase simCase) {
+	public void close() {
 		/**
 		 * Do whatever one needs to do now that the inputs are known and we're
 		 * interested in running a tracker.
@@ -308,8 +310,8 @@ public abstract class Scenario implements Comparable<Scenario> {
 		_distressSearchObjectIdToInitialPriorWithinScenario = new TreeMap<>();
 		double totalWeight = 0d;
 		for (int iPass = 0; iPass < 2; ++iPass) {
-			for (final SotWithWt distressSotWithWt : _distressSotWithWts) {
-				final double wt = distressSotWithWt.getWorkingWeight();
+			for (final SotWithDbl distressSotWithWt : _distressSotWithWts) {
+				final double wt = distressSotWithWt.getWorkingDbl();
 				if (iPass == 0) {
 					totalWeight += wt;
 				} else {
@@ -340,11 +342,11 @@ public abstract class Scenario implements Comparable<Scenario> {
 	}
 
 	private void setSotOrdToCount(final Model model) {
-		final ArrayList<SotWithWt> mySotWithWts = new ArrayList<>();
-		for (final SotWithWt sotWithWt : _distressSotWithWts) {
-			final double wt = sotWithWt.getWorkingWeight();
-			if (wt > 0) {
-				mySotWithWts.add(sotWithWt);
+		final ArrayList<SotWithDbl> mySotWithWts = new ArrayList<>();
+		for (final SotWithDbl sotWithDbl : _distressSotWithWts) {
+			final double wt = sotWithDbl.getWorkingDbl();
+			if (wt > 0d) {
+				mySotWithWts.add(sotWithDbl);
 			}
 		}
 		final int nMySots = mySotWithWts.size();
@@ -356,10 +358,10 @@ public abstract class Scenario implements Comparable<Scenario> {
 		 * mySearchObjectTypeWithWeights that have low sotOrds. Hence, sort
 		 * mySearchObjectTypeWithWeights by sotOrd.
 		 */
-		mySotWithWts.sort(new Comparator<SotWithWt>() {
+		mySotWithWts.sort(new Comparator<SotWithDbl>() {
 
 			@Override
-			public int compare(final SotWithWt o1, final SotWithWt o2) {
+			public int compare(final SotWithDbl o1, final SotWithDbl o2) {
 				final int id1 = o1.getSot().getId();
 				final int sotOrd1 = model.getSotOrd(id1);
 				final int id2 = o2.getSot().getId();
@@ -373,8 +375,8 @@ public abstract class Scenario implements Comparable<Scenario> {
 		final int base = _nParticles / nMySots;
 		final int nLeftOver = _nParticles % nMySots;
 		for (int k = 0; k < nMySots; ++k) {
-			final SotWithWt sotWithWt = mySotWithWts.get(k);
-			final int sotId = sotWithWt.getSot().getId();
+			final SotWithDbl sotWithDbl = mySotWithWts.get(k);
+			final int sotId = sotWithDbl.getSot().getId();
 			final int sotOrd = model.getSotOrd(sotId);
 			_sotOrdToCount[sotOrd] = base;
 			if (k < nLeftOver) {
@@ -397,10 +399,6 @@ public abstract class Scenario implements Comparable<Scenario> {
 
 	public int[] getSotOrdToCount() {
 		return _sotOrdToCount;
-	}
-
-	public boolean isDebrisSighting() {
-		return false;
 	}
 
 }

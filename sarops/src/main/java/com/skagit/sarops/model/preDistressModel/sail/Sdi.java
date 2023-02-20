@@ -43,8 +43,8 @@ public class Sdi {
 	final public boolean _useZeroZeroMotoring;
 	final public double _nearToEndNmi;
 	/**
-	 * The following are separate draws and, because they are stored when the
-	 * Sdi is created, are constant for this particle for the entire voyage.
+	 * The following are separate draws and, because they are stored when the Sdi is
+	 * created, are constant for this particle for the entire voyage.
 	 */
 	final public double _angleOffDirect;
 	final public double _proportionOfDistanceToTargetToIgnoreOffsetAngle;
@@ -57,8 +57,7 @@ public class Sdi {
 
 	final private static double _HdgIncrement = 5d;
 
-	public Sdi(final SailData sailData, final ParticleIndexes prtclIndxs,
-			final Randomx r) {
+	public Sdi(final SailData sailData, final ParticleIndexes prtclIndxs, final Randomx r) {
 		_r = r;
 		_prtclIndxs = prtclIndxs;
 		_sailData = sailData;
@@ -66,11 +65,9 @@ public class Sdi {
 			/** Since we have no Rng, we are computing minArrivalRefSecs. */
 			_sailorQuality = 1d;
 			_speedMultiplier = sailData.getSpeedMultiplier(_sailorQuality);
-			_forbiddenAngleIncrease =
-					sailData.getForbiddenAngleIncrease(_sailorQuality);
+			_forbiddenAngleIncrease = sailData.getForbiddenAngleIncrease(_sailorQuality);
 			_angleOffDirect = 0d;
-			_proportionOfDistanceToTargetToIgnoreOffsetAngle =
-					sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle;
+			_proportionOfDistanceToTargetToIgnoreOffsetAngle = sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle;
 			_hoveToKts = sailData._hoveToMaxKts;
 			_hoveToOffsetFromApprntDnWnd = 0d;
 			_twistCwFirst = true;
@@ -88,18 +85,13 @@ public class Sdi {
 		double sailorQuality = 1d;
 		double nearToEndNmi = 0d;
 		try {
-			sailorQuality = sailData._betaDistribution
-					.inverseCumulativeProbability(_r.nextDouble());
+			sailorQuality = sailData._betaDistribution.inverseCumulativeProbability(_r.nextDouble());
 			speedMultiplier = sailData.getSpeedMultiplier(sailorQuality);
-			forbiddenAngleIncrease =
-					sailData.getForbiddenAngleIncrease(sailorQuality);
-			angleOffDirect =
-					_r.getTruncatedGaussian() * sailData._angleOffRhumblineSd;
-			proportionOfDistanceToTargetToIgnoreOffsetAngle =
-					sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle + _r
-							.nextDouble() *
-							(sailData._highProportionOfDistanceToTargetToIgnoreOffsetAngle -
-									sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle);
+			forbiddenAngleIncrease = sailData.getForbiddenAngleIncrease(sailorQuality);
+			angleOffDirect = _r.getTruncatedGaussian() * sailData._angleOffRhumblineSd;
+			proportionOfDistanceToTargetToIgnoreOffsetAngle = sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle
+					+ _r.nextDouble() * (sailData._highProportionOfDistanceToTargetToIgnoreOffsetAngle
+							- sailData._lowProportionOfDistanceToTargetToIgnoreOffsetAngle);
 			nearToEndNmi = sailData._nearToEndNmi;
 		} catch (final OutOfRangeException e) {
 			speedMultiplier = 0d;
@@ -110,32 +102,25 @@ public class Sdi {
 		_sailorQuality = sailorQuality;
 		_speedMultiplier = speedMultiplier;
 		_forbiddenAngleIncrease = forbiddenAngleIncrease;
-		_proportionOfDistanceToTargetToIgnoreOffsetAngle =
-				proportionOfDistanceToTargetToIgnoreOffsetAngle;
+		_proportionOfDistanceToTargetToIgnoreOffsetAngle = proportionOfDistanceToTargetToIgnoreOffsetAngle;
 
 		/** Put in zeroZeroMotoring. */
-		_useZeroZeroMotoring = _r == null ? false :
-				_r.nextDouble() <= sailData._probZeroZeroMotoring;
+		_useZeroZeroMotoring = _r == null ? false : _r.nextDouble() <= sailData._probZeroZeroMotoring;
 		_nearToEndNmi = nearToEndNmi;
-		if (-_ClosingDefinition <= angleOffDirect &&
-				angleOffDirect <= _ClosingDefinition) {
+		if (-_ClosingDefinition <= angleOffDirect && angleOffDirect <= _ClosingDefinition) {
 			_angleOffDirect = angleOffDirect;
 		} else {
 			_angleOffDirect = 0d;
 		}
-		_hoveToKts = sailData._hoveToMinKts +
-				_r.nextDouble() * (sailData._hoveToMaxKts - sailData._hoveToMinKts);
+		_hoveToKts = sailData._hoveToMinKts + _r.nextDouble() * (sailData._hoveToMaxKts - sailData._hoveToMinKts);
 		final boolean use90 = _r == null ? true : _r.nextBoolean();
-		final double hoveToOffset = sailData._hoveToOffsetFromUpwindMean +
-				_r.getTruncatedGaussian() * sailData._hoveToBearingSd;
-		_hoveToOffsetFromApprntDnWnd =
-				use90 ? hoveToOffset : (360d - hoveToOffset);
+		final double hoveToOffset = sailData._hoveToOffsetFromUpwindMean
+				+ _r.getTruncatedGaussian() * sailData._hoveToBearingSd;
+		_hoveToOffsetFromApprntDnWnd = use90 ? hoveToOffset : (360d - hoveToOffset);
 		_twistCwFirst = _r.nextBoolean();
-		if (0L < sailData._meanAverageTackSecs &&
-				sailData._averageTackSecsSd >= 0L) {
+		if (0L < sailData._meanAverageTackSecs && sailData._averageTackSecsSd >= 0L) {
 			final long meanTackSecs = (long) Math.min(SailData._TenYears,
-					_r.getTruncatedGaussian() * sailData._averageTackSecsSd +
-							sailData._meanAverageTackSecs);
+					_r.getTruncatedGaussian() * sailData._averageTackSecsSd + sailData._meanAverageTackSecs);
 			_meanTackSecs = Math.max(10, meanTackSecs);
 		} else {
 			_meanTackSecs = SailData._TenYears;
@@ -143,17 +128,14 @@ public class Sdi {
 	}
 
 	/** Generate the SailSegs for a single leg of the voyage. */
-	public ArrayList<SailSeg> generateSailSegs(
-			final SimCaseManager.SimCase simCase, final long startRefSecs,
-			final LatLng3 legStart, final LatLng3 legStop, final int iLeg,
-			final int nLegs, final long[] refSecsS) {
+	public ArrayList<SailSeg> generateSailSegs(final SimCaseManager.SimCase simCase, final long startRefSecs,
+			final LatLng3 legStart, final LatLng3 legStop, final int iLeg, final int nLegs, final long[] refSecsS) {
 
 		final MyLogger logger = SimCaseManager.getLogger(simCase);
 		/** Unpack values. */
 		final Model model = _sailData._model;
-		final ShorelineFinder shorelineFinder =
-				_UseModelShorelineFinder ? model.getShorelineFinder() :
-						ShorelineFinder.createNoPolygonShorelineFinder();
+		final ShorelineFinder shorelineFinder = _UseModelShorelineFinder ? model.getShorelineFinder()
+				: ShorelineFinder.createNoPolygonShorelineFinder();
 		final Polars polars = _sailData._polars;
 		final CurrentsUvGetter currentsUvGetter = model.getCurrentsUvGetter();
 		final WindsUvGetter windsUvGetter = model.getWindsUvGetter();
@@ -161,15 +143,13 @@ public class Sdi {
 		final boolean lastLeg = iLeg == nLegs - 1;
 		final int nRefSecsS = refSecsS == null ? 0 : refSecsS.length;
 
-		final long[] currentsAndWindsHalfLivesSecsS =
-				new long[] { currentsUvGetter.getPreDistressHalfLifeSecs(),
-						windsUvGetter.getPreDistressHalfLifeSecs() };
+		final long[] currentsAndWindsHalfLivesSecsS = new long[] {
+				currentsUvGetter.getPreDistressHalfLifeSecs(), windsUvGetter.getPreDistressHalfLifeSecs()
+		};
 		final double closeEnoughForArrival = _sailData._arrivalRadiusNmi;
 		final long checkIntervalSecs = _sailData._checkIntervalSecs;
-		final String interpolationModeC =
-				model.getInterpolationMode(/* forCurrents= */true);
-		final String interpolationModeW =
-				model.getInterpolationMode(/* forCurrents= */false);
+		final String interpolationModeC = model.getInterpolationMode(/* forCurrents= */true);
+		final String interpolationModeW = model.getInterpolationMode(/* forCurrents= */false);
 		final double enterHoveToSpeed = _sailData._enterHoveToKts;
 		final double exitHoveToSpeed = _sailData._exitHoveToKts;
 		final long lastOutputRefSecs = model.getLastOutputRefSecs();
@@ -188,24 +168,22 @@ public class Sdi {
 		HdgKts upWind = null;
 
 		/**
-		 * closeEnoughToIgnoreOffsetAngle is how close we have to get to abandon
-		 * the offset hdg. When we get that close, we will re-set
-		 * closeEnoughToIgnoreOffsetAngle to 0. If we lose progress and hence
-		 * are no longer that close, we do not re-set
-		 * closeEnoughToIgnoreOffsetAngle; we simply keep it at 0.
+		 * closeEnoughToIgnoreOffsetAngle is how close we have to get to abandon the
+		 * offset hdg. When we get that close, we will re-set
+		 * closeEnoughToIgnoreOffsetAngle to 0. If we lose progress and hence are no
+		 * longer that close, we do not re-set closeEnoughToIgnoreOffsetAngle; we simply
+		 * keep it at 0.
 		 */
 		final double legNmi = GreatCircleCalculator.getNmi(legStart, legStop);
-		double closeEnoughToIgnoreOffsetAngle =
-				(1d - _proportionOfDistanceToTargetToIgnoreOffsetAngle) * legNmi;
+		double closeEnoughToIgnoreOffsetAngle = (1d - _proportionOfDistanceToTargetToIgnoreOffsetAngle) * legNmi;
 
 		/** Force a new environment by setting secsLeftInEnv to 0. */
 		long secsLeftInEnv = 0L;
 		/**
-		 * Fill in all of the SailSegs for this Voyage leg. We do this
-		 * checkIntervalSecs at a time. Because of land, there may be several
-		 * SailSegs within a checkIntervalSecs, but the environment is assumed
-		 * to be constant over both time and position, for the entire
-		 * checkIntervalSecs.
+		 * Fill in all of the SailSegs for this Voyage leg. We do this checkIntervalSecs
+		 * at a time. Because of land, there may be several SailSegs within a
+		 * checkIntervalSecs, but the environment is assumed to be constant over both
+		 * time and position, for the entire checkIntervalSecs.
 		 */
 		int nLandHitsInRow = 0;
 		boolean wasMotor = false;
@@ -216,16 +194,13 @@ public class Sdi {
 
 		final ArrayList<SailSeg> sailSegs = new ArrayList<>();
 
-		/**
-		 * If we start on land, we go nowhere. Else, we never get onto land.
-		 */
+		/** If we start on land, we go nowhere. Else, we never get onto land. */
 		final int legStartLevel = shorelineFinder.getLevel(logger, legStart);
 		final boolean landed = legStartLevel % 2 == 1;
 		if (landed) {
-			final GreatCircleArc gca =
-					GreatCircleArc.CreateGca(legStart, legStart);
-			final SailSeg sailSeg = new SailSeg(gca, /* edgeNumber= */0,
-					startRefSecs, lastOutputRefSecs, upWind, dnCurrent);
+			final GreatCircleArc gca = GreatCircleArc.CreateGca(legStart, legStart);
+			final SailSeg sailSeg = new SailSeg(gca, /* edgeNumber= */0, startRefSecs, lastOutputRefSecs, upWind,
+					dnCurrent);
 			sailSeg._svt0 = sailSeg._svt1 = StateVectorType.BLOCKED;
 			addAndValidateSailSeg(logger, sailSeg, sailSegs);
 			return dumpAndReturn(simCase, iLeg, sailSegs);
@@ -233,10 +208,8 @@ public class Sdi {
 
 		NEXT_SAIL_SEG: for (;;) {
 			final int sailSegNumber = sailSegs.size();
-			final SailSeg pvsSeg =
-					sailSegNumber == 0 ? null : sailSegs.get(sailSegNumber - 1);
-			final LatLng3 segStart =
-					pvsSeg == null ? legStart : pvsSeg._gca.getLatLng1();
+			final SailSeg pvsSeg = sailSegNumber == 0 ? null : sailSegs.get(sailSegNumber - 1);
+			final LatLng3 segStart = pvsSeg == null ? legStart : pvsSeg._gca.getLatLng1();
 			final double enterMotorKts;
 			final double exitMotorKts;
 			if (!_useZeroZeroMotoring) {
@@ -244,18 +217,16 @@ public class Sdi {
 				enterMotorKts = _sailData._enterMotorKts;
 				exitMotorKts = _sailData._exitMotorKts;
 			} else if (firstLeg) {
-				final double nmiToStart =
-						MathX.haversineX(legStart, segStart) / _NmiToR;
+				final double nmiToStart = MathX.haversineX(legStart, segStart) / _NmiToR;
 				if (nmiToStart < _nearToEndNmi) {
 					enterMotorKts = _sailData._enterMotorKts;
 					exitMotorKts = _sailData._exitMotorKts;
 				} else if (lastLeg) {
 					/**
-					 * Even though we are firstLeg, we might be (probably are) lastLeg
-					 * as well. In that case, we must check for the end as well.
+					 * Even though we are firstLeg, we might be (probably are) lastLeg as well. In
+					 * that case, we must check for the end as well.
 					 */
-					final double nmiToEnd =
-							MathX.haversineX(segStart, legStop) / _NmiToR;
+					final double nmiToEnd = MathX.haversineX(segStart, legStop) / _NmiToR;
 					if (nmiToEnd < _nearToEndNmi) {
 						enterMotorKts = _sailData._enterMotorKts;
 						exitMotorKts = _sailData._exitMotorKts;
@@ -268,8 +239,7 @@ public class Sdi {
 				}
 			} else if (lastLeg) {
 				/** Since we are not firstLeg, so we check only for closeToEnd. */
-				final double nmiToEnd =
-						MathX.haversineX(segStart, legStop) / _NmiToR;
+				final double nmiToEnd = MathX.haversineX(segStart, legStop) / _NmiToR;
 				if (nmiToEnd < _nearToEndNmi) {
 					enterMotorKts = _sailData._enterMotorKts;
 					exitMotorKts = _sailData._exitMotorKts;
@@ -298,64 +268,57 @@ public class Sdi {
 			/** Get the environment if necessary. */
 			if (secsLeftInEnv <= 0L) {
 				/**
-				 * Get the environment for this checkIntervalSecs, and reset how
-				 * much time is left in this checkIntervalSecs.
+				 * Get the environment for this checkIntervalSecs, and reset how much time is
+				 * left in this checkIntervalSecs.
 				 */
 				final DataForOnePointAndTime rawCrrnt;
-				if (currentsUvGetter.isEmpty(simCase)) {
+				if (currentsUvGetter.isEmpty(logger)) {
 					rawCrrnt = new DataForOnePointAndTime(0f, 0f, 0f, 0f, 0f, 0f);
 				} else {
-					rawCrrnt = currentsUvGetter.getCurrentData(segStartRefSecs,
-							segStart, interpolationModeC);
+					rawCrrnt = currentsUvGetter.getCurrentData(logger, segStartRefSecs, segStart, interpolationModeC);
 				}
 				final DataForOnePointAndTime rawDnWind;
-				if (windsUvGetter.isEmpty(simCase)) {
+				if (windsUvGetter.isEmpty(logger)) {
 					rawDnWind = new DataForOnePointAndTime(0f, 0f, 0f, 0f, 0f, 0f);
 				} else {
-					rawDnWind = windsUvGetter.getDownWindData(segStartRefSecs,
-							segStart, interpolationModeW);
+					rawDnWind = windsUvGetter.getDownWindData(segStartRefSecs, segStart, interpolationModeW);
 				}
-				final DataForOnePointAndTime[] rawCrrntAndDnWnd =
-						new DataForOnePointAndTime[] { rawCrrnt, rawDnWind };
-				final double[][] crrntAndDnWnd = getCorrelatedCurrentAndDownWind(
-						rawCrrntAndDnWnd, oldRefSecsForCorrelatedCrrntsAndWnds, oldZ,
-						segStartRefSecs, currentsAndWindsHalfLivesSecsS);
-				dnCurrent = new HdgKts(crrntAndDnWnd[0][0], crrntAndDnWnd[0][1],
-						/* doublesAreHdgKts= */false);
-				upWind = new HdgKts(-crrntAndDnWnd[1][0], -crrntAndDnWnd[1][1],
-						/* doublesAreHdgKts= */false);
+				final DataForOnePointAndTime[] rawCrrntAndDnWnd = new DataForOnePointAndTime[] {
+						rawCrrnt, rawDnWind
+				};
+				final double[][] crrntAndDnWnd = getCorrelatedCurrentAndDownWind(rawCrrntAndDnWnd,
+						oldRefSecsForCorrelatedCrrntsAndWnds, oldZ, segStartRefSecs, currentsAndWindsHalfLivesSecsS);
+				dnCurrent = new HdgKts(crrntAndDnWnd[0][0], crrntAndDnWnd[0][1], /* doublesAreHdgKts= */false);
+				upWind = new HdgKts(-crrntAndDnWnd[1][0], -crrntAndDnWnd[1][1], /* doublesAreHdgKts= */false);
 				oldRefSecsForCorrelatedCrrntsAndWnds = segStartRefSecs;
 
 				/**
-				 * Setting secsLeftInEnv. Do not set it so that we go past the next
-				 * refSecs or lastOutputRefSecs. Other than that, simply add
-				 * checkIntervalSecs to segStartRefSecs.
+				 * Setting secsLeftInEnv. Do not set it so that we go past the next refSecs or
+				 * lastOutputRefSecs. Other than that, simply add checkIntervalSecs to
+				 * segStartRefSecs.
 				 */
-				long endIntervalSecs = Math.min(segStartRefSecs + checkIntervalSecs,
-						lastOutputRefSecs);
+				long endIntervalSecs = Math.min(segStartRefSecs + checkIntervalSecs, lastOutputRefSecs);
 				if (nRefSecsS > 0) {
 					final int idx0 = Arrays.binarySearch(refSecsS, segStartRefSecs);
 					final int cannotCrossIdx;
 					if (idx0 >= 0) {
 						/**
-						 * segStartRefSecs is on some refSecsS. The one that we cannot
-						 * cross is the next one.
+						 * segStartRefSecs is on some refSecsS. The one that we cannot cross is the next
+						 * one.
 						 */
 						cannotCrossIdx = idx0 + 1;
 					} else {
 						cannotCrossIdx = -idx0 - 1;
 					}
 					if (cannotCrossIdx < nRefSecsS) {
-						endIntervalSecs =
-								Math.min(endIntervalSecs, refSecsS[cannotCrossIdx]);
+						endIntervalSecs = Math.min(endIntervalSecs, refSecsS[cannotCrossIdx]);
 					}
 				}
 				secsLeftInEnv = endIntervalSecs - segStartRefSecs;
 				apprntWindKts = dnCurrent.add(upWind).getKts();
-				portAndStrbrdWedges =
-						polars.getPortAndStrbrdWedges(logger, dnCurrent, upWind,
-								/* port= */true, /* strbrd= */true, _forbiddenAngleIncrease,
-								_speedMultiplier, /* addInCurrent= */true, /* cull= */true);
+				portAndStrbrdWedges = polars.getPortAndStrbrdWedges(logger, dnCurrent, upWind, /* port= */true,
+						/* strbrd= */true, _forbiddenAngleIncrease, _speedMultiplier, /* addInCurrent= */true,
+						/* cull= */true);
 				/** With new environment, reset nLandHitsInRow. */
 				nLandHitsInRow = 0;
 			}
@@ -364,8 +327,8 @@ public class Sdi {
 			final double directCog = MathX.initialHdgX(segStart, legStop);
 
 			/** This is the direction we will try to go for this SailSeg. */
-			final double dsrdCog = LatLng3.getInRange0_360(directCog +
-					(closeEnoughToIgnoreOffsetAngle == 0d ? 0d : _angleOffDirect));
+			final double dsrdCog = LatLng3
+					.getInRange0_360(directCog + (closeEnoughToIgnoreOffsetAngle == 0d ? 0d : _angleOffDirect));
 
 			/** Determine what we are doing at refSecs. */
 			final boolean hoveTo;
@@ -394,38 +357,32 @@ public class Sdi {
 			}
 
 			if (_Examine) {
-				final String s =
-						String.format("%s: Particle%s S/Q[%f] Wind %s Current %s",
-								motor ? "Motor" : (hoveTo ? "Hoveto" : "Sailing"),
-								_prtclIndxs.getString(), _sailorQuality, upWind.getString(),
-								dnCurrent.getString());
+				final String s = String.format("%s: Particle%s S/Q[%f] Wind %s Current %s",
+						motor ? "Motor" : (hoveTo ? "Hoveto" : "Sailing"), _prtclIndxs.getString(), _sailorQuality,
+						upWind.getString(), dnCurrent.getString());
 				SimCaseManager.err(simCase, s);
 			}
 			if (motor) {
 				wasMotor = true;
 				wasHoveTo = false;
 				/**
-				 * Compute what direction and how fast we will go if we wish to go
-				 * straight at LegStop. If we cannot go straight at LegStop, the
-				 * following returns what happens if we aim straight into the
-				 * current.
+				 * Compute what direction and how fast we will go if we wish to go straight at
+				 * LegStop. If we cannot go straight at LegStop, the following returns what
+				 * happens if we aim straight into the current.
 				 */
-				final HdgKts motorHdgKtsForDsrdCog =
-						getMotorHdgKts(dnCurrent, motorKts, dsrdCog);
+				final HdgKts motorHdgKtsForDsrdCog = getMotorHdgKts(dnCurrent, motorKts, dsrdCog);
 				final double hdgKtsHdgForDsrdCog = motorHdgKtsForDsrdCog.getHdg();
-				if (Math.abs(LatLng3.degsToEast180_180(dsrdCog,
-						hdgKtsHdgForDsrdCog)) > 0.1) {
+				if (Math.abs(LatLng3.degsToEast180_180(dsrdCog, hdgKtsHdgForDsrdCog)) > 0.1) {
 					/**
-					 * He is overwhelmed. Go at most 15 minutes, hoping for a better
-					 * environment. If, in those 15 minutes, we hit land, there we
-					 * stay, overwhelmed and stuck on land.
+					 * He is overwhelmed. Go at most 15 minutes, hoping for a better environment.
+					 * If, in those 15 minutes, we hit land, there we stay, overwhelmed and stuck on
+					 * land.
 					 */
 					final long secsToUse = Math.min(15 * 60, secsLeftInEnv);
-					final SailSeg sailSeg = createSailSegFromHdgKts(logger,
-							_prtclIndxs, iLeg, motorHdgKtsForDsrdCog, secsToUse,
-							shorelineFinder, sailSegNumber, segStart, segStartRefSecs,
-							/* goal= */null, /* inControl= */true, /* closeEnough0= */0d,
-							/* closeEnoughToIgnoreOffsetAngle= */0d, upWind, dnCurrent);
+					final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs, iLeg, motorHdgKtsForDsrdCog,
+							secsToUse, shorelineFinder, sailSegNumber, segStart, segStartRefSecs, /* goal= */null,
+							/* inControl= */true, /* closeEnough0= */0d, /* closeEnoughToIgnoreOffsetAngle= */0d,
+							upWind, dnCurrent);
 					final long durationSecs = sailSeg._refSecs1 - sailSeg._refSecs0;
 					sailSeg._svt0 = StateVectorType.MOTOR_OVERWHELMED;
 					/**
@@ -444,8 +401,8 @@ public class Sdi {
 				}
 
 				/**
-				 * We are motoring and can make progress towards dsrdCog. Find which
-				 * direction to go.
+				 * We are motoring and can make progress towards dsrdCog. Find which direction
+				 * to go.
 				 */
 				SailSeg bestBlockedSailSeg = null;
 				double cwTwist = 0d;
@@ -464,8 +421,7 @@ public class Sdi {
 							ccwTwist += _HdgIncrement;
 							hdg = LatLng3.getInRange0_360(directCog - ccwTwist);
 						}
-						if ((LatLng3.degsToEast180_180(directCog,
-								hdg)) > _ClosingDefinition) {
+						if ((LatLng3.degsToEast180_180(directCog, hdg)) > _ClosingDefinition) {
 							/** Not interested. */
 							continue;
 						}
@@ -476,11 +432,10 @@ public class Sdi {
 							continue;
 						}
 					}
-					final SailSeg sailSeg = createSailSegFromHdgKts(logger,
-							_prtclIndxs, iLeg, motorHdgKts, secsLeftInEnv,
-							shorelineFinder, sailSegNumber, segStart, segStartRefSecs,
-							legStop, /* inControl= */true, closeEnoughForArrival,
-							closeEnoughToIgnoreOffsetAngle, upWind, dnCurrent);
+					final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs, iLeg, motorHdgKts,
+							secsLeftInEnv, shorelineFinder, sailSegNumber, segStart, segStartRefSecs, legStop,
+							/* inControl= */true, closeEnoughForArrival, closeEnoughToIgnoreOffsetAngle, upWind,
+							dnCurrent);
 					final double sailSegNmi = sailSeg._gca.getTtlNmi();
 					final long durationSecs = sailSeg.getDurationSecs();
 					sailSeg._svt0 = StateVectorType.MOTOR;
@@ -500,8 +455,8 @@ public class Sdi {
 					}
 					if (sailSeg._svt1 == StateVectorType.PRJCTN) {
 						/**
-						 * It went as far in this direction as it could usefully go.
-						 * We'll use it if it has length.
+						 * It went as far in this direction as it could usefully go. We'll use it if it
+						 * has length.
 						 */
 						sailSeg._svt1 = StateVectorType.MOTOR_PRJCTN;
 						secsLeftInEnv -= durationSecs;
@@ -515,9 +470,8 @@ public class Sdi {
 							sailSeg._svt1 = StateVectorType.MOTOR;
 						} else if (bestBlockedSailSeg == null) {
 							/**
-							 * Even though k > 0, we were not deflected; we just tried
-							 * headings that were not closing. We are still classified as
-							 * motoring.
+							 * Even though k > 0, we were not deflected; we just tried headings that were
+							 * not closing. We are still classified as motoring.
 							 */
 							sailSeg._svt1 = StateVectorType.MOTOR;
 						} else {
@@ -529,19 +483,18 @@ public class Sdi {
 						continue NEXT_SAIL_SEG;
 					}
 					/**
-					 * It didn't arrive, it didn't go full, and it didn't have to stop
-					 * because of projections. It competes for best blocked.
+					 * It didn't arrive, it didn't go full, and it didn't have to stop because of
+					 * projections. It competes for best blocked.
 					 */
-					if (bestBlockedSailSeg == null ||
-							bestBlockedSailSeg._gca.getTtlNmi() < sailSegNmi) {
+					if (bestBlockedSailSeg == null || bestBlockedSailSeg._gca.getTtlNmi() < sailSegNmi) {
 						bestBlockedSailSeg = sailSeg;
 						continue;
 					}
 				}
 				/**
-				 * Motoring and couldn't go full. Use half of the best one unless
-				 * this is our 3rd bump. In that case, use up the rest of
-				 * checkInterval and go 3/4 of the way to land.
+				 * Motoring and couldn't go full. Use half of the best one unless this is our
+				 * 3rd bump. In that case, use up the rest of checkInterval and go 3/4 of the
+				 * way to land.
 				 */
 				if (bestBlockedSailSeg == null) {
 					/** We are confused. Just give up. */
@@ -552,16 +505,14 @@ public class Sdi {
 				final double origHdg = origGca.getRawInitialHdg();
 				final double origNmi = origGca.getTtlNmi();
 				final boolean lastOne = ++nLandHitsInRow >= 3;
-				final LatLng3 latLng1 = GreatCircleCalculator.getLatLng(segStart,
-						origHdg, (lastOne ? 0.75 : 0.5) * origNmi);
-				final GreatCircleArc gca =
-						GreatCircleArc.CreateGca(segStart, latLng1);
+				final LatLng3 latLng1 = GreatCircleCalculator.getLatLng(segStart, origHdg,
+						(lastOne ? 0.75 : 0.5) * origNmi);
+				final GreatCircleArc gca = GreatCircleArc.CreateGca(segStart, latLng1);
 				final double nmi = gca.getTtlNmi();
 				final double hrs = nmi / motorKts;
 				final long durationSecs = Math.round(3600d * hrs);
 				final long stopSecs = segStartRefSecs + durationSecs;
-				final SailSeg sailSeg = new SailSeg(gca, sailSegNumber, startSecs,
-						stopSecs, upWind, dnCurrent);
+				final SailSeg sailSeg = new SailSeg(gca, sailSegNumber, startSecs, stopSecs, upWind, dnCurrent);
 				sailSeg._svt0 = StateVectorType.MOTOR;
 				sailSeg._svt1 = StateVectorType.MOTOR_BLOCKED;
 				addAndValidateSailSeg(logger, bestBlockedSailSeg, sailSegs);
@@ -577,23 +528,17 @@ public class Sdi {
 				wasHoveTo = true;
 				final HdgKts apprntUpWind = upWind.add(dnCurrent);
 				final double apprntDnWndHdg = apprntUpWind.getHdg() + 180d;
-				final double apprntHoveToHdg =
-						apprntDnWndHdg + _hoveToOffsetFromApprntDnWnd;
-				final double apprntHoveToTheta =
-						Math.toRadians(90d - apprntHoveToHdg);
+				final double apprntHoveToHdg = apprntDnWndHdg + _hoveToOffsetFromApprntDnWnd;
+				final double apprntHoveToTheta = Math.toRadians(90d - apprntHoveToHdg);
 				final double c = MathX.cosX(apprntHoveToTheta);
 				final double s = MathX.sinX(apprntHoveToTheta);
 				final double trueEastKts = c * _hoveToKts + dnCurrent.getEastKts();
-				final double trueNorthKts =
-						s * _hoveToKts + dnCurrent.getNorthKts();
-				final HdgKtsPlus trueHdgKts =
-						new HdgKtsPlus(trueEastKts, trueNorthKts,
-								/* doublesAreHdgKts= */false, StateVectorType.HOVETO);
-				final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs,
-						iLeg, trueHdgKts, secsLeftInEnv, shorelineFinder, sailSegNumber,
-						segStart, segStartRefSecs, legStop, /* inControl= */false,
-						closeEnoughForArrival, /* closeEnoughToIgnoreOffsetAngle= */0d,
-						upWind, dnCurrent);
+				final double trueNorthKts = s * _hoveToKts + dnCurrent.getNorthKts();
+				final HdgKtsPlus trueHdgKts = new HdgKtsPlus(trueEastKts, trueNorthKts, /* doublesAreHdgKts= */false,
+						StateVectorType.HOVETO);
+				final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs, iLeg, trueHdgKts, secsLeftInEnv,
+						shorelineFinder, sailSegNumber, segStart, segStartRefSecs, legStop, /* inControl= */false,
+						closeEnoughForArrival, /* closeEnoughToIgnoreOffsetAngle= */0d, upWind, dnCurrent);
 				sailSeg._svt0 = StateVectorType.HOVETO;
 				if (sailSeg._svt1 == StateVectorType.ARRIVE) {
 					if (!lastLeg || closeEnoughToIgnoreOffsetAngle > 0d) {
@@ -621,9 +566,8 @@ public class Sdi {
 			double bestClosingKts = Double.NEGATIVE_INFINITY;
 			SailSeg bestBlockedSailSeg = null;
 			/**
-			 * We prefer port or strbrd if the last SailSeg ended with a TACK_END.
-			 * If such a preference exists, we will take the preferred side if it
-			 * closes.
+			 * We prefer port or strbrd if the last SailSeg ended with a TACK_END. If such a
+			 * preference exists, we will take the preferred side if it closes.
 			 */
 			final boolean preferPort, preferStrbrd;
 			if (sailSegs.size() == 0) {
@@ -638,16 +582,14 @@ public class Sdi {
 				}
 			}
 			/**
-			 * We initialize cwTwist and ccwTwist. First, assuming directHdg is
-			 * north, find the quadrant Q of dsrdCog. If Q=I or Q=II, we're in a
-			 * "normal" situation; dsrdCog is within 90 of directHdg and dsrdCog
-			 * is a good place to start looking. If Q=III, then initialize
-			 * ccwTwist to 90 so we make no ccw twists, and cwTwist to -90 so the
-			 * cwTwists run through the entire view. If Q=IV, initialize cwTwist
-			 * to 90 and ccwTwist to -90.
+			 * We initialize cwTwist and ccwTwist. First, assuming directHdg is north, find
+			 * the quadrant Q of dsrdCog. If Q=I or Q=II, we're in a "normal" situation;
+			 * dsrdCog is within 90 of directHdg and dsrdCog is a good place to start
+			 * looking. If Q=III, then initialize ccwTwist to 90 so we make no ccw twists,
+			 * and cwTwist to -90 so the cwTwists run through the entire view. If Q=IV,
+			 * initialize cwTwist to 90 and ccwTwist to -90.
 			 */
-			final double dsrdOffsetFromDrct =
-					LatLng3.degsToEast0_360L(directCog, dsrdCog);
+			final double dsrdOffsetFromDrct = LatLng3.degsToEast0_360L(directCog, dsrdCog);
 			final int q;
 			if (dsrdOffsetFromDrct < 90d) {
 				q = 1;
@@ -677,8 +619,7 @@ public class Sdi {
 			if (_meanTackSecs >= SailData._TenYears) {
 				tackSecs = SailData._TenYears;
 			} else {
-				tackSecs = Math.max(10L, (long) Math.min(SailData._TenYears,
-						_r.getExponentialDraw(_meanTackSecs)));
+				tackSecs = Math.max(10L, (long) Math.min(SailData._TenYears, _r.getExponentialDraw(_meanTackSecs)));
 			}
 			final long maxSegSecs = Math.min(tackSecs, secsLeftInEnv);
 
@@ -692,21 +633,18 @@ public class Sdi {
 					cog = LatLng3.getInRange0_360(dsrdCog - ccwTwist);
 					ccwTwist += _HdgIncrement;
 				}
-				final HdgKtsPlus hdgKtsForCog = Polars.getHdgKtsForCog(
-						portAndStrbrdWedges, cog, preferPort, preferStrbrd);
+				final HdgKtsPlus hdgKtsForCog = Polars.getHdgKtsForCog(portAndStrbrdWedges, cog, preferPort,
+						preferStrbrd);
 				final double thisCog = hdgKtsForCog.getHdg();
-				final double absOffset =
-						Math.abs(LatLng3.degsToEast180_180(directCog, thisCog));
+				final double absOffset = Math.abs(LatLng3.degsToEast180_180(directCog, thisCog));
 				if (absOffset > _ClosingDefinition) {
 					/** Not interested. */
 					continue;
 				}
 				/** hdgKtsForCog closes. */
-				final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs,
-						iLeg, hdgKtsForCog, maxSegSecs, shorelineFinder, sailSegNumber,
-						segStart, segStartRefSecs, legStop, /* inControl= */true,
-						closeEnoughForArrival, closeEnoughToIgnoreOffsetAngle, upWind,
-						dnCurrent);
+				final SailSeg sailSeg = createSailSegFromHdgKts(logger, _prtclIndxs, iLeg, hdgKtsForCog, maxSegSecs,
+						shorelineFinder, sailSegNumber, segStart, segStartRefSecs, legStop, /* inControl= */true,
+						closeEnoughForArrival, closeEnoughToIgnoreOffsetAngle, upWind, dnCurrent);
 				sailSeg._svt0 = hdgKtsForCog._svt;
 				final long durationSecs = sailSeg.getDurationSecs();
 				final StateVectorType svt1 = sailSeg._svt1;
@@ -741,8 +679,7 @@ public class Sdi {
 						sailSeg._svt1 = hdgKtsForCog._svt;
 					} else {
 						/**
-						 * We went full, this isn't our first choice for cog; we were
-						 * deflected.
+						 * We went full, this isn't our first choice for cog; we were deflected.
 						 */
 						sailSeg._svt1 = StateVectorType.DEFLECTED;
 					}
@@ -753,33 +690,29 @@ public class Sdi {
 				/**
 				 * hdgKtsForCog is blocked. It's competing for bestBlockedSailSeg.
 				 */
-				final double thisClosingKts =
-						hdgKtsForCog.getClosingKts(segStart, legStop);
+				final double thisClosingKts = hdgKtsForCog.getClosingKts(segStart, legStop);
 				if (thisClosingKts > bestClosingKts) {
 					bestBlockedSailSeg = sailSeg;
 					bestClosingKts = thisClosingKts;
 				}
 			}
 			/**
-			 * Sailing and couldn't go full. Use half of the best one unless this
-			 * is our 3rd bump. In that case, use up the rest of checkInterval and
-			 * go 3/4 of the way to land.
+			 * Sailing and couldn't go full. Use half of the best one unless this is our 3rd
+			 * bump. In that case, use up the rest of checkInterval and go 3/4 of the way to
+			 * land.
 			 */
 			if (bestBlockedSailSeg == null) {
 				/** We could not close. Aim for direct and take what you get. */
-				final HdgKts desperateChoice = Polars.getHdgKtsForCog(
-						portAndStrbrdWedges, directCog, preferPort, preferStrbrd);
-				final SailSeg desperateSailSeg = createSailSegFromHdgKts(logger,
-						_prtclIndxs, iLeg, desperateChoice,
-						Math.min(secsLeftInEnv, tackSecs), shorelineFinder,
-						sailSegNumber, segStart, segStartRefSecs, /* goal= */null,
-						/* inControl= */false, closeEnoughForArrival,
+				final HdgKts desperateChoice = Polars.getHdgKtsForCog(portAndStrbrdWedges, directCog, preferPort,
+						preferStrbrd);
+				final SailSeg desperateSailSeg = createSailSegFromHdgKts(logger, _prtclIndxs, iLeg, desperateChoice,
+						Math.min(secsLeftInEnv, tackSecs), shorelineFinder, sailSegNumber, segStart, segStartRefSecs,
+						/* goal= */null, /* inControl= */false, closeEnoughForArrival,
 						/* closeEnoughToIgnoreOffsetAngle= */0d, upWind, dnCurrent);
 				desperateSailSeg._svt0 = StateVectorType.OVERWHELMED;
-				final StateVectorType svt1 =
-						desperateSailSeg._svt1 == StateVectorType.BLOCKED ?
-								StateVectorType.OVERWHELMED_BLOCKED :
-								StateVectorType.OVERWHELMED;
+				final StateVectorType svt1 = desperateSailSeg._svt1 == StateVectorType.BLOCKED
+						? StateVectorType.OVERWHELMED_BLOCKED
+						: StateVectorType.OVERWHELMED;
 				desperateSailSeg._svt1 = svt1;
 				addAndValidateSailSeg(logger, desperateSailSeg, sailSegs);
 				if (svt1 == StateVectorType.OVERWHELMED_BLOCKED) {
@@ -795,43 +728,37 @@ public class Sdi {
 			final double origHdg = origGca.getRawInitialHdg();
 			final double origNmi = origGca.getTtlNmi();
 			final boolean lastOne = ++nLandHitsInRow >= 3;
-			final LatLng3 latLng1 = GreatCircleCalculator.getLatLng(segStart,
-					origHdg, (lastOne ? 0.75 : 0.5) * origNmi);
-			final GreatCircleArc gca =
-					GreatCircleArc.CreateGca(segStart, latLng1);
+			final LatLng3 latLng1 = GreatCircleCalculator.getLatLng(segStart, origHdg,
+					(lastOne ? 0.75 : 0.5) * origNmi);
+			final GreatCircleArc gca = GreatCircleArc.CreateGca(segStart, latLng1);
 			final double nmi = gca.getTtlNmi();
 			final double hrs = nmi / motorKts;
 			final long stopSecs = Math.round(segStartRefSecs + 3600d * hrs);
-			final SailSeg sailSeg = new SailSeg(gca, sailSegNumber, startSecs,
-					stopSecs, upWind, dnCurrent);
+			final SailSeg sailSeg = new SailSeg(gca, sailSegNumber, startSecs, stopSecs, upWind, dnCurrent);
 			sailSeg._svt0 = bestBlockedSailSeg._svt0;
 			sailSeg._svt1 = StateVectorType.BLOCKED;
 			addAndValidateSailSeg(logger, bestBlockedSailSeg, sailSegs);
 			if (lastOne) {
 				return dumpAndReturn(simCase, iLeg, sailSegs);
 			}
-			final long durationSecs =
-					bestBlockedSailSeg._refSecs1 - bestBlockedSailSeg._refSecs0;
+			final long durationSecs = bestBlockedSailSeg._refSecs1 - bestBlockedSailSeg._refSecs0;
 			secsLeftInEnv -= durationSecs;
 			continue NEXT_SAIL_SEG;
 		}
 
 	}
 
-	final private ArrayList<SailSeg> dumpAndReturn(
-			final SimCaseManager.SimCase simCase, final int iLeg,
+	final private ArrayList<SailSeg> dumpAndReturn(final SimCaseManager.SimCase simCase, final int iLeg,
 			final ArrayList<SailSeg> sailSegs) {
 		if (_Examine) {
 			String s = "";
 			final int nSailSegs = sailSegs == null ? 0 : sailSegs.size();
 			for (int k = 0; k < nSailSegs; ++k) {
 				final SailSeg sailSeg = sailSegs.get(k);
-				final String prtclIndxsString = _prtclIndxs == null ? "NULL" :
-						_prtclIndxs.getString(/* includeScenario= */true);
-				final String name =
-						String.format("%s iLeg[%d]", prtclIndxsString, iLeg);
-				final String sailSegString = sailSeg._gca
-						.getXmlString(sailSeg._svt1.getColorName(), k, name);
+				final String prtclIndxsString = _prtclIndxs == null ? "NULL"
+						: _prtclIndxs.getString(/* includeScenario= */true);
+				final String name = String.format("%s iLeg[%d]", prtclIndxsString, iLeg);
+				final String sailSegString = sailSeg._gca.getXmlString(sailSeg._svt1.getColorName(), k, name);
 				s += "\n" + sailSegString;
 			}
 			s += "\n";
@@ -840,35 +767,31 @@ public class Sdi {
 		return sailSegs;
 	}
 
-	final private boolean addAndValidateSailSeg(final MyLogger logger,
-			final SailSeg sailSeg, final ArrayList<SailSeg> sailSegs) {
+	final private boolean addAndValidateSailSeg(final MyLogger logger, final SailSeg sailSeg,
+			final ArrayList<SailSeg> sailSegs) {
 		sailSegs.add(sailSeg);
 		return true;
 	}
 
-	private static final SailSeg createSailSegFromHdgKts(
-			final MyLogger logger, final ParticleIndexes prtclIndxs,
-			final int iLeg, final HdgKts hdgKts, final long maxLenSecs,
-			final ShorelineFinder shorelineFinder, final int edgeNumber,
-			final LatLng3 start, final long segStartRefSecs, final LatLng3 goal,
-			final boolean inControl, final double closeEnoughForArrival,
-			final double closeEnoughToIgnoreOffsetAngle, final HdgKts upWind,
-			final HdgKts dnCurrent) {
+	private static final SailSeg createSailSegFromHdgKts(final MyLogger logger, final ParticleIndexes prtclIndxs,
+			final int iLeg, final HdgKts hdgKts, final long maxLenSecs, final ShorelineFinder shorelineFinder,
+			final int edgeNumber, final LatLng3 start, final long segStartRefSecs, final LatLng3 goal,
+			final boolean inControl, final double closeEnoughForArrival, final double closeEnoughToIgnoreOffsetAngle,
+			final HdgKts upWind, final HdgKts dnCurrent) {
 		/** Unpack some numbers. */
 		final double kts = hdgKts.getKts();
 		final double hdg = hdgKts.getHdg();
 		final double fullNmi = kts * maxLenSecs / 3600d;
 
 		/** Create the full Gca. */
-		final GreatCircleArc fullGca =
-				GreatCircleArc.CreateGca(start, hdg, fullNmi);
+		final GreatCircleArc fullGca = GreatCircleArc.CreateGca(start, hdg, fullNmi);
 
 		/**
-		 * Find shorelineXing and compute nmiToXing. If there is no xing, then
-		 * nmiToXing = fullNmi.
+		 * Find shorelineXing and compute nmiToXing. If there is no xing, then nmiToXing
+		 * = fullNmi.
 		 */
-		final ShorelineFinderResult sfr = shorelineFinder
-				.getShorelineFinderResult(logger, fullGca, /* findFirst= */true);
+		final ShorelineFinderResult sfr = shorelineFinder.getShorelineFinderResult(logger, fullGca,
+				/* findFirst= */true);
 		final LatLng3 shorelineXing = sfr.getShorelineXing();
 		final GreatCircleArc maxGca;
 		if (shorelineXing == null) {
@@ -880,23 +803,19 @@ public class Sdi {
 
 		/** Make sure it does not go past closeEnoughForArrival. */
 		if (closeEnoughForArrival > 0d && goal != null) {
-			final LatLng3 entrance0 =
-					GreatCircleCalculator.getFirstLatLngWithinTolerance(start, hdg,
-							goal, closeEnoughForArrival);
+			final LatLng3 entrance0 = GreatCircleCalculator.getFirstLatLngWithinTolerance(start, hdg, goal,
+					closeEnoughForArrival);
 			if (entrance0 != null) {
-				final double nmiToEntrance0 =
-						GreatCircleCalculator.getNmi(start, entrance0);
+				final double nmiToEntrance0 = GreatCircleCalculator.getNmi(start, entrance0);
 				if (nmiToEntrance0 <= maxNmi + _MinSailSegNmi) {
 					/** It is at least close to arriving. We're done. */
-					final GreatCircleArc arrival0Gca =
-							GreatCircleArc.CreateGca(start, entrance0);
+					final GreatCircleArc arrival0Gca = GreatCircleArc.CreateGca(start, entrance0);
 					final double ttlNmi = arrival0Gca.getTtlNmi();
 					final double arrivalHrs = ttlNmi / kts;
-					final long duration0Secs = Math.max(_MinSecsToAssignSailSeg,
-							Math.round(3600d * arrivalHrs));
+					final long duration0Secs = Math.max(_MinSecsToAssignSailSeg, Math.round(3600d * arrivalHrs));
 					final long stopSecs = segStartRefSecs + duration0Secs;
-					final SailSeg sailSeg = new SailSeg(arrival0Gca, edgeNumber,
-							segStartRefSecs, stopSecs, upWind, dnCurrent);
+					final SailSeg sailSeg = new SailSeg(arrival0Gca, edgeNumber, segStartRefSecs, stopSecs, upWind,
+							dnCurrent);
 					sailSeg._svt1 = StateVectorType.ARRIVE;
 					return sailSeg;
 				}
@@ -905,24 +824,19 @@ public class Sdi {
 
 		/** Make sure it does not go past closeEnoughToIgnoreOffsetAngle. */
 		if (closeEnoughToIgnoreOffsetAngle > 0d && goal != null) {
-			final LatLng3 entrance1 =
-					GreatCircleCalculator.getFirstLatLngWithinTolerance(start, hdg,
-							goal, closeEnoughToIgnoreOffsetAngle);
+			final LatLng3 entrance1 = GreatCircleCalculator.getFirstLatLngWithinTolerance(start, hdg, goal,
+					closeEnoughToIgnoreOffsetAngle);
 			if (entrance1 != null) {
-				final double nmiToEntrance1 =
-						GreatCircleCalculator.getNmi(start, entrance1);
+				final double nmiToEntrance1 = GreatCircleCalculator.getNmi(start, entrance1);
 				if (nmiToEntrance1 <= maxNmi + _MinSailSegNmi) {
 					/** It got close enough. We're done. */
-					final GreatCircleArc arrival1Gca =
-							GreatCircleArc.CreateGca(start, entrance1);
+					final GreatCircleArc arrival1Gca = GreatCircleArc.CreateGca(start, entrance1);
 					final double arrival1Hrs = arrival1Gca.getTtlNmi() / kts;
-					final long duration1Secs = Math.max(_MinSecsToAssignSailSeg,
-							Math.round(3600d * arrival1Hrs));
+					final long duration1Secs = Math.max(_MinSecsToAssignSailSeg, Math.round(3600d * arrival1Hrs));
 					final long stopSecs = segStartRefSecs + duration1Secs;
-					final SailSeg sailSeg = new SailSeg(arrival1Gca, edgeNumber,
-							segStartRefSecs, stopSecs, upWind, dnCurrent);
-					sailSeg._svt1 =
-							StateVectorType.CLOSE_ENOUGH_TO_ABANDON_OFFSET_ANGLE;
+					final SailSeg sailSeg = new SailSeg(arrival1Gca, edgeNumber, segStartRefSecs, stopSecs, upWind,
+							dnCurrent);
+					sailSeg._svt1 = StateVectorType.CLOSE_ENOUGH_TO_ABANDON_OFFSET_ANGLE;
 					return sailSeg;
 				}
 			}
@@ -930,18 +844,15 @@ public class Sdi {
 
 		/** Make sure it does not go past projection. */
 		if (inControl && goal != null) {
-			final GreatCircleArc.Projection projection =
-					maxGca.new Projection(goal);
+			final GreatCircleArc.Projection projection = maxGca.new Projection(goal);
 			if (projection.getProjectionToGcIsInGca()) {
 				final LatLng3 projectionLatLng = projection.getClosestPointOnGca();
-				final GreatCircleArc projectionGca =
-						GreatCircleArc.CreateGca(start, projectionLatLng);
+				final GreatCircleArc projectionGca = GreatCircleArc.CreateGca(start, projectionLatLng);
 				final double arrival2Hrs = projectionGca.getTtlNmi() / kts;
-				final long duration2Secs = Math.max(_MinSecsToAssignSailSeg,
-						Math.round(3600d * arrival2Hrs));
+				final long duration2Secs = Math.max(_MinSecsToAssignSailSeg, Math.round(3600d * arrival2Hrs));
 				final long stopSecs = segStartRefSecs + duration2Secs;
-				final SailSeg sailSeg = new SailSeg(projectionGca, edgeNumber,
-						segStartRefSecs, stopSecs, upWind, dnCurrent);
+				final SailSeg sailSeg = new SailSeg(projectionGca, edgeNumber, segStartRefSecs, stopSecs, upWind,
+						dnCurrent);
 				sailSeg._svt1 = StateVectorType.PRJCTN;
 				return sailSeg;
 			}
@@ -949,36 +860,29 @@ public class Sdi {
 
 		if (fullGca == maxGca) {
 			/** No reason to stop and it wasn't blocked. */
-			final long duration3Secs =
-					Math.max(_MinSecsToAssignSailSeg, maxLenSecs);
+			final long duration3Secs = Math.max(_MinSecsToAssignSailSeg, maxLenSecs);
 			final long stopSecs = segStartRefSecs + duration3Secs;
-			final SailSeg sailSeg = new SailSeg(fullGca, edgeNumber,
-					segStartRefSecs, stopSecs, upWind, dnCurrent);
+			final SailSeg sailSeg = new SailSeg(fullGca, edgeNumber, segStartRefSecs, stopSecs, upWind, dnCurrent);
 			sailSeg._svt1 = null;
 			return sailSeg;
 		}
 
 		/** This hdg got blocked. */
 		final double duration4Hrs = maxGca.getTtlNmi() / kts;
-		final long duration4Secs =
-				Math.max(_MinSecsToAssignSailSeg, Math.round(3600d * duration4Hrs));
+		final long duration4Secs = Math.max(_MinSecsToAssignSailSeg, Math.round(3600d * duration4Hrs));
 		final long stopSecs = segStartRefSecs + duration4Secs;
-		final SailSeg sailSeg = new SailSeg(maxGca, edgeNumber, segStartRefSecs,
-				stopSecs, upWind, dnCurrent);
+		final SailSeg sailSeg = new SailSeg(maxGca, edgeNumber, segStartRefSecs, stopSecs, upWind, dnCurrent);
 		sailSeg._svt1 = StateVectorType.BLOCKED;
 		return sailSeg;
 	}
 
 	/** Times and half-lives are in seconds. oldZ is updated. */
-	private double[][] getCorrelatedCurrentAndDownWind(
-			final DataForOnePointAndTime[] currntAndDnWindAtRefSecs,
-			final long oldRefSecs, final double[][] oldZ, final long refSecs,
-			final long[] halfLivesSecs) {
+	private double[][] getCorrelatedCurrentAndDownWind(final DataForOnePointAndTime[] currntAndDnWindAtRefSecs,
+			final long oldRefSecs, final double[][] oldZ, final long refSecs, final long[] halfLivesSecs) {
 		final double[][] crrntAndDnWndOut = new double[2][2];
 		/** k0 indicates current or wind. k1 indicates east or north. */
 		for (int k0 = 0; k0 < 2; ++k0) {
-			final DataForOnePointAndTime currentOrDnWind =
-					currntAndDnWindAtRefSecs[k0];
+			final DataForOnePointAndTime currentOrDnWind = currntAndDnWindAtRefSecs[k0];
 			final long halfLifeSecs = halfLivesSecs[k0];
 			final double decayRate = Math.log(2d) / halfLifeSecs;
 			for (int k1 = 0; k1 < 2; ++k1) {
@@ -990,8 +894,7 @@ public class Sdi {
 					oldZ[k0][k1] = 0d;
 				} else {
 					final double freshZ = _r.getTruncatedGaussian();
-					if (refSecs > oldRefSecs && halfLifeSecs > 0 &&
-							!Double.isNaN(oldZ[k0][k1])) {
+					if (refSecs > oldRefSecs && halfLifeSecs > 0 && !Double.isNaN(oldZ[k0][k1])) {
 						final long deltaSecs = refSecs - oldRefSecs;
 						final double rho = Math.exp(-decayRate * deltaSecs);
 						final double rhoPrime = Math.sqrt(1 - rho * rho);
@@ -1001,11 +904,9 @@ public class Sdi {
 					}
 				}
 				final float k1Mean = currentOrDnWind
-						.getValue(k1 == 0 ? NetCdfUvGetter.DataComponent.U :
-								NetCdfUvGetter.DataComponent.V);
+						.getValue(k1 == 0 ? NetCdfUvGetter.DataComponent.U : NetCdfUvGetter.DataComponent.V);
 				final float k1StdDev = currentOrDnWind
-						.getValue(k1 == 0 ? NetCdfUvGetter.DataComponent.DU :
-								NetCdfUvGetter.DataComponent.DV);
+						.getValue(k1 == 0 ? NetCdfUvGetter.DataComponent.DU : NetCdfUvGetter.DataComponent.DV);
 				crrntAndDnWndOut[k0][k1] = k1Mean + k1StdDev * oldZ[k0][k1];
 			}
 		}
@@ -1013,14 +914,12 @@ public class Sdi {
 	}
 
 	/**
-	 * Finds the heading to aim the boat so that the current will bring the
-	 * boat around to the desired heading, and returns what direction and how
-	 * fast we will go. Strictly for motoring. If we cannot find such a
-	 * heading, then we simply aim the boat straight into the current and
-	 * return the result of that.
+	 * Finds the heading to aim the boat so that the current will bring the boat
+	 * around to the desired heading, and returns what direction and how fast we
+	 * will go. Strictly for motoring. If we cannot find such a heading, then we
+	 * simply aim the boat straight into the current and return the result of that.
 	 */
-	private static HdgKtsPlus getMotorHdgKts(final HdgKts dnCurrent,
-			final double Bk, final double dsrdCog) {
+	private static HdgKtsPlus getMotorHdgKts(final HdgKts dnCurrent, final double Bk, final double dsrdCog) {
 		/**
 		 * <pre>
 		 * Let:
@@ -1055,11 +954,10 @@ public class Sdi {
 		final double A = BkBk + TtTt * BkBk;
 		final double B = 2d * TDC * Bk * TtCe_Cn;
 		final double C = TtCe_Cn * TtCe_Cn - BkBk;
-		final double[] roots =
-				NumericalRoutines.quadratic(A, B, C, /* result= */null);
+		final double[] roots = NumericalRoutines.quadratic(A, B, C, /* result= */null);
 		/**
-		 * Note: roots are the proposed solution for the cos of the direction to
-		 * point the boat.
+		 * Note: roots are the proposed solution for the cos of the direction to point
+		 * the boat.
 		 */
 		if (Double.isNaN(roots[0])) {
 			/**
@@ -1068,9 +966,8 @@ public class Sdi {
 			final double kts = Math.sqrt(Ce * Ce + Cn * Cn) - Bk;
 			final double mathHdg = MathX.atan2X(Cn, Ce);
 			final double hdg = Math.toDegrees(Constants._PiOver2 - mathHdg);
-			final HdgKtsPlus hdgKts =
-					new HdgKtsPlus(hdg, kts, /* doublesAreHdgkts= */true,
-							/* stateVectorType= */StateVectorType.MOTOR);
+			final HdgKtsPlus hdgKts = new HdgKtsPlus(hdg, kts, /* doublesAreHdgkts= */true,
+					/* stateVectorType= */StateVectorType.MOTOR);
 			return hdgKts;
 		}
 		double bestS = Double.NaN;
@@ -1090,8 +987,7 @@ public class Sdi {
 					final double moveInY = Cn + s * Bk;
 					final double moveInX = Ce + c * Bk;
 					final double cogR = MathX.atan2X(moveInY, moveInX);
-					final double cog =
-							LatLng3.getInRange0_360(90d - Math.toDegrees(cogR));
+					final double cog = LatLng3.getInRange0_360(90d - Math.toDegrees(cogR));
 					final double diff = LatLng3.degsToEast180_180(dsrdCog, cog);
 					final double absDiff = Math.abs(diff);
 					if (absDiff < bestAbsDiff) {
@@ -1105,9 +1001,8 @@ public class Sdi {
 		final double eKts = (Ce + bestC * Bk);
 		final double nKts = (Cn + bestS * Bk);
 		/** cog should be practically equal to dsrdCog. */
-		final HdgKtsPlus hdgKts =
-				new HdgKtsPlus(eKts, nKts, /* doublesAreHdgkts= */false,
-						/* stateVectorType= */StateVectorType.MOTOR);
+		final HdgKtsPlus hdgKts = new HdgKtsPlus(eKts, nKts, /* doublesAreHdgkts= */false,
+				/* stateVectorType= */StateVectorType.MOTOR);
 		return hdgKts;
 	}
 }

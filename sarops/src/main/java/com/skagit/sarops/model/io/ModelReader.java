@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.skagit.sarops.AbstractOutFilesManager;
-import com.skagit.sarops.model.DebrisSighting;
+import com.skagit.sarops.model.DebrisObjectType;
 import com.skagit.sarops.model.ExtraGraphicsClass;
 import com.skagit.sarops.model.LobScenario;
 import com.skagit.sarops.model.Model;
@@ -35,7 +35,7 @@ import com.skagit.sarops.model.RegularScenario;
 import com.skagit.sarops.model.Scenario;
 import com.skagit.sarops.model.SearchObjectType;
 import com.skagit.sarops.model.Sortie;
-import com.skagit.sarops.model.SotWithWt;
+import com.skagit.sarops.model.SotWithDbl;
 import com.skagit.sarops.model.preDistressModel.DeadReckon;
 import com.skagit.sarops.model.preDistressModel.PreDistressModel;
 import com.skagit.sarops.model.preDistressModel.Voyage;
@@ -422,7 +422,7 @@ public class ModelReader {
 				 * text String.
 				 */
 				traverse(simCase, model, /* caseDirFile= */null, /* modelFilePath= */null, root);
-				model.close(simCase);
+				model.close();
 			} catch (final ReaderException e) {
 				SimCaseManager.err(simCase, String.format("Reader error.%s", StringUtilities.getStackTraceString(e)));
 				model = null;
@@ -450,11 +450,6 @@ public class ModelReader {
 		}
 	}
 
-	/**
-	 * @param root  the root of the tree containing the description of the model.
-	 * @param model the model to be populated.
-	 * @throws ReaderException when an incorrect definition is given.
-	 */
 	private static TreeSet<StringPlus> traverse(final SimCaseManager.SimCase simCase, final Model model,
 			final File caseDirFile, final String modelFilePath, final Element root) throws ReaderException {
 		/**
@@ -521,16 +516,17 @@ public class ModelReader {
 		/** 3rd time through; bulk of the work. */
 		final ArrayList<Element> graphicsElements = new ArrayList<>();
 		it0 = new ElementIterator(root);
-		final HashSet<Short> usedScenarioIds = new HashSet<>();
-		final HashSet<Short> usedDebrisSightingIds = new HashSet<>();
+		final HashSet<Integer> usedScIds = new HashSet<>();
+		final HashSet<Integer> usedDsIds = new HashSet<>();
 		while (it0.hasNextElement()) {
 			final Element child = it0.nextElement();
 			final String childTag = child.getTagName();
 			if ("SCENARIO".equals(childTag)) {
-				readScenarioOrDebrisSighting(simCase, usedScenarioIds, child, model, stringPluses);
+				readScenario(simCase, usedScIds, child, model, stringPluses);
 				scenarioRead = true;
 			} else if ("DEBRIS_SIGHTING".equals(childTag)) {
-				readScenarioOrDebrisSighting(simCase, usedDebrisSightingIds, child, model, stringPluses);
+				readDebrisSighting(simCase, usedDsIds, child, model, stringPluses);
+				scenarioRead = true;
 			} else if ("COMPLETED_SEARCH".equals(childTag)) {
 				readCompletedSearch(simCase, child, model, /* addToModel= */true, stringPluses);
 			} else if ("GRAPHICS".equals(childTag)) {
@@ -538,7 +534,10 @@ public class ModelReader {
 			} else if ("REQUEST".equals(childTag)) {
 				/** This is already done. Hence, do nothing. */
 			} else if ("SEARCH_OBJECT_TYPE".equals(childTag)) {
-				readDistressSot(simCase, child, model, stringPluses);
+				readSot(simCase, child, model, stringPluses);
+				searchObjectTypeRead = true;
+			} else if ("DEBRIS_OBJECT_TYPE".equals(childTag)) {
+				readDot(simCase, child, model, stringPluses);
 				searchObjectTypeRead = true;
 			} else if ("ENVDATA".equals(childTag)) {
 				readEnvironmentalData(simCase, model, modelFilePath, child, stringPluses);
@@ -549,7 +548,7 @@ public class ModelReader {
 				final String unit = null;
 				int originatingObjectTypeId = getInt(simCase, child, "id", unit, stringPluses);
 				final String name = getString(simCase, child, "name", "" + originatingObjectTypeId, stringPluses);
-				SearchObjectType searchObjectType = model.getSearchObjectType(originatingObjectTypeId);
+				SearchObjectType searchObjectType = model.sotIdToSot(originatingObjectTypeId);
 				/**
 				 * We have a special situation of the originating SearchObjectType. If there is
 				 * no such searchObjectType, we create one. Doing so will guarantee a unique id,
@@ -560,12 +559,14 @@ public class ModelReader {
 					searchObjectType = model.addSearchObjectType(originatingObjectTypeId, name);
 					originatingObjectTypeId = searchObjectType.getId();
 				}
-				model.setOriginatingObjectTypeWithWeight(new SotWithWt.OriginatingSotWithWt(searchObjectType));
+				model.setOriginatingObjectTypeWithWeight(new SotWithDbl.OriginatingSotWithWt(searchObjectType));
 			} else {
 				AnnounceIgnoreTag(simCase, childTag);
 			}
 		}
-		if (!requestRead) {
+		if (!requestRead)
+
+		{
 			throw new ReaderException("Missing request definition");
 		}
 		if (!displayOnly && !environmentalDataRead) {
@@ -712,27 +713,18 @@ public class ModelReader {
 				currentsElement);
 	}
 
-	/**
-	 * Reads the definition of an ObjectType: survival and leeway data.
-	 *
-	 * @param element the node holding the data.
-	 * @param model   the model to be populated.
-	 * @throws ReaderException when an incorrect definition is given.
-	 */
-	private static void readDistressSot(final SimCaseManager.SimCase simCase, final Element element, final Model model,
+	/** Reads the definition of a Search Object Type: survival and leeway data. */
+	private static void readSot(final SimCaseManager.SimCase simCase, final Element element, final Model model,
 			final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final ElementIterator childIterator = new ElementIterator(element);
 		final String unit = null;
 		final int id = getInt(simCase, element, "id", unit, stringPluses);
 		final String name = getString(simCase, element, "name", "" + id, stringPluses);
-		SearchObjectType distressSot = model.getSearchObjectType(id);
+		SearchObjectType distressSot = model.sotIdToSot(id);
 		if (distressSot != null) {
 			throw new ReaderException("Multiple definition of search object type " + id);
 		}
 		distressSot = model.addSearchObjectType(id, name);
-		/**
-		 * ProbabilityOfAnchoring, maximumAnchorableDepthInMeters, and alwaysAnchor
-		 */
 		final boolean alwaysAnchor = getBoolean(simCase, element, "alwaysAnchor", false, stringPluses);
 		final double perCentAnchoring = getDouble(simCase, element, "probabilityOfAnchoring", " %", 0d, stringPluses);
 		final double probabilityOfAnchoring = 0.01 * perCentAnchoring;
@@ -742,13 +734,8 @@ public class ModelReader {
 		distressSot.setMaximumAnchorDepthM(maximumAnchorDepthM);
 		distressSot.setAlwaysAnchor(alwaysAnchor);
 		/** Get and set the survival data for this object type. */
-		double scaleHrs = Double.NaN;
-		double shape = Double.NaN;
-		scaleHrs = getDouble(simCase, element, "scale", " hrs", Double.NaN, /* stringPluses= */null);
-		shape = getDouble(simCase, element, "shape", "", Double.NaN, /* stringPluses= */null);
-		if (Double.isNaN(scaleHrs) || Double.isNaN(shape)) {
-			throw new ReaderException("Incomplete survival description");
-		}
+		final double scaleHrs = getDouble(simCase, element, "scale", " hrs", Double.MAX_VALUE, /* stringPluses= */null);
+		final double shape = getDouble(simCase, element, "shape", "", Double.MAX_VALUE, /* stringPluses= */null);
 		distressSot.setSurvivalData(scaleHrs, shape);
 		/** Leeway has its own subtag. */
 		boolean haveLeewayTag = false;
@@ -761,69 +748,8 @@ public class ModelReader {
 				if (!getBoolean(simCase, element, "LeewayData", true, stringPluses)) {
 					continue;
 				}
-				double nominalSpeed = Double.NaN;
-				double gibingRate = Double.NaN;
-				double dwlSlope = Double.NaN;
-				double dwlConstant = 0d;
-				double dwlStandardDeviation = Double.NaN;
-				double cwlPlusSlope = Double.NaN;
-				double cwlPlusConstant = Double.NaN;
-				double cwlPlusStandardDeviation = Double.NaN;
-				double cwlMinusSlope = Double.NaN;
-				double cwlMinusConstant = Double.NaN;
-				double cwlMinusStandardDeviation = Double.NaN;
-				boolean useRayleigh = false;
-				nominalSpeed = getDouble(simCase, child, "nominalSpeed", " kts", Double.NaN, stringPluses);
-				gibingRate = getDouble(simCase, child, "gibingRate", "% perHr", Double.NaN, stringPluses);
-				final ElementIterator grandChildIterator = new ElementIterator(child);
-				while (grandChildIterator.hasNextElement()) {
-					final Element grandChild = grandChildIterator.nextElement();
-					final String grandChildTag = grandChild.getTagName();
-					if ("DWL".equals(grandChildTag)) {
-						if (!Double.isNaN(dwlSlope)) {
-							throw new ReaderException("Multiple definition of dwl");
-						}
-						dwlSlope = getDouble(simCase, grandChild, "slope", "", stringPluses);
-						dwlConstant = getDouble(simCase, grandChild, "constant", " kts", 0d, stringPluses);
-						dwlStandardDeviation = getDouble(simCase, grandChild, "Syx", " kts", stringPluses);
-						useRayleigh = getBoolean(simCase, grandChild, "useRayleigh", false, stringPluses);
-					} else if ("CWLPOS".equals(grandChildTag)) {
-						if (!Double.isNaN(cwlPlusSlope)) {
-							throw new ReaderException("Multiple definition of cwlPlus");
-						}
-						cwlPlusSlope = getDouble(simCase, grandChild, "slope", "", stringPluses);
-						cwlPlusConstant = getDouble(simCase, grandChild, "constant", " kts", 0d, stringPluses);
-						cwlPlusStandardDeviation = getDouble(simCase, grandChild, "Syx", " kts", stringPluses);
-					} else if ("CWLNEG".equals(grandChildTag)) {
-						if (!Double.isNaN(cwlMinusSlope)) {
-							throw new ReaderException("Multiple definition of cwlMinus");
-						}
-						cwlMinusSlope = getDouble(simCase, grandChild, "slope", "", stringPluses);
-						cwlMinusConstant = getDouble(simCase, grandChild, "constant", " kts", 0d, stringPluses);
-						cwlMinusStandardDeviation = getDouble(simCase, grandChild, "Syx", " kts", stringPluses);
-					} else {
-						AnnounceIgnoreTag(simCase, grandChildTag);
-					}
-				}
-				if (Double.isNaN(cwlPlusSlope)) {
-					cwlPlusSlope = -cwlMinusSlope;
-					cwlPlusStandardDeviation = cwlMinusStandardDeviation;
-				}
-				if (Double.isNaN(cwlMinusSlope)) {
-					cwlMinusSlope = -cwlPlusSlope;
-					cwlMinusStandardDeviation = cwlPlusStandardDeviation;
-				}
-				if (Double.isNaN(dwlSlope) || Double.isNaN(cwlPlusSlope) || Double.isNaN(gibingRate)
-						|| Double.isNaN(nominalSpeed)) {
-					throw new ReaderException("Incomplete leeway description");
-				}
-				/**
-				 * setLeewayData is expecting gibingRate as a frequency per second.
-				 */
-				final double gibingFrequencyPerSecond = gibingRate / 100d / 3600d;
-				distressSot.setLeewayData(gibingFrequencyPerSecond, dwlSlope, dwlConstant, dwlStandardDeviation,
-						cwlPlusSlope, cwlPlusConstant, cwlPlusStandardDeviation, cwlMinusSlope, cwlMinusConstant,
-						cwlMinusStandardDeviation, nominalSpeed, useRayleigh);
+				final SearchObjectType.LeewayData leewayData = readLeewayData(simCase, child, stringPluses);
+				distressSot.setLeewayData(leewayData);
 			} else {
 				AnnounceIgnoreTag(simCase, tagName);
 			}
@@ -833,6 +759,102 @@ public class ModelReader {
 				throw new ReaderException("Bad Object Type");
 			}
 		}
+	}
+
+	/** Reads the definition of an Debris Object Type: leeway data. */
+	private static void readDot(final SimCaseManager.SimCase simCase, final Element element, final Model model,
+			final TreeSet<StringPlus> stringPluses) throws ReaderException {
+		final ElementIterator childIterator = new ElementIterator(element);
+		final String unit = null;
+		final int dotId = getInt(simCase, element, "id", unit, stringPluses);
+		final String name = getString(simCase, element, "name", "" + dotId, stringPluses);
+		DebrisObjectType dot = model.dotIdToDot(dotId);
+		if (dot != null) {
+			throw new ReaderException("Multiple definition of search object type " + dotId);
+		}
+		dot = model.addDebrisObjectType(dotId, name);
+		/** Leeway has its own subtag. */
+		boolean haveLeewayTag = false;
+		while (childIterator.hasNextElement()) {
+			final Element child = childIterator.nextElement();
+			final String tagName = child.getTagName();
+			if ("LEEWAY".equals(tagName)) {
+				haveLeewayTag = true;
+				final SearchObjectType.LeewayData leewayData = readLeewayData(simCase, child, stringPluses);
+				dot.setLeewayData(leewayData);
+			} else {
+				AnnounceIgnoreTag(simCase, tagName);
+			}
+		}
+		if (!haveLeewayTag) {
+			if (getBoolean(simCase, element, "LeewayData", true, stringPluses)) {
+				throw new ReaderException("Bad Object Type");
+			}
+		}
+	}
+
+	private static SearchObjectType.LeewayData readLeewayData(final SimCaseManager.SimCase simCase,
+			final Element element, final TreeSet<StringPlus> stringPluses) throws ReaderException {
+		double nominalSpeed = Double.NaN;
+		double gibingRate = Double.NaN;
+		double dwlSlope = Double.NaN;
+		double dwlConstant = 0d;
+		double dwlStandardDeviation = Double.NaN;
+		double cwlPlusSlope = Double.NaN;
+		double cwlPlusConstant = Double.NaN;
+		double cwlPlusStandardDeviation = Double.NaN;
+		double cwlMinusSlope = Double.NaN;
+		double cwlMinusConstant = Double.NaN;
+		double cwlMinusStandardDeviation = Double.NaN;
+		boolean useRayleigh = false;
+		nominalSpeed = getDouble(simCase, element, "nominalSpeed", " kts", Double.NaN, stringPluses);
+		gibingRate = getDouble(simCase, element, "gibingRate", "% perHr", Double.NaN, stringPluses);
+		final ElementIterator childIterator = new ElementIterator(element);
+		while (childIterator.hasNextElement()) {
+			final Element child = childIterator.nextElement();
+			final String childTag = child.getTagName();
+			if ("DWL".equals(childTag)) {
+				if (!Double.isNaN(dwlSlope)) {
+					throw new ReaderException("Multiple definition of dwl");
+				}
+				dwlSlope = getDouble(simCase, child, "slope", "", stringPluses);
+				dwlConstant = getDouble(simCase, child, "constant", " kts", 0d, stringPluses);
+				dwlStandardDeviation = getDouble(simCase, child, "Syx", " kts", stringPluses);
+				useRayleigh = getBoolean(simCase, child, "useRayleigh", false, stringPluses);
+			} else if ("CWLPOS".equals(childTag)) {
+				if (!Double.isNaN(cwlPlusSlope)) {
+					throw new ReaderException("Multiple definition of cwlPlus");
+				}
+				cwlPlusSlope = getDouble(simCase, child, "slope", "", stringPluses);
+				cwlPlusConstant = getDouble(simCase, child, "constant", " kts", 0d, stringPluses);
+				cwlPlusStandardDeviation = getDouble(simCase, child, "Syx", " kts", stringPluses);
+			} else if ("CWLNEG".equals(childTag)) {
+				if (!Double.isNaN(cwlMinusSlope)) {
+					throw new ReaderException("Multiple definition of cwlMinus");
+				}
+				cwlMinusSlope = getDouble(simCase, child, "slope", "", stringPluses);
+				cwlMinusConstant = getDouble(simCase, child, "constant", " kts", 0d, stringPluses);
+				cwlMinusStandardDeviation = getDouble(simCase, child, "Syx", " kts", stringPluses);
+			} else {
+				AnnounceIgnoreTag(simCase, childTag);
+			}
+		}
+		if (Double.isNaN(cwlPlusSlope)) {
+			cwlPlusSlope = -cwlMinusSlope;
+			cwlPlusStandardDeviation = cwlMinusStandardDeviation;
+		}
+		if (Double.isNaN(cwlMinusSlope)) {
+			cwlMinusSlope = -cwlPlusSlope;
+			cwlMinusStandardDeviation = cwlPlusStandardDeviation;
+		}
+		if (Double.isNaN(dwlSlope) || Double.isNaN(cwlPlusSlope) || Double.isNaN(gibingRate)
+				|| Double.isNaN(nominalSpeed)) {
+			throw new ReaderException("Incomplete leeway description");
+		}
+		final double gibingFrequencyPerSecond = gibingRate / 100d / 3600d;
+		return new SearchObjectType.LeewayData(gibingFrequencyPerSecond, dwlSlope, dwlConstant, dwlStandardDeviation,
+				cwlPlusSlope, cwlPlusConstant, cwlPlusStandardDeviation, cwlMinusSlope, cwlMinusConstant,
+				cwlMinusStandardDeviation, nominalSpeed, useRayleigh);
 	}
 
 	private static void readRequest(final SimCaseManager.SimCase simCase, final Model model, final File caseDirFile,
@@ -965,9 +987,7 @@ public class ModelReader {
 							throw new ReaderException("Cannot get nParticles.");
 						}
 					} else {
-						/**
-						 * Regular. If they're both set explicitly, we do not appeal to mode.
-						 */
+						/** Regular. If they're both set explicitly, we do not appeal to mode. */
 						int monteCarloMinutesA = 0;
 						int monteCarloMinutesB = 0;
 						int nParticlesPerScenarioA = 0;
@@ -1192,11 +1212,11 @@ public class ModelReader {
 				readSortieLegs(simCase, child, sortie, constantSpeed, sortieStartTime, stringPluses);
 			} else if ("COMP_OBJECT_TYPE".equals(childTag)) {
 				final String unit = null;
-				final int searchObjectTypeId = getInt(simCase, child, "id", unit, stringPluses);
-				final SearchObjectType searchObjectType = model.getSearchObjectType(searchObjectTypeId);
+				final int sotId = getInt(simCase, child, "id", unit, stringPluses);
+				final SearchObjectType searchObjectType = model.sotIdToSot(sotId);
 				if (searchObjectType == null) {
-					String errString = "Search object type " + searchObjectTypeId + " is not in {";
-					final Collection<SearchObjectType> searchObjectTypes = model.getSearchObjectTypes();
+					String errString = "Search object type " + sotId + " is not in {";
+					final ArrayList<SearchObjectType> searchObjectTypes = model.getSearchObjectTypes();
 					boolean printedOne = false;
 					for (final SearchObjectType searchObjectType2 : searchObjectTypes) {
 						if (printedOne) {
@@ -1206,7 +1226,7 @@ public class ModelReader {
 						errString += searchObjectType2.getId();
 					}
 					errString += "}";
-					final ReaderException readerError = new ReaderException(errString + searchObjectTypeId);
+					final ReaderException readerError = new ReaderException(errString + sotId);
 					SimCaseManager.err(simCase, String.format(errString + "\nWe used to throw an error here.\n%s",
 							StringUtilities.getStackTraceString(readerError)));
 				}
@@ -1214,7 +1234,7 @@ public class ModelReader {
 				if (lrcSet.getNLrcs() == 0) {
 					lrcSet.add(LateralRangeCurve._NearSighted);
 				}
-				sortie.addLrcSet(searchObjectTypeId, lrcSet, viz2);
+				sortie.addLrcSet(sotId, lrcSet, viz2);
 			} else {
 				AnnounceIgnoreTag(simCase, childTag);
 			}
@@ -1564,7 +1584,7 @@ public class ModelReader {
 					}
 					lastRefSecs = currentRefSecs;
 				} else {
-					currentRefSecs = readDtg(simCase, child, stringPluses);
+					currentRefSecs = readDtg(simCase, child, "dtg", stringPluses);
 				}
 				if (lastLatLng != null) {
 					sortie.addLegIfNotVacuous(lastLatLng, currentLatLng, lastRefSecs, currentRefSecs);
@@ -1577,14 +1597,10 @@ public class ModelReader {
 		}
 	}
 
-	/** Reads the scenario or debrisSighting and updates the model. */
-	private static void readScenarioOrDebrisSighting(final SimCaseManager.SimCase simCase, final HashSet<Short> usedIds,
+	/** Reads a scenario and updates the model. */
+	private static void readScenario(final SimCaseManager.SimCase simCase, final HashSet<Integer> usedIds,
 			final Element element, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
-		short idX = getShort(simCase, element, "id", /* unit= */null, stringPluses);
-		while (!usedIds.add(idX)) {
-			idX *= 10;
-		}
-		final short id = idX;
+		final short id = uniquifyId(getInt(simCase, element, "id", /* unit= */null, stringPluses), usedIds);
 		final String name = getString(simCase, element, "name", "", stringPluses);
 		final String preType = getString(simCase, element, "type", "", /* stringPluses= */null);
 		final String type;
@@ -1599,15 +1615,12 @@ public class ModelReader {
 		} else if (preType.equalsIgnoreCase(Scenario._R21Type)) {
 			getString(simCase, element, "type", "", stringPluses);
 			type = Scenario._R21Type;
-		} else if (element.getTagName().equalsIgnoreCase(Scenario._DebrisSightingType)) {
-			type = Scenario._DebrisSightingType;
 		} else if (preType.length() == 0) {
 			type = Scenario._RegularScenarioType;
 		} else {
 			type = null;
 		}
-		final boolean isDebrisSighting = type == Scenario._DebrisSightingType;
-		final double scenarioWeight = !isDebrisSighting ? getWeight(simCase, element, "weight", stringPluses) : 1d;
+		final double scenarioWeight = getPercentage(simCase, element, "weight", stringPluses);
 		if (scenarioWeight > 0d) {
 			if (type == Scenario._RegularScenarioType) {
 				/** A Regular (Voyage, DR, LKP, etc) scenario. */
@@ -1646,7 +1659,7 @@ public class ModelReader {
 						readPath(simCase, model, child, regularScenario, distressRefSecsMean, distressPlusMinusHrs,
 								sailElementExists, stringPluses);
 					} else if ("SCEN_OBJECT_TYPE".equals(tagName)) {
-						readSearchObject(simCase, child, regularScenario, model, stringPluses);
+						readSotWithWt(simCase, child, regularScenario, model, stringPluses);
 					} else if ("SAIL".equals(tagName)) {
 						sailElement = child;
 						continue;
@@ -1674,7 +1687,7 @@ public class ModelReader {
 					final String tagName = child.getTagName();
 					if ("TIME".equals(tagName)) {
 						timeDistribution = readTimeDistribution(simCase, child, /* readAsDuration= */false,
-								/* isDebrisSighting= */false, stringPluses);
+								stringPluses);
 					} else if ("SIGHTING".equals(tagName) || "BEARING_CALL".equals(tagName)
 							|| "ELLIPSE".equals(tagName)) {
 						haveSighting = true;
@@ -1723,31 +1736,81 @@ public class ModelReader {
 						} else if ("ELLIPSE".equals(tagName)) {
 							readEllipse(simCase, child, lobScenario, stringPluses);
 						} else if ("SCEN_OBJECT_TYPE".equals(tagName)) {
-							readSearchObject(simCase, child, lobScenario, model, stringPluses);
+							readSotWithWt(simCase, child, lobScenario, model, stringPluses);
 						} else {
 							continue;
 						}
 					}
 				}
-			} else if (type == Scenario._DebrisSightingType) {
-				final int iDebrisSighting = model.getNDebrisSightings();
-				final DebrisSighting debrisSighting = new DebrisSighting(simCase, id, name, iDebrisSighting);
-				final ElementIterator childIterator = new ElementIterator(element);
-				while (childIterator.hasNextElement()) {
-					final Element child = childIterator.nextElement();
-					final String tagName = child.getTagName();
-					if ("PATH".equals(tagName)) {
-						readPath(simCase, model, child, debrisSighting, /* sightingRefSecsMean= */-1L,
-								/* sightingPlusMinusHrs= */-1d, /* sailElementExists= */ false, stringPluses);
-					} else if ("SCEN_OBJECT_TYPE".equals(tagName)) {
-						readSearchObject(simCase, child, debrisSighting, model, stringPluses);
-					} else {
-						AnnounceIgnoreTag(simCase, tagName);
-					}
-				}
-				model.addDebrisSighting(debrisSighting);
 			}
 		}
+	}
+
+	private static short uniquifyId(final int id, final HashSet<Integer> usedIds) {
+		for (int k = 0; k < 1000; k += 100) {
+			if (k + id >= Short.MAX_VALUE) {
+				break;
+			}
+			final int newId = k + id;
+			if (usedIds.add(newId)) {
+				return (short) newId;
+			}
+		}
+		return (short) -1;
+	}
+
+	/** Reads a debris sighting and updates the model. */
+	private static void readDebrisSighting(final SimCaseManager.SimCase simCase, final HashSet<Integer> usedIds,
+			final Element element, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
+		final short id = uniquifyId(getInt(simCase, element, "id", /* unit= */null, stringPluses), usedIds);
+		final String name = getString(simCase, element, "name", "", stringPluses);
+		if (name == null || name.length() == 0) {
+			throw new ReaderException("Bad Debris Sighting.");
+		}
+		long sightingRefSecs = -1;
+		Polygon polygon = null;
+		final ArrayList<SotWithDbl> dotWithCnfdncs = new ArrayList<>();
+		final ElementIterator childIt = new ElementIterator(element);
+		while (childIt.hasNextElement()) {
+			final Element childElt = childIt.nextElement();
+			final String childTag = childElt.getTagName();
+			if ("TIME".equals(childTag)) {
+				if (sightingRefSecs >= 0) {
+					sightingRefSecs = -1L;
+				} else {
+					try {
+						sightingRefSecs = readDtg(simCase, childElt, "dtg", stringPluses);
+					} catch (final Exception e) {
+						sightingRefSecs = -1L;
+					}
+				}
+			} else if (childTag.equals("POLYGON")) {
+				polygon = (Polygon) readArea(simCase, childElt, /* interpretAsHazard= */false, /* isUniform= */false,
+						/* truncateDistanceNmi= */0d, stringPluses);
+			} else if ("DEBRIS_OBJECT_TYPE".equals(childTag)) {
+				final int dotId = getInt(simCase, childElt, "id", /* unit= */null, stringPluses);
+				final int nDotsWithCnfdnc = dotWithCnfdncs.size();
+				for (int k = 0; k < nDotsWithCnfdnc; ++k) {
+					if (dotWithCnfdncs.get(k).getSot().getId() == dotId) {
+						throw new ReaderException(
+								"Duplicate debris object type " + dotId + " for DebrisSighting " + id);
+					}
+				}
+				final DebrisObjectType dot = model.dotIdToDot(dotId);
+				if (dot == null) {
+					throw new ReaderException("Unknown debris object type " + dotId);
+				}
+				final double confidence = getPercentage(simCase, childElt, "confidence", stringPluses);
+				if (confidence < 0d || confidence > 100d) {
+					throw new ReaderException("Bad Debris Object Type Confidence given for " + dotId);
+				}
+				dotWithCnfdncs.add(new SotWithDbl(dot, confidence));
+			}
+		}
+		if (sightingRefSecs < 0 || polygon == null || dotWithCnfdncs.size() == 0) {
+			throw new ReaderException("Incomplete DebrisSighting " + name);
+		}
+		model.addDebrisSighting(simCase, name, id, polygon, sightingRefSecs, dotWithCnfdncs);
 	}
 
 	/** Used to log a surprising tag. */
@@ -1755,36 +1818,26 @@ public class ModelReader {
 		SimCaseManager.out(simCase, String.format("Ignoring tag[%s].", tagName));
 	}
 
-	/**
-	 * Read a SearchObjectTypeWithWeight.
-	 *
-	 * @param element  the node containing the information.
-	 * @param scenario the scenario for this SearchObjectType.
-	 * @param model    the model being populated.
-	 * @throws ReaderException when an incorrect definition is given.
-	 */
-	private static void readSearchObject(final SimCaseManager.SimCase simCase, final Element element,
+	private static void readSotWithWt(final SimCaseManager.SimCase simCase, final Element element,
 			final Scenario scenario, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final String unit = null;
-		final int id = getInt(simCase, element, "id", unit, stringPluses);
-		final SearchObjectType distressSot = model.getSearchObjectType(id);
-		if (distressSot == null) {
-			throw new ReaderException("Unknown search object type " + id);
+		final int sotId = getInt(simCase, element, "id", unit, stringPluses);
+		final SearchObjectType sot = model.sotIdToSot(sotId);
+		if (sot == null) {
+			throw new ReaderException("Unknown search object type " + sotId);
 		}
-		final double weight = !scenario.isDebrisSighting() ? getWeight(simCase, element, "weight", stringPluses) : 1d;
-		final SotWithWt searchObjectTypeWithWeight = new SotWithWt(distressSot, weight);
-		scenario.add(searchObjectTypeWithWeight);
+		final double weight = getPercentage(simCase, element, "weight", stringPluses);
+		if (weight < 0d || weight > 100d) {
+			throw new ReaderException("Bad Search Object Type Weight given " + sotId);
+		}
+		final SotWithDbl sotWithWt = new SotWithDbl(sot, weight);
+		if (sotWithWt != scenario.addSotWithWt(sotWithWt)) {
+			throw new ReaderException("Bad Search-Object-Type/Weight combination (duplicate(?))");
+
+		}
 	}
 
-	/**
-	 * Reads one of the three kinds of path for a scenario.
-	 *
-	 * @param element           the node containing the information.
-	 * @param regularScenario   the scenario to be populated.
-	 * @param model             the model to be populated.
-	 * @param sailElementExists
-	 * @throws ReaderException when an incorrect definition is given.
-	 */
+	/** Reads one of the three kinds of path for a scenario. */
 	private static void readPath(final SimCaseManager.SimCase simCase, final Model model, final Element element,
 			final RegularScenario regularScenario, final long distressRefSecsMean, final double distressPlusMinusHrs,
 			final boolean sailElementExists, final TreeSet<StringPlus> stringPluses) throws ReaderException {
@@ -1795,17 +1848,11 @@ public class ModelReader {
 		 * location. There will be at most one subsequent element and it will be either
 		 * a VOYAGE or a DEAD_RECKON tag.
 		 */
-		final boolean isDebrisSighting = regularScenario.isDebrisSighting();
 		while (childIterator.hasNextElement()) {
 			final Element child = childIterator.nextElement();
 			final String childTag = child.getTagName();
-			if (("DEPARTURE_LOCATION".equals(childTag) && !isDebrisSighting)
-					|| (isDebrisSighting && "DEBRIS_LOCATION".equals(childTag))) {
+			if ("DEPARTURE_LOCATION".equals(childTag)) {
 				readDepartureArea(simCase, child, regularScenario, stringPluses);
-				if (isDebrisSighting) {
-					/** We're all done. */
-					return;
-				}
 			} else if ("VOYAGE".equals(childTag)) {
 				final boolean noDistress = getBoolean(simCase, child, "NoDistress", false, /* stringPluses= */null);
 				if (noDistress) {
@@ -1900,7 +1947,7 @@ public class ModelReader {
 				} else {
 					if (!last) {
 						dwellTimeDistributionForLeg = readTimeDistribution(simCase, grandChild,
-								/* readAsDuration= */true, scenario.isDebrisSighting(), stringPluses);
+								/* readAsDuration= */true, stringPluses);
 					} else {
 						dwellTimeDistributionForLeg = null;
 					}
@@ -1934,7 +1981,7 @@ public class ModelReader {
 			while (childIterator.hasNextElement()) {
 				final Element child = childIterator.nextElement();
 				if ("DISTRESS_TIME".equals(child.getTagName())) {
-					maxDistressRefSecs = readDtg(simCase, child, stringPluses);
+					maxDistressRefSecs = readDtg(simCase, child, "dtg", stringPluses);
 				}
 			}
 			if (maxDistressRefSecs == Long.MAX_VALUE) {
@@ -1983,7 +2030,7 @@ public class ModelReader {
 			/** We did not successfully read in the departureArea with child. */
 			if (departureTimeDistribution == null) {
 				departureTimeDistribution = readTimeDistribution(simCase, child, /* readAsDuration= */false,
-						scenario.isDebrisSighting(), stringPluses);
+						stringPluses);
 				if (departureTimeDistribution != null) {
 					continue;
 				}
@@ -2000,8 +2047,7 @@ public class ModelReader {
 	}
 
 	private static TimeDistribution readTimeDistribution(final SimCaseManager.SimCase simCase, final Element element,
-			final boolean readAsDuration, final boolean isDebrisSighting, final TreeSet<StringPlus> stringPluses)
-			throws ReaderException {
+			final boolean readAsDuration, final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final String tagName = element.getTagName();
 		if (readAsDuration) {
 			if (!"DWELL_TIME".equals(tagName)) {
@@ -2012,14 +2058,12 @@ public class ModelReader {
 				return null;
 			}
 		}
-		final int plusMinusInMinutes = !isDebrisSighting
-				? getDurationMinutes(simCase, element, "plus_minus", stringPluses)
-				: 0;
+		final int plusMinusInMinutes = getDurationMinutes(simCase, element, "plus_minus", stringPluses);
 		int timeInMinutes;
 		if (readAsDuration) {
 			timeInMinutes = getDurationMinutes(simCase, element, "duration", stringPluses);
 		} else {
-			timeInMinutes = (int) (readDtg(simCase, element, stringPluses) / 60);
+			timeInMinutes = (int) (readDtg(simCase, element, "dtg", stringPluses) / 60);
 		}
 		return new TimeDistribution(timeInMinutes, plusMinusInMinutes);
 	}
@@ -2033,11 +2077,6 @@ public class ModelReader {
 			s = getStringNoDefault(simCase, element, attNameCore, stringPluses);
 		}
 		return TimeUtilities.dtgToRefSecs(s);
-	}
-
-	public static long readDtg(final SimCaseManager.SimCase simCase, final Element element,
-			final TreeSet<StringPlus> stringPluses) throws ReaderException {
-		return readDtg(simCase, element, "dtg", stringPluses);
 	}
 
 	/**
@@ -2291,23 +2330,19 @@ public class ModelReader {
 	}
 
 	/**
-	 * Reads a percentage, checking that the % sign is given.
-	 *
-	 * @param element       the node containing the information.
-	 * @param attributeName the attribute to be evaluated.
-	 * @return a decimal value.
-	 * @throws ReaderException when an incorrect definition is given.
+	 * Reads a percentage, checking that the % sign is given, and returns the
+	 * proportion.
 	 */
-	private static double getWeight(final SimCaseManager.SimCase simCase, final Element element,
+	private static double getPercentage(final SimCaseManager.SimCase simCase, final Element element,
 			final String attributeName, final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final String stringValue = getStringNoDefault(simCase, element, attributeName, stringPluses);
 		if (!stringValue.endsWith("%")) {
-			throw new ReaderException("Bad perCent format " + stringValue);
+			throw new ReaderException("Bad perCent _Format " + stringValue);
 		}
-		final String decimalValue = stringValue.substring(0, stringValue.length() - 1);
+		final String s = stringValue.substring(0, stringValue.length() - 1);
 		try {
-			final double weight = Double.parseDouble(decimalValue);
-			return weight / 100;
+			final double perCentage = Double.parseDouble(s);
+			return perCentage / 100d;
 		} catch (final NumberFormatException exception) {
 			throw new ReaderException(exception.getMessage());
 		}
@@ -2708,17 +2743,6 @@ public class ModelReader {
 		return stringToInt(fullValue, unit);
 	}
 
-	public static short getShort(final SimCaseManager.SimCase simCase, final Element element,
-			final String attributeName, final String unit, final TreeSet<StringPlus> stringPluses)
-			throws ReaderException {
-		final String defaultValue = null;
-		final String fullValue = getString(simCase, element, attributeName, defaultValue, stringPluses);
-		if (fullValue == null || fullValue.length() == 0) {
-			throw new ReaderException("Missing int: " + element.getTagName() + '.' + attributeName);
-		}
-		return stringToShort(fullValue, unit);
-	}
-
 	public static int getDurationMinutes(final SimCaseManager.SimCase simCase, final Element element,
 			final String attributeName, final TreeSet<StringPlus> stringPluses) {
 		final long durationSecs = getDurationSecs(simCase, element, attributeName, stringPluses);
@@ -2780,18 +2804,6 @@ public class ModelReader {
 			return Long.parseLong(validateAndStripUnit(fullValue, unit));
 		} catch (final NumberFormatException exception) {
 			throw new ReaderException("Bad int: " + fullValue);
-		}
-	}
-
-	private static short stringToShort(final String fullValue, final String unit) throws ReaderException {
-		try {
-			final int intValue = Integer.parseInt(validateAndStripUnit(fullValue, unit));
-			if (intValue < 0) {
-				return intValue == -1 ? (short) -1 : Short.MIN_VALUE;
-			}
-			return (short) (intValue % (-Short.MIN_VALUE));
-		} catch (final NumberFormatException exception) {
-			throw new ReaderException("Bad short: " + fullValue);
 		}
 	}
 

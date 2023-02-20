@@ -11,40 +11,35 @@ import com.skagit.util.randomx.Randomx;
 import com.skagit.util.shorelineFinder.ShorelineFinder;
 
 public class UnderwayStateVector extends StateVector {
-	public UnderwayStateVector(final StateVector predecessor,
-			final StateVectorType stateVectorType, final long simSecs,
+	public UnderwayStateVector(final StateVector predecessor, final StateVectorType stateVectorType, final long simSecs,
 			final boolean updateParticleTail) {
 		super(predecessor, stateVectorType, simSecs, updateParticleTail);
 		setLatLng(getLatLng());
 		setStateVectorType(stateVectorType);
 	}
 
-	public UnderwayStateVector(final Particle particle, final long simSecs,
-			final LatLng3 latLng, final StateVectorType stateVectorType,
-			final boolean updateParticleTail) {
+	public UnderwayStateVector(final Particle particle, final long simSecs, final LatLng3 latLng,
+			final StateVectorType stateVectorType, final boolean updateParticleTail) {
 		super(particle, simSecs, latLng, stateVectorType, updateParticleTail);
 	}
 
 	@Override
-	public StateVector timeUpdate(final Tracker tracker,
-			final Scenario scenario, final long[] simSecsS, final int iT) {
+	public StateVector timeUpdate(final Tracker tracker, final Scenario scenario, final long[] simSecsS, final int iT) {
 		final long particleSimSecs = getSimSecs();
 		final long simSecsToUpdateTo = simSecsS[iT];
 		if (particleSimSecs > simSecsToUpdateTo) {
 			return this;
 		}
-		final SimCaseManager.SimCase simCase = tracker.getSimCase();
-		final MyLogger logger = SimCaseManager.getLogger(simCase);
-		final UnderwayParticle particle = (UnderwayParticle) getParticle();
+		final SimCaseManager.SimCase simCasex = tracker.getSimCase();
+		final MyLogger logger = SimCaseManager.getLogger(simCasex);
+		final UnderwayParticle particle = (UnderwayParticle) _particle;
 		final long distressSimSecs = particle.getDistressSimSecs();
-		final long underwayDuration =
-				Math.min(distressSimSecs, simSecsToUpdateTo) - particleSimSecs;
+		final long underwayDuration = Math.min(distressSimSecs, simSecsToUpdateTo) - particleSimSecs;
 		final UnderwayStateVector underwayStateVector0 = this;
 		final PreDistressModel.Itinerary itinerary = particle.getItinerary();
 		final UnderwayStateVector underwayStateVector1;
 		if (underwayDuration > 0) {
-			underwayStateVector1 = itinerary.move(simCase, scenario,
-					underwayStateVector0, underwayDuration);
+			underwayStateVector1 = itinerary.move(simCasex, scenario, underwayStateVector0, underwayDuration);
 		} else {
 			underwayStateVector1 = underwayStateVector0;
 		}
@@ -56,8 +51,8 @@ public class UnderwayStateVector extends StateVector {
 		final ParticlesFile particlesFile = tracker.getParticlesFile();
 		final ParticleIndexes prtclIndxs = particle.getParticleIndexes();
 		final boolean updateParticleTail = true;
-		final DistressStateVector adriftStateVector = new DistressStateVector(
-				underwayStateVector1, distressSimSecs, updateParticleTail);
+		final DistressStateVector adriftStateVector = new DistressStateVector(underwayStateVector1, distressSimSecs,
+				updateParticleTail);
 		final LatLng3 distressLatLng = underwayStateVector1.getLatLng();
 		adriftStateVector.setLatLng(distressLatLng);
 		if (particle.getDistressLatLng() == null) {
@@ -67,8 +62,7 @@ public class UnderwayStateVector extends StateVector {
 		/** Check for landed. */
 		final Model model = tracker.getModel();
 		final ShorelineFinder shorelineFinder = model.getShorelineFinder();
-		final int distressLevel =
-				shorelineFinder.getLevel(logger, distressLatLng);
+		final int distressLevel = shorelineFinder.getLevel(logger, distressLatLng);
 		final boolean landed = distressLevel % 2 == 1;
 		final long distressRefSecs = model.getRefSecs(distressSimSecs);
 		if (landed) {
@@ -78,11 +72,9 @@ public class UnderwayStateVector extends StateVector {
 			adriftStateVector.setIsStuckOnLand();
 		} else {
 			/** Check for anchoring. */
-			final SearchObjectType searchObjectType =
-					particle.getDistressObjectType();
+			final SearchObjectType searchObjectType = particle.getDistressObjectType();
 			final Randomx random = particle.getRandom();
-			final boolean isAnchored = searchObjectType.anchors(distressLatLng,
-					random.nextDouble(), model.getEtopo());
+			final boolean isAnchored = searchObjectType.anchors(distressLatLng, random.nextDouble(), model.getEtopo());
 			if (isAnchored) {
 				particle.setAnchoringSimSecs(distressSimSecs);
 				particlesFile.setAnchoringRefSecs(prtclIndxs, distressRefSecs);

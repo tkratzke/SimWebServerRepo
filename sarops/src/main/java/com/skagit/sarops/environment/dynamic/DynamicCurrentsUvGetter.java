@@ -16,35 +16,30 @@ import com.skagit.sarops.environment.WindsUvGetter;
 import com.skagit.sarops.model.Model;
 import com.skagit.sarops.model.Scenario;
 import com.skagit.sarops.simCaseManager.SimCaseManager;
-import com.skagit.sarops.simCaseManager.SimCaseManager.SimCase;
 import com.skagit.sarops.tracker.DistressStateVector;
 import com.skagit.util.gshhs.CircleOfInterest;
+import com.skagit.util.myLogger.MyLogger;
 import com.skagit.util.navigation.LatLng3;
 
 import ucar.nc2.NetcdfFile;
 
-public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
-		implements CurrentsUvGetter, SummaryBuilder {
+public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter implements CurrentsUvGetter, SummaryBuilder {
 	final private static int _MaxUvGettersToKeep = 100;
 
-	public DynamicCurrentsUvGetter(final SimCaseManager.SimCase simCase,
-			final Model model, final String interpolationMode,
-			final long halfLifeSecs, final long preDistressHalfLifeSecs,
-			final double uStandardDeviation, final double vStandardDeviation,
-			final String scheme, final String userInfo, final String host,
-			final int port, final String path, final String clientKey,
-			final String sourceID, final String sourceName, final int outputType,
-			final int timeOut, final boolean zipped) {
-		super(simCase, model, _DriftsTag, _MaxUvGettersToKeep,
-				interpolationMode, halfLifeSecs, preDistressHalfLifeSecs,
-				uStandardDeviation, vStandardDeviation, scheme, userInfo, host,
-				port, path, clientKey, sourceID, sourceName, outputType, timeOut,
-				zipped);
+	public DynamicCurrentsUvGetter(final SimCaseManager.SimCase simCase, final Model model,
+			final String interpolationMode, final long halfLifeSecs, final long preDistressHalfLifeSecs,
+			final double uStandardDeviation, final double vStandardDeviation, final String scheme,
+			final String userInfo, final String host, final int port, final String path, final String clientKey,
+			final String sourceID, final String sourceName, final int outputType, final int timeOut,
+			final boolean zipped) {
+		super(simCase, model, _DriftsTag, _MaxUvGettersToKeep, interpolationMode, halfLifeSecs, preDistressHalfLifeSecs,
+				uStandardDeviation, vStandardDeviation, scheme, userInfo, host, port, path, clientKey, sourceID,
+				sourceName, outputType, timeOut, zipped);
 	}
 
 	@Override
-	public void incrementalPrepare(final long refSeconds,
-			final LatLng3 latLng, final BoxDefinition inputBoxDefinition) {
+	public void incrementalPrepare(final long refSeconds, final LatLng3 latLng,
+			final BoxDefinition inputBoxDefinition) {
 		cacheNecessaryBoxDefinition(refSeconds, latLng, inputBoxDefinition);
 	}
 
@@ -66,13 +61,12 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 	@Override
 	public void close(final String interpolationMode) {
 		/**
-		 * Closing is done by each NetCdfCurrentsUvGetter. Hence, we do nothing
-		 * here.
+		 * Closing is done by each NetCdfCurrentsUvGetter. Hence, we do nothing here.
 		 */
 	}
 
 	@Override
-	public CurrentsUvGetter getCurrentsUvGetter2(final BitSet iViews0,
+	public CurrentsUvGetter getCurrentsUvGetter2(final MyLogger logger, final BitSet iViews0,
 			final boolean interpolateInTime0) {
 		/** If iView is not 0, ..., well, we're just not up to that. */
 		if (!iViews0.get(0)) {
@@ -80,15 +74,14 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 		}
 		return new CurrentsUvGetter() {
 			@Override
-			public DataForOnePointAndTime getCurrentData(final long refSeconds,
+			public DataForOnePointAndTime getCurrentData(final MyLogger logger, final long refSecs,
 					final LatLng3 latLng, final String interpolationMode) {
-				return getDataForOnePointAndTime(refSeconds, latLng,
-						getInterpolationMode());
+				return getDataForOnePointAndTime(refSecs, latLng, getInterpolationMode());
 			}
 
 			@Override
-			public long getHalfLifeSecs(final int overallIndex) {
-				return DynamicCurrentsUvGetter.this.getHalfLifeSecs(overallIndex);
+			public long getHalfLifeSecs() {
+				return DynamicCurrentsUvGetter.this.getHalfLifeSecs();
 			}
 
 			@Override
@@ -97,8 +90,8 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 			}
 
 			@Override
-			public void incrementalPrepare(final long refSeconds,
-					final LatLng3 latLng, final BoxDefinition boxDefinition) {
+			public void incrementalPrepare(final long refSeconds, final LatLng3 latLng,
+					final BoxDefinition boxDefinition) {
 			}
 
 			@Override
@@ -120,7 +113,7 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 			}
 
 			@Override
-			public CurrentsUvGetter getCurrentsUvGetter2(final BitSet iViews1,
+			public CurrentsUvGetter getCurrentsUvGetter2(final MyLogger logger, final BitSet iViews1,
 					final boolean interpolateInTime1) {
 				return null;
 			}
@@ -131,15 +124,14 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 			}
 
 			@Override
-			public void writeElement(final Element outputDriftsElement,
-					final Element inputDriftsElement, final Model model) {
+			public void writeElement(final Element outputDriftsElement, final Element inputDriftsElement,
+					final Model model) {
 			}
 
 			@Override
-			public boolean isEmpty(final SimCaseManager.SimCase simCase) {
-				final DynamicCurrentsUvGetter dynamicCurrentsUvGetter =
-						DynamicCurrentsUvGetter.this;
-				return dynamicCurrentsUvGetter.isEmpty(simCase);
+			public boolean isEmpty(final MyLogger logger) {
+				final DynamicCurrentsUvGetter dynamicCurrentsUvGetter = DynamicCurrentsUvGetter.this;
+				return dynamicCurrentsUvGetter.isEmpty(logger);
 			}
 
 			@Override
@@ -157,10 +149,8 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 			}
 
 			@Override
-			public DistressStateVector fillInStateVectorsIfAppropriate(
-					final SimCase simCase, final WindsUvGetter windsUvGetter,
-					final Scenario scenario, final long[] simSecsS,
-					final DistressStateVector distressStateVector,
+			public DistressStateVector fillInStateVectorsIfAppropriate(final WindsUvGetter windsUvGetter,
+					final Scenario scenario, final long[] simSecsS, final DistressStateVector distressStateVector,
 					final long simSecs) {
 				return distressStateVector;
 			}
@@ -169,69 +159,66 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 
 	@Override
 	public String[] getViewNames() {
-		return new String[] { "Currents" };
+		return new String[] {
+				"Currents"
+		};
 	}
 
 	@Override
-	public DataForOnePointAndTime getCurrentData(final long refSeconds,
-			final LatLng3 latLng, final String interpolationMode) {
+	public DataForOnePointAndTime getCurrentData(final MyLogger logger, final long refSecs, final LatLng3 latLng,
+			final String interpolationMode) {
 		NetCdfUvGetter winner = null;
 		for (final BoxDefinition boxDefinition : _uvGetters.keySet()) {
-			if (boxDefinition.contains(refSeconds, latLng)) {
+			if (boxDefinition.contains(refSecs, latLng)) {
 				winner = _uvGetters.get(boxDefinition);
 				break;
 			}
 		}
 		/**
-		 * We should only get here when we didn't call prepare. So we better
-		 * call it now. But since this routine is called in parallel, we have to
-		 * synchronize this block of code.
+		 * We should only get here when we didn't call prepare. So we better call it
+		 * now. But since this routine is called in parallel, we have to synchronize
+		 * this block of code.
 		 */
 		if (winner == null) {
 			synchronized (this) {
 				final double nmiBuffer = 45.0;
-				final BoxDefinition newBoxDefinition = new BoxDefinition(_simCase,
-						_model, refSeconds, latLng, nmiBuffer);
+				final BoxDefinition newBoxDefinition = new BoxDefinition(_simCase, _model, refSecs, latLng, nmiBuffer);
 				incrementalPrepare(-1L, null, newBoxDefinition);
 				finishPrepare();
 				/** Now try again. */
 				for (final BoxDefinition boxDefinition : _uvGetters.keySet()) {
-					if (boxDefinition.contains(refSeconds, latLng)) {
+					if (boxDefinition.contains(refSecs, latLng)) {
 						winner = _uvGetters.get(boxDefinition);
-						return winner.getDataForOnePointAndTime(_simCase, refSeconds,
-								latLng, interpolationMode);
+						return winner.getDataForOnePointAndTime(_simCase, refSecs, latLng, interpolationMode);
 					}
 				}
 			}
 		}
 		/**
-		 * Take the last one you see if you can't get a perfect fit. You should
-		 * always get a perfect fit.
+		 * Take the last one you see if you can't get a perfect fit. You should always
+		 * get a perfect fit.
 		 */
 		if (winner == null) {
 			winner = _uvGetters.lastEntry().getValue();
 		}
-		final NetCdfCurrentsUvGetter netCdfCurrentsUvGetter =
-				(NetCdfCurrentsUvGetter) winner;
+		final NetCdfCurrentsUvGetter netCdfCurrentsUvGetter = (NetCdfCurrentsUvGetter) winner;
 		final DataForOnePointAndTime currentsUv;
-		if (netCdfCurrentsUvGetter.isEmpty(_simCase)) {
+		if (netCdfCurrentsUvGetter.isEmpty(logger)) {
 			currentsUv = new DataForOnePointAndTime(0f, 0f, 0f, 0f, 0f, 0f);
 		} else {
-			currentsUv = netCdfCurrentsUvGetter.getCurrentData(refSeconds, latLng,
-					interpolationMode);
+			currentsUv = netCdfCurrentsUvGetter.getCurrentData(logger, refSecs, latLng, interpolationMode);
 		}
 		return currentsUv;
 	}
 
 	@Override
-	public SummaryRefSecs getSummaryForRefSecs(final CircleOfInterest coi,
-			final long refSecs, final int iView,
+	public SummaryRefSecs getSummaryForRefSecs(final CircleOfInterest coi, final long refSecs, final int iView,
 			final boolean interpolateInTime) {
 		return getSummaryForRefSecsSXYZ(coi, refSecs, iView);
 	}
 
 	@Override
-	public long getHalfLifeSecs(final int overallIndex) {
+	public long getHalfLifeSecs() {
 		return _halfLifeSecs;
 	}
 
@@ -241,19 +228,16 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 	}
 
 	@Override
-	public void writeElement(final Element outputDriftsElement,
-			final Element inputDriftsElement, final Model model) {
+	public void writeElement(final Element outputDriftsElement, final Element inputDriftsElement, final Model model) {
 		writeFixedPart(outputDriftsElement);
 	}
 
 	@Override
-	protected NetCdfUvGetter buildNetCdfUvGetter(final String uriString,
-			final NetcdfFile netCdfFile)
+	protected NetCdfUvGetter buildNetCdfUvGetter(final String uriString, final NetcdfFile netCdfFile)
 			throws NetCdfUvGetter.NetCdfUvGetterException {
 		try {
-			return new NetCdfCurrentsUvGetter(_simCase, _model, uriString,
-					netCdfFile, _dU, _dV, _altDU, _altDV, _halfLifeSecs,
-					_preDistressHalfLifeSecs);
+			return new NetCdfCurrentsUvGetter(_simCase, _model, uriString, netCdfFile, _dU, _dV, _altDU, _altDV,
+					_halfLifeSecs, _preDistressHalfLifeSecs);
 		} catch (final NetCdfUvGetterException e) {
 			SimCaseManager.standardLogError(_simCase, e);
 		}
@@ -267,14 +251,13 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 
 	@Override
 	void closeNetCdfUvGetter(final NetCdfUvGetter netCdfUvGetter) {
-		final NetCdfCurrentsUvGetter netCdfCurrentsUvGetter =
-				(NetCdfCurrentsUvGetter) netCdfUvGetter;
+		final NetCdfCurrentsUvGetter netCdfCurrentsUvGetter = (NetCdfCurrentsUvGetter) netCdfUvGetter;
 		netCdfCurrentsUvGetter.close(getInterpolationMode());
 	}
 
 	@Override
-	public boolean isEmpty(final SimCaseManager.SimCase simCase) {
-		final boolean b = super.isEmpty(simCase);
+	public boolean isEmpty(final MyLogger logger) {
+		final boolean b = super.isEmpty(logger);
 		return b;
 	}
 
@@ -294,10 +277,9 @@ public class DynamicCurrentsUvGetter extends DynamicEnvUvGetter
 	}
 
 	@Override
-	public DistressStateVector fillInStateVectorsIfAppropriate(
-			final SimCase simCase, final WindsUvGetter windsUvGetter,
-			final Scenario scenario, final long[] simSecsS,
-			final DistressStateVector distressStateVector, final long simSecs) {
+	public DistressStateVector fillInStateVectorsIfAppropriate(final WindsUvGetter windsUvGetter,
+			final Scenario scenario, final long[] simSecsS, final DistressStateVector distressStateVector,
+			final long simSecs) {
 		return distressStateVector;
 	}
 }

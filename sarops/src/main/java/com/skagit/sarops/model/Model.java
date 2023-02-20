@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -51,6 +51,7 @@ import com.skagit.util.StaticUtilities;
 import com.skagit.util.StringUtilities;
 import com.skagit.util.TimeUtilities;
 import com.skagit.util.cdf.area.Area;
+import com.skagit.util.cdf.area.Polygon;
 import com.skagit.util.etopo.Etopo;
 import com.skagit.util.gshhs.CircleOfInterest;
 import com.skagit.util.gshhs.GshhsReader;
@@ -85,16 +86,16 @@ public class Model {
 	/** When we read in the xml, we populate the following. */
 	private TreeSet<ModelReader.StringPlus> _stringPluses;
 
-	/** Scenarii: */
-	final private HashMap<Integer, Integer> _idToScenarioIndex;
+	/** Scenarii and DebrisSightings: */
 	final private ArrayList<Scenario> _scenarii;
+	final private ArrayList<DebrisSighting> _debrisSightings;
 
-	private SotWithWt.OriginatingSotWithWt _originatingSotWithWt;
-	final private List<Sortie> _sorties;
-	final private List<DebrisSighting> _debrisSightings;
-	final private HashMap<Integer, Integer> _idToDebrisSightingIndex;
-	final private List<FixHazard> _fixHazards;
-	final private Map<Integer, SearchObjectType> _searchObjectTypes;
+	private SotWithDbl.OriginatingSotWithWt _originatingSotWithWt;
+
+	final private ArrayList<Sortie> _sorties;
+	final private ArrayList<FixHazard> _fixHazards;
+	final private ArrayList<SearchObjectType> _searchObjectTypes;
+	final private ArrayList<DebrisObjectType> _debrisObjectTypes;
 
 	/** Critical times and counts. */
 	private long _firstOutputRefSecs;
@@ -159,20 +160,17 @@ public class Model {
 
 		/** Scenarii and DebrisSightings: */
 		if (_displayOnly) {
-			_idToScenarioIndex = null;
 			_scenarii = null;
-			_idToDebrisSightingIndex = null;
 			_debrisSightings = null;
 		} else {
-			_idToScenarioIndex = new HashMap<>();
 			_scenarii = new ArrayList<>();
-			_idToDebrisSightingIndex = new HashMap<>();
 			_debrisSightings = new ArrayList<>();
 		}
 
 		_sorties = new ArrayList<>();
 		_fixHazards = new ArrayList<>();
-		_searchObjectTypes = new TreeMap<>();
+		_searchObjectTypes = new ArrayList<>();
+		_debrisObjectTypes = new ArrayList<>();
 		_outOfAreaIncidents = new TreeMap<>();
 
 		_writeOcTables = false;
@@ -206,20 +204,35 @@ public class Model {
 		_sorties.add(sortie);
 	}
 
-	/** So that we can temporarily add a Sortie. */
-	public void remove(final Sortie sortie) {
-		_sorties.remove(sortie);
+	public SearchObjectType sotIdToSot(final int sotId) {
+		for (int nSots = _searchObjectTypes.size(), k = 0; k < nSots; ++k) {
+			final SearchObjectType sot = _searchObjectTypes.get(k);
+			if (sot.getId() == sotId) {
+				return sot;
+			}
+		}
+		return null;
 	}
 
-	public SearchObjectType getSearchObjectType(final int id) {
-		return _searchObjectTypes.get(id);
+	public ArrayList<SearchObjectType> getSearchObjectTypes() {
+		return _searchObjectTypes;
 	}
 
-	public Collection<SearchObjectType> getSearchObjectTypes() {
-		return _searchObjectTypes.values();
+	public DebrisObjectType dotIdToDot(final int dotId) {
+		for (int nDots = _debrisObjectTypes.size(), k = 0; k < nDots; ++k) {
+			final DebrisObjectType dot = _debrisObjectTypes.get(k);
+			if (dot.getId() == dotId) {
+				return dot;
+			}
+		}
+		return null;
 	}
 
-	public List<Sortie> getSorties() {
+	public ArrayList<DebrisObjectType> getDebrisObjectTypes() {
+		return _debrisObjectTypes;
+	}
+
+	public ArrayList<Sortie> getSorties() {
 		return _sorties;
 	}
 
@@ -335,19 +348,33 @@ public class Model {
 				return false;
 			}
 		}
-		if (_searchObjectTypes.size() != model._searchObjectTypes.size()) {
-			return false;
-		}
 		if (!_originatingSotWithWt.deepEquals(model._originatingSotWithWt)) {
 			return false;
 		}
-		final Iterator<SearchObjectType> searchObjectTypeIterator = _searchObjectTypes.values().iterator();
-		final Iterator<SearchObjectType> comparedSearchObjectTypeIterator = model._searchObjectTypes.values()
-				.iterator();
-		while (searchObjectTypeIterator.hasNext() && comparedSearchObjectTypeIterator.hasNext()) {
-			final SearchObjectType searchObjectType = searchObjectTypeIterator.next();
-			final SearchObjectType comparedSearchObjectType = comparedSearchObjectTypeIterator.next();
-			if (!searchObjectType.deepEquals(comparedSearchObjectType)) {
+		if (_searchObjectTypes.size() != model._searchObjectTypes.size()) {
+			return false;
+		}
+		final int nSots = _searchObjectTypes.size();
+		final int nComparedSots = model._searchObjectTypes.size();
+		if (nSots != nComparedSots) {
+			return false;
+		}
+		for (int k = 0; k < nSots; ++k) {
+			final SearchObjectType sot = _searchObjectTypes.get(k);
+			final SearchObjectType comparedSot = model._searchObjectTypes.get(k);
+			if (!sot.deepEquals(comparedSot)) {
+				return false;
+			}
+
+		}
+		final int nDebrisObjectTypes = _debrisObjectTypes.size();
+		if (nDebrisObjectTypes != model._debrisObjectTypes.size()) {
+			return false;
+		}
+		for (int k = 0; k < nDebrisObjectTypes; ++k) {
+			final DebrisObjectType dot = _debrisObjectTypes.get(k);
+			final DebrisObjectType comparedDot = model._debrisObjectTypes.get(k);
+			if (!dot.deepEquals(comparedDot)) {
 				return false;
 			}
 		}
@@ -448,16 +475,25 @@ public class Model {
 
 	public SearchObjectType addSearchObjectType(final int id, final String name) {
 		final SearchObjectType newOne = new SearchObjectType(id, name);
-		final SearchObjectType incumbent = _searchObjectTypes.put(id, newOne);
-		if (incumbent == null) {
-			/** Successful put. Return the new one. */
+		final int idx = Collections.binarySearch(_searchObjectTypes, newOne);
+		if (idx < 0) {
+			_searchObjectTypes.add(newOne);
+			Collections.sort(_searchObjectTypes);
 			return newOne;
 		}
-		/**
-		 * Old one existed. Put the old one back and return null to indicate an
-		 * unsuccessful put.
-		 */
-		_searchObjectTypes.put(id, incumbent);
+		/** Old one existed. Return null to indicate an unsuccessful put. */
+		return null;
+	}
+
+	public DebrisObjectType addDebrisObjectType(final int id, final String name) {
+		final DebrisObjectType newOne = new DebrisObjectType(id, name);
+		final int idx = Collections.binarySearch(_debrisObjectTypes, newOne);
+		if (idx < 0) {
+			_debrisObjectTypes.add(newOne);
+			Collections.sort(_debrisObjectTypes);
+			return newOne;
+		}
+		/** Old one existed. Return null to indicate an unsuccessful put. */
 		return null;
 	}
 
@@ -532,7 +568,7 @@ public class Model {
 			SimCaseManager.err(simCase, "No search object type defined");
 			result = false;
 		}
-		for (final SearchObjectType searchObjectType : _searchObjectTypes.values()) {
+		for (final SearchObjectType searchObjectType : _searchObjectTypes) {
 			if (searchObjectType != getOriginatingSotWithWt().getSot()) {
 				result &= searchObjectType.check(simCase);
 			}
@@ -797,11 +833,11 @@ public class Model {
 		return _fixHazards;
 	}
 
-	public SotWithWt.OriginatingSotWithWt getOriginatingSotWithWt() {
+	public SotWithDbl.OriginatingSotWithWt getOriginatingSotWithWt() {
 		return _originatingSotWithWt;
 	}
 
-	public void setOriginatingObjectTypeWithWeight(final SotWithWt.OriginatingSotWithWt originating) {
+	public void setOriginatingObjectTypeWithWeight(final SotWithDbl.OriginatingSotWithWt originating) {
 		_originatingSotWithWt = originating;
 	}
 
@@ -982,7 +1018,7 @@ public class Model {
 		_interpolationMode = interpolationMode;
 	}
 
-	public boolean getIsSticky(final int overallIndex) {
+	public boolean getIsSticky(final ParticleIndexes prtclIndxs) {
 		if (_proportionOfSticky == 0d) {
 			return false;
 		} else if (_proportionOfSticky == 1d) {
@@ -994,15 +1030,11 @@ public class Model {
 					final Randomx r = new Randomx(_randomSeed, /* nToAdvace= */1);
 					final int n = getTotalNParticles();
 					final int k = (int) Math.round(_proportionOfSticky * n);
-					final int[] stickyIntArray = PermutationTools.randomKofN(k, n, r);
-					_stickies = new BitSet();
-					for (final int element : stickyIntArray) {
-						_stickies.set(element);
-					}
+					_stickies = PermutationTools.randomKofNBitSet(k, n, r);
 				}
 			}
-
 		}
+		final int overallIndex = prtclIndxs.getOverallIndex();
 		return _stickies.get(overallIndex);
 	}
 
@@ -1059,18 +1091,6 @@ public class Model {
 
 	public void setWindsFilePath(final String filePath) {
 		_windsFilePath = StringUtilities.cleanUpFilePath(filePath);
-	}
-
-	public void clearExceptFor(final int specialSearchObjectId) {
-		_sorties.clear();
-		_fixHazards.clear();
-		final SearchObjectType searchObjectType = _searchObjectTypes.get(specialSearchObjectId);
-		_searchObjectTypes.clear();
-		if (specialSearchObjectId >= 0) {
-			_searchObjectTypes.put(specialSearchObjectId, searchObjectType);
-		}
-		clearScenarii();
-		clearDebrisSightings();
 	}
 
 	public String getEtopoShpFilePath() {
@@ -1170,10 +1190,9 @@ public class Model {
 
 	public float[] getMaximumAnchorDepthsInM() {
 		final TreeSet<Float> maximumAnchorDepthsInMetersSet = new TreeSet<>();
-		for (final Map.Entry<Integer, SearchObjectType> entry : _searchObjectTypes.entrySet()) {
-			final SearchObjectType searchObjectType = entry.getValue();
-			if (searchObjectType.mightAnchor()) {
-				maximumAnchorDepthsInMetersSet.add(searchObjectType.getMaximumAnchorDepthInM());
+		for (final SearchObjectType sot : _searchObjectTypes) {
+			if (sot.mightAnchor()) {
+				maximumAnchorDepthsInMetersSet.add(sot.getMaximumAnchorDepthInM());
 			}
 		}
 		final int nDifferent = maximumAnchorDepthsInMetersSet.size();
@@ -1190,9 +1209,7 @@ public class Model {
 		final TreeSet<Long> refSecsSet = new TreeSet<>();
 		refSecsSet.add(_firstOutputRefSecs);
 		refSecsSet.add(_lastOutputRefSecs);
-		/**
-		 * Get the intermediate steps. Set the first one and then add them all in.
-		 */
+		/** Get the intermediate steps. Set the first one and then add them all in. */
 		final long dayBoundary = TimeUtilities.roundDownToDayBoundary(_firstOutputRefSecs);
 		for (long refSecs = dayBoundary; refSecs < _lastOutputRefSecs; refSecs += _monteCarloSecs) {
 			if (refSecs > _firstOutputRefSecs) {
@@ -1215,8 +1232,10 @@ public class Model {
 		return !_reverseDrift ? refSecs : Long.MAX_VALUE - refSecs;
 	}
 
-	public CurrentsUvGetter getCurrentsUvGetter2(final BitSet iViews, final boolean interpolateInTime) {
-		return _currentsUvGetter == null ? null : _currentsUvGetter.getCurrentsUvGetter2(iViews, interpolateInTime);
+	public CurrentsUvGetter getCurrentsUvGetter2(final MyLogger logger, final BitSet iViews,
+			final boolean interpolateInTime) {
+		return _currentsUvGetter == null ? null
+				: _currentsUvGetter.getCurrentsUvGetter2(logger, iViews, interpolateInTime);
 	}
 
 	public WindsUvGetter getWindsUvGetter2(final BitSet iViews, final boolean interpolateInTime) {
@@ -1339,21 +1358,29 @@ public class Model {
 		return _searchObjectTypes.size();
 	}
 
-	public int getSotOrd(final int searchObjectTypeId) {
-		int k = 0;
-		for (final SearchObjectType searchObjectType : _searchObjectTypes.values()) {
-			if (searchObjectType.getId() == searchObjectTypeId) {
-				return k;
+	public int getSotOrd(final int sotId) {
+		final int nSots = _searchObjectTypes.size();
+		for (int sotOrd = 0; sotOrd < nSots; ++sotOrd) {
+			if (_searchObjectTypes.get(sotOrd).getId() == sotId) {
+				return sotOrd;
 			}
-			++k;
 		}
 		return -1;
 	}
 
-	public SearchObjectType getSearchObjectTypeFromOrd(final int sotOrd) {
-		for (final SearchObjectType searchObjectType : _searchObjectTypes.values()) {
-			if (getSotOrd(searchObjectType.getId()) == sotOrd) {
-				return searchObjectType;
+	public SearchObjectType getSotFromOrd(final int sotOrd) {
+		if (sotOrd < 0 || sotOrd >= _searchObjectTypes.size()) {
+			return null;
+		}
+		return _searchObjectTypes.get(sotOrd);
+	}
+
+	public SearchObjectType getSotFromId(final int sotId) {
+		final int nSots = _searchObjectTypes.size();
+		for (int sotOrd = 0; sotOrd < nSots; ++sotOrd) {
+			final SearchObjectType sot = _searchObjectTypes.get(sotOrd);
+			if (sot.getId() == sotId) {
+				return sot;
 			}
 		}
 		return null;
@@ -1426,7 +1453,6 @@ public class Model {
 	}
 
 	public void writeEcho(final SimCaseManager.SimCase simCase) {
-		/** Write out the echo, now that the environment has been set. */
 		try {
 			final String[] echoFileNames = getEchoFileNames(simCase);
 			final File echoDir = new File(echoFileNames[0]);
@@ -1466,12 +1492,6 @@ public class Model {
 		_windsElement = null;
 		_currentsFilePath = _currentsFileType = null;
 		_currentsElement = null;
-		/**
-		 * <pre>
-		 * Do not null this out.
-		_outputFilePath = null;
-		 * </pre>
-		 */
 		_containmentRequests = null;
 		_modeName = null;
 		/** Environmental data: */
@@ -1503,8 +1523,8 @@ public class Model {
 	public int getMaxNParticles(final int iScenario, final int sotId) {
 		if (iScenario == _WildCard) {
 			int n = 0;
-			final int nRealScenarii = _scenarii.size();
-			for (int iSc = 0; iSc < nRealScenarii; ++iSc) {
+			final int nScenarii = _scenarii.size();
+			for (int iSc = 0; iSc < nScenarii; ++iSc) {
 				n += getMaxNParticles(iSc, sotId);
 			}
 			return n;
@@ -1518,9 +1538,10 @@ public class Model {
 		return count;
 	}
 
-	private Scenario addScenario(final double scenarioWeight, final Scenario scenario) {
+	private synchronized Scenario addScenario(final double scenarioWeight, final Scenario scenario) {
 		if (scenario != null && scenarioWeight > 0d) {
 			_scenarii.add(scenario);
+			Collections.sort(_scenarii);
 			return scenario;
 		}
 		return null;
@@ -1599,34 +1620,12 @@ public class Model {
 		return result;
 	}
 
-	public void clearScenarii() {
-		_idToScenarioIndex.clear();
-		_scenarii.clear();
-	}
-
-	public void clearDebrisSightings() {
-		_idToDebrisSightingIndex.clear();
-		_debrisSightings.clear();
-	}
-
-	/**
-	 * Close the scenarii and debrisSightings and establish _idToScenarioIndex and
-	 * _idToDebrisSightingIndex.
-	 */
-	public void close(final SimCaseManager.SimCase simCase) {
+	/** Done reading everything in. */
+	public void close() {
 		final int nScenarii = _scenarii.size();
 		for (int iScenario = 0; iScenario < nScenarii; ++iScenario) {
 			final Scenario scenario = _scenarii.get(iScenario);
-			final int id = scenario.getId();
-			scenario.close(simCase);
-			_idToScenarioIndex.put(id, iScenario);
-		}
-		final int nDebrisSightings = _debrisSightings.size();
-		for (int iDebrisSighting = 0; iDebrisSighting < nDebrisSightings; ++iDebrisSighting) {
-			final DebrisSighting debrisSighting = _debrisSightings.get(iDebrisSighting);
-			final int id = debrisSighting.getId();
-			debrisSighting.close(simCase);
-			_idToDebrisSightingIndex.put(id, iDebrisSighting);
+			scenario.close();
 		}
 	}
 
@@ -1662,28 +1661,22 @@ public class Model {
 		return false;
 	}
 
-	public int scenarioIdToIndex(final int scenarioId) {
-		final Integer index = _idToScenarioIndex.get(scenarioId);
-		return index == null ? -1 : index;
-	}
-
-	public int scenarioIndexToId(final int iScenario) {
-		if (iScenario < 0 || iScenario >= _scenarii.size()) {
-			return Integer.MIN_VALUE;
+	public int scenarioIdToIndex(final int id) {
+		for (int n = _scenarii.size(), k = 0; k < n; ++k) {
+			if (_scenarii.get(k).getId() == id) {
+				return k;
+			}
 		}
-		return _scenarii.get(iScenario).getId();
+		return -1;
 	}
 
-	public int debrisSightingIdToIndex(final int debrisSightingId) {
-		final Integer index = _idToDebrisSightingIndex.get(debrisSightingId);
-		return index == null ? -1 : index;
-	}
-
-	public int debrisSightingIndexToId(final int iDebrisSighting) {
-		if (iDebrisSighting < 0 || iDebrisSighting >= _debrisSightings.size()) {
-			return Integer.MIN_VALUE;
+	public int debrisSightingIdToIndex(final int id) {
+		for (int n = _debrisSightings.size(), k = 0; k < n; ++k) {
+			if (_debrisSightings.get(k).getId() == id) {
+				return k;
+			}
 		}
-		return _debrisSightings.get(iDebrisSighting).getId();
+		return -1;
 	}
 
 	public boolean scenariiAreDeepEqual(final Model model) {
@@ -1704,16 +1697,15 @@ public class Model {
 	}
 
 	public boolean debrisSightingsAreDeepEqual(final Model model) {
-		if (_debrisSightings.size() != model._debrisSightings.size()) {
+		final int n = _debrisSightings.size();
+		if (n != model._debrisSightings.size()) {
 			return false;
 		}
-		final Iterator<DebrisSighting> debrisSightingIterator = _debrisSightings.iterator();
-		final Iterator<DebrisSighting> comparedDebrisSightingIterator = model._debrisSightings.iterator();
-		while (debrisSightingIterator.hasNext() && comparedDebrisSightingIterator.hasNext()) {
-			final DebrisSighting debrisSighting = debrisSightingIterator.next();
-			final DebrisSighting comparedDebrisSighting = comparedDebrisSightingIterator.next();
-			if ((debrisSighting.getId() != comparedDebrisSighting.getId())
-					|| !debrisSighting.deepEquals(comparedDebrisSighting)) {
+		for (int k = 0; k < n; ++k) {
+			final DebrisSighting debrisSighting = _debrisSightings.get(k);
+			final DebrisSighting otherDebrisSighting = model._debrisSightings.get(k);
+			if ((debrisSighting.getId() != otherDebrisSighting.getId())
+					|| !debrisSighting.deepEquals(otherDebrisSighting)) {
 				return false;
 			}
 		}
@@ -1724,8 +1716,38 @@ public class Model {
 		return _debrisSightings.size();
 	}
 
-	public void addDebrisSighting(final DebrisSighting debrisSighting) {
+	public long[] getDebrisSightingSecsS() {
+		final HashSet<Long> secsSet = new HashSet<>();
+		final int nSightings = _debrisSightings.size();
+		for (int k = 0; k < nSightings; ++k) {
+			final DebrisSighting sighting = _debrisSightings.get(k);
+			secsSet.add(sighting.getSightingRefSecs());
+		}
+		final int nSecsS = secsSet.size();
+		final long[] toReturn = new long[nSecsS];
+		final Iterator<Long> it = secsSet.iterator();
+		for (int k = 0; k < nSecsS; ++k) {
+			toReturn[k] = it.next();
+		}
+		Arrays.sort(toReturn);
+		return toReturn;
+	}
+
+	public int getNDebrisObjectTypes() {
+		return _debrisObjectTypes.size();
+	}
+
+	public synchronized DebrisSighting addDebrisSighting(final SimCaseManager.SimCase simCase, final String name,
+			final int id, final Polygon polygon, final long sightingRefSecs,
+			final ArrayList<SotWithDbl> dotWithCnfdncsList) {
+		final int nDotWithCnfdcs = dotWithCnfdncsList.size();
+		final SotWithDbl[] dotWithCnfdncs = dotWithCnfdncsList.toArray(new SotWithDbl[nDotWithCnfdcs]);
+		Arrays.sort(dotWithCnfdncs);
+		final DebrisSighting debrisSighting = new DebrisSighting(simCase, id, name, polygon, sightingRefSecs,
+				dotWithCnfdncs);
 		_debrisSightings.add(debrisSighting);
+		Collections.sort(_debrisSightings);
+		return debrisSighting;
 	}
 
 }

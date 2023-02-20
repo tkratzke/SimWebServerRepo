@@ -1,6 +1,6 @@
 package com.skagit.sarops.model.io;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 
 import com.skagit.sarops.environment.CurrentsUvGetter;
 import com.skagit.sarops.environment.WindsUvGetter;
+import com.skagit.sarops.model.DebrisObjectType;
 import com.skagit.sarops.model.ExtraGraphicsClass;
 import com.skagit.sarops.model.FixHazard;
 import com.skagit.sarops.model.Model;
@@ -101,14 +102,20 @@ public class ModelWriter {
 		}
 		currentsUvGetter.writeElement(outputCurrentsElement, inputCurrentsElement, model);
 
-		/** Object types. */
-		final Collection<SearchObjectType> searchObjectTypes = model.getSearchObjectTypes();
+		/** Search Object types. */
+		final ArrayList<SearchObjectType> searchObjectTypes = model.getSearchObjectTypes();
 		for (final SearchObjectType searchObjectType : searchObjectTypes) {
 			searchObjectType.write(_formatter, mainElement);
 		}
 
+		/** Debris Object types. */
+		final ArrayList<DebrisObjectType> debrisObjectTypes = model.getDebrisObjectTypes();
+		for (final DebrisObjectType debrisObjectType : debrisObjectTypes) {
+			debrisObjectType.write(_formatter, mainElement);
+		}
+
 		/** Scenarios. */
-		model.getOriginatingSotWithWt().write(_formatter, mainElement, model);
+		model.getOriginatingSotWithWt().write(_formatter, mainElement);
 		final int nScenarii = model.getNScenarii();
 		for (int scenarioIndex = 0; scenarioIndex < nScenarii; ++scenarioIndex) {
 			model.getScenario(scenarioIndex).write(_formatter, mainElement, model);

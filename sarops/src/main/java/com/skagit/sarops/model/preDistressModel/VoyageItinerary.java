@@ -91,7 +91,7 @@ public class VoyageItinerary extends PreDistressModel.Itinerary {
 	}
 
 	@Override
-	public UnderwayStateVector move(final SimCaseManager.SimCase simCase, final Scenario scenario,
+	public UnderwayStateVector move(final SimCaseManager.SimCase simCasex, final Scenario scenario,
 			final UnderwayStateVector underwayStateVector0, final long durationSecs) {
 		if (durationSecs == 0) {
 			return underwayStateVector0;
@@ -340,7 +340,9 @@ public class VoyageItinerary extends PreDistressModel.Itinerary {
 	}
 
 	public static void main(final String[] args) {
-		final int[] ints = { 0, 2, 4 };
+		final int[] ints = {
+				0, 2, 4
+		};
 		for (int d = -1; d <= 5; ++d) {
 			final int glbIdx = CombinatoricTools.getGlbIndex(ints, d);
 			System.out.println(d + " " + glbIdx);

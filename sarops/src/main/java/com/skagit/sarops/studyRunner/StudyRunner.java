@@ -6,15 +6,15 @@ import com.skagit.sarops.simCaseManager.SimCaseManager.SimCase;
 import com.skagit.util.AbstractToImpl;
 import com.skagit.util.StaticUtilities;
 
-abstract public class AbstractStudyRunner {
-	final private static AbstractStudyRunner _Singleton;
+abstract public class StudyRunner {
+	final private static StudyRunner _Singleton;
 	static {
-		final AbstractStudyRunner singleton = (AbstractStudyRunner) AbstractToImpl
+		final StudyRunner singleton = (StudyRunner) AbstractToImpl
 				.GetImplObject(StaticUtilities.getMyClass());
 		if (singleton != null) {
 			_Singleton = singleton;
 		} else {
-			_Singleton = new AbstractStudyRunner() {
+			_Singleton = new StudyRunner() {
 
 				@Override
 				protected boolean runStudy(final SimCase simCase) {

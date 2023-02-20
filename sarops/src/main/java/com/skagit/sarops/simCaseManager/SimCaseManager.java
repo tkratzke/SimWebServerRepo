@@ -28,8 +28,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.skagit.sarops.MainSaropsObject;
 import com.skagit.sarops.AbstractOutFilesManager;
+import com.skagit.sarops.MainSaropsObject;
 import com.skagit.sarops.model.Model;
 import com.skagit.sarops.model.io.ModelReader;
 import com.skagit.sarops.planner.Planner;
@@ -53,9 +53,8 @@ import com.skagit.util.myThreadPool.MyThreadPool;
 
 public class SimCaseManager {
 
-	final private static boolean _DEBUG_SIM_CASES =
-			StringUtilities.getSystemProperty("Debug.SimCases",
-					/* useSpaceProxy= */false) != null;
+	final private static boolean _DEBUG_SIM_CASES = StringUtilities.getSystemProperty("Debug.SimCases",
+			/* useSpaceProxy= */false) != null;
 
 	final public static String _SimEndingLc = "-sim.xml";
 	final public static String _PlanEndingLc = "-plan.xml";
@@ -67,8 +66,8 @@ public class SimCaseManager {
 	final private static int _OldMs = 5 * 60 * 1000;
 	final private static int _VeryOldMs = 12 * 60 * 60 * 1000;
 
-	final private static boolean _ForgiveMissingParticlesFile =
-			System.getProperty("Forgive.Missing.ParticlesFile") != null;
+	final private static boolean _ForgiveMissingParticlesFile = System
+			.getProperty("Forgive.Missing.ParticlesFile") != null;
 
 	public enum ProgressState {
 		WAITING("Waiting"), ACTIVE("Active"), DONE("Done"), DROPPED("Dropped");
@@ -90,7 +89,9 @@ public class SimCaseManager {
 	final public static int _WorkerPriorityAdjustment = -3;
 
 	final private static String _DisplayOnlyString = "DISPLAY ONLY";
-	final private static boolean[] _LockOnSimCaseManagerProperties = {true};
+	final private static boolean[] _LockOnSimCaseManagerProperties = {
+			true
+	};
 	private static Properties _SimCaseManagerProperties = null;
 	private static int _MaxNProcessorsToUse;
 	private static int _NEngines;
@@ -105,9 +106,8 @@ public class SimCaseManager {
 		final private String _errCoreName;
 		final private MyLogger _logger;
 
-		private ThreadLoggerInfo(final File logDir, final String dbgCoreName,
-				final String outCoreName, final String wrnCoreName,
-				final String errCoreName, final MyLogger logger) {
+		private ThreadLoggerInfo(final File logDir, final String dbgCoreName, final String outCoreName,
+				final String wrnCoreName, final String errCoreName, final MyLogger logger) {
 			_logDir = logDir;
 			_dbgCoreName = dbgCoreName;
 			_outCoreName = outCoreName;
@@ -119,8 +119,7 @@ public class SimCaseManager {
 
 	final private TreeMap<String, ThreadLoggerInfo> _engineNameToThreadLoggerInfo;
 
-	final private ShortAlphaStringMap _shortAlphaStringMap =
-			new ShortAlphaStringMap();
+	final private ShortAlphaStringMap _shortAlphaStringMap = new ShortAlphaStringMap();
 
 	static class ParticlesFilePlus {
 		final String _key;
@@ -128,8 +127,7 @@ public class SimCaseManager {
 		final ParticlesFile _particlesFile;
 		long _lastAccessSecs;
 
-		private ParticlesFilePlus(final String key,
-				final ParticlesFile particlesFile, final long fileTimeSecs) {
+		private ParticlesFilePlus(final String key, final ParticlesFile particlesFile, final long fileTimeSecs) {
 			_key = key;
 			_fileTimeSecs = fileTimeSecs;
 			_particlesFile = particlesFile;
@@ -148,8 +146,8 @@ public class SimCaseManager {
 		private Properties _simProperties;
 		private String _xmlSimPropertiesFilePath;
 		/**
-		 * We store _nProgressSteps from _chunkReporter for when _chunkReporter
-		 * is gone. _nProgressSteps gets reset when _chunkReporter is set.
+		 * We store _nProgressSteps from _chunkReporter for when _chunkReporter is gone.
+		 * _nProgressSteps gets reset when _chunkReporter is set.
 		 */
 		private int _nProgressSteps;
 		private ChunkReporter _chunkReporter;
@@ -176,8 +174,7 @@ public class SimCaseManager {
 			_mainSaropsObject = null;
 			_creationMs = System.currentTimeMillis();
 			_finishMs = Long.MAX_VALUE / 2;
-			_nProgressSteps =
-					SimCaseManager.getSimGlobalStrings(this).getNProgressSteps();
+			_nProgressSteps = SimCaseManager.getSimGlobalStrings(this).getNProgressSteps();
 			_xmlSimPropertiesFilePath = null;
 			allowGoing();
 		}
@@ -200,24 +197,21 @@ public class SimCaseManager {
 			_mainSaropsObject = null;
 			_creationMs = System.currentTimeMillis();
 			_finishMs = Long.MAX_VALUE / 2;
-			_nProgressSteps =
-					SimCaseManager.getSimGlobalStrings(this).getNProgressSteps();
+			_nProgressSteps = SimCaseManager.getSimGlobalStrings(this).getNProgressSteps();
 			_xmlSimPropertiesFilePath = null;
 			allowGoing();
 		}
 
-		public void setXmlSimPropertiesFilePath(
-				final String xmlSimPropertiesFilePath) {
+		public void setXmlSimPropertiesFilePath(final String xmlSimPropertiesFilePath) {
 			_xmlSimPropertiesFilePath = xmlSimPropertiesFilePath;
 		}
 
 		private void resetSimGlobalStringsAndProperties() {
 			_simGlobalStrings = new SimGlobalStrings();
 			try {
-				_simProperties =
-						ModelReader.getSimPropertiesBeforeXmlOverrides(SimCase.this);
+				_simProperties = ModelReader.getSimPropertiesBeforeXmlOverrides(SimCase.this);
 			} catch (final Exception e) {
-				_logger.err(String.format("%s may Not proceed(2).", getName()));
+				MyLogger.err(_logger, String.format("%s may Not proceed(2).", getName()));
 				finishRun(ProgressState.DROPPED);
 				return;
 			}
@@ -228,8 +222,7 @@ public class SimCaseManager {
 				return null;
 			}
 			final String lcMustContain = mustContain.toLowerCase();
-			for (final Map.Entry<Object, Object> entry : _simProperties
-					.entrySet()) {
+			for (final Map.Entry<Object, Object> entry : _simProperties.entrySet()) {
 				final String key = (String) entry.getKey();
 				if (key.toLowerCase().contains(lcMustContain)) {
 					final String value = (String) entry.getValue();
@@ -250,8 +243,7 @@ public class SimCaseManager {
 			return null;
 		}
 
-		public boolean getSimPropertyBoolean(final String mustContain,
-				final boolean defaultValue) {
+		public boolean getSimPropertyBoolean(final String mustContain, final boolean defaultValue) {
 			final String[] fields = getSimProperty(mustContain);
 			if (fields == null) {
 				return defaultValue;
@@ -260,8 +252,7 @@ public class SimCaseManager {
 			return isOn == null ? defaultValue : isOn;
 		}
 
-		public double getSimPropertyDouble(final String mustContain,
-				final double defaultValue) {
+		public double getSimPropertyDouble(final String mustContain, final double defaultValue) {
 			final String[] fields = getSimProperty(mustContain);
 			if (fields == null) {
 				return defaultValue;
@@ -288,8 +279,7 @@ public class SimCaseManager {
 			return _mainSaropsObject;
 		}
 
-		public void setMainSaropsObject(
-				final MainSaropsObject mainSaropsObject) {
+		public void setMainSaropsObject(final MainSaropsObject mainSaropsObject) {
 			_mainSaropsObject = mainSaropsObject;
 		}
 
@@ -318,41 +308,28 @@ public class SimCaseManager {
 		public void run() {
 			_progressState = ProgressState.ACTIVE;
 			_engineName = Thread.currentThread().getName();
-			final ThreadLoggerInfo threadLoggerInfo =
-					_engineNameToThreadLoggerInfo.get(_engineName);
+			final ThreadLoggerInfo threadLoggerInfo = _engineNameToThreadLoggerInfo.get(_engineName);
 			_logger = threadLoggerInfo._logger;
 			_logger.out(String.format("Activating case %s", getName()));
-			final String modelFilePath =
-					StringUtilities.cleanUpFilePath(_runnerArgs[0]);
+			final String modelFilePath = StringUtilities.cleanUpFilePath(_runnerArgs[0]);
 			final File modelFile = new File(modelFilePath);
 			final File outAndErrDir = modelFile.getParentFile();
 			final String versionName = SimGlobalStrings.getStaticVersionName();
-			final String currentClassName =
-					convertToCurrentPckgName(_rawClassName);
+			final String currentClassName = convertToCurrentPckgName(_rawClassName);
 			final String caseName = getName();
 			if (currentClassName.equals(_TrackerClassName)) {
-				_logger.out(
-						String.format("Running Tracker, VersionName[%s], Case[%s].",
-								versionName, caseName));
-				_logger.resetAppenders(outAndErrDir,
-						_DEBUG_SIM_CASES ? "sim.dbg" : null, "sim.out", "sim.wrn",
+				_logger.out(String.format("Running Tracker, VersionName[%s], Case[%s].", versionName, caseName));
+				_logger.resetAppenders(outAndErrDir, _DEBUG_SIM_CASES ? "sim.dbg" : null, "sim.out", "sim.wrn",
 						"sim.err", MyLogger._DefaultSuffix, /* append= */false);
-				_logger.out(
-						String.format("Running Tracker, VersionName[%s], Case[%s].",
-								versionName, caseName));
+				_logger.out(String.format("Running Tracker, VersionName[%s], Case[%s].", versionName, caseName));
 			} else {
-				_logger.out(
-						String.format("Running Planner, VersionName[%s], Case[%s].",
-								versionName, caseName));
-				_logger.resetAppenders(outAndErrDir,
-						_DEBUG_SIM_CASES ? "plan.dbg" : null, "plan.out", "plan.wrn",
+				_logger.out(String.format("Running Planner, VersionName[%s], Case[%s].", versionName, caseName));
+				_logger.resetAppenders(outAndErrDir, _DEBUG_SIM_CASES ? "plan.dbg" : null, "plan.out", "plan.wrn",
 						"plan.err", MyLogger._DefaultSuffix, /* append= */false);
-				_logger.out(
-						String.format("Running Planner, VersionName[%s], Case[%s].",
-								versionName, caseName));
+				_logger.out(String.format("Running Planner, VersionName[%s], Case[%s].", versionName, caseName));
 			}
 			if (!_mayProceed) {
-				_logger.err(String.format("%s may Not proceed(1).", getName()));
+				MyLogger.err(_logger, String.format("%s may Not proceed(1).", getName()));
 				finishRun(ProgressState.DROPPED);
 				return;
 			}
@@ -362,13 +339,11 @@ public class SimCaseManager {
 			_logger.out(String.format("Reading input for %s.", getName()));
 			final boolean canReadInputFile = canReadInputFile();
 			if (!canReadInputFile) {
-				_logger
-						.err(String.format("Failed to read input for %s.", getName()));
+				_logger.err(String.format("Failed to read input for %s.", getName()));
 				finishRun(ProgressState.DROPPED);
 				return;
 			}
-			ProgressState completionProgressState =
-					_interrupted ? ProgressState.DROPPED : ProgressState.DONE;
+			ProgressState completionProgressState = _interrupted ? ProgressState.DROPPED : ProgressState.DONE;
 			try {
 				_logger.out(String.format("Finished reading input."));
 				_logger.out("Input Args:");
@@ -381,26 +356,21 @@ public class SimCaseManager {
 				} else if (currentClassName.equals(_PlannerClassName)) {
 					Planner.runPlanner(this, _runnerArgs);
 				}
-				_logger.out(String.format("%s/%s completed successfully.",
-						currentClassName, getName()));
+				_logger.out(String.format("%s/%s completed successfully.", currentClassName, getName()));
 			} catch (final Exception e) {
 				completionProgressState = ProgressState.DROPPED;
 				final String name = getName();
 				final String eString = e.toString();
-				_logger.err(String.format("Dropped %s because of \"%s.\"\n", name,
-						eString));
-				final String stackTraceString =
-						StringUtilities.getStackTraceString(e);
-				_logger.err(String.format("Stack trace:\n%s", stackTraceString));
+				MyLogger.err(_logger, String.format("Dropped %s because of \"%s.\"\n", name, eString));
+				final String stackTraceString = StringUtilities.getStackTraceString(e);
+				MyLogger.err(_logger, String.format("Stack trace:\n%s", stackTraceString));
 			}
 			finishRun(completionProgressState);
 		}
 
 		private boolean canReadInputFile() {
-			final String currentClassName =
-					convertToCurrentPckgName(_rawClassName);
-			if (currentClassName.equals(_TrackerClassName) &&
-					_runnerArgs == null && _runnerArgs.length == 0) {
+			final String currentClassName = convertToCurrentPckgName(_rawClassName);
+			if (currentClassName.equals(_TrackerClassName) && _runnerArgs == null && _runnerArgs.length == 0) {
 				/** Display only; we don't really care. */
 				return true;
 			}
@@ -414,8 +384,7 @@ public class SimCaseManager {
 				return false;
 			}
 			Element root = null;
-			try (final FileInputStream fis =
-					new FileInputStream(new File(filePath))) {
+			try (final FileInputStream fis = new FileInputStream(new File(filePath))) {
 				final Document document = LsFormatter._DocumentBuilder.parse(fis);
 				root = document.getDocumentElement();
 			} catch (final IOException | SAXException e2) {
@@ -433,14 +402,12 @@ public class SimCaseManager {
 				return true;
 			}
 			/**
-			 * Parse it enough to find the particlesFile and verify that we can
-			 * read it.
+			 * Parse it enough to find the particlesFile and verify that we can read it.
 			 */
-			final String particlesFilePath =
-					AbstractOutFilesManager.GetParticlesFilePathFromXml(filePath);
+			final String particlesFilePath = AbstractOutFilesManager.GetParticlesFilePathFromXml(filePath);
 			final File particlesFile = new File(particlesFilePath);
-			if (!particlesFile.exists() || !particlesFile.canRead() ||
-					!particlesFilePath.toLowerCase().endsWith(".nc")) {
+			if (!particlesFile.exists() || !particlesFile.canRead()
+					|| !particlesFilePath.toLowerCase().endsWith(".nc")) {
 				return false;
 			}
 			return true;
@@ -451,16 +418,14 @@ public class SimCaseManager {
 		}
 
 		public String getCleanedUpFilePath() {
-			if (_runnerArgs == null || _runnerArgs.length < 1 ||
-					_runnerArgs[0] == null) {
+			if (_runnerArgs == null || _runnerArgs.length < 1 || _runnerArgs[0] == null) {
 				return _DisplayOnlyString;
 			}
 			return _runnerArgs[0];
 		}
 
 		public String getNameForDisplay() {
-			if (_runnerArgs == null || _runnerArgs.length < 1 ||
-					_runnerArgs[0] == null) {
+			if (_runnerArgs == null || _runnerArgs.length < 1 || _runnerArgs[0] == null) {
 				return _DisplayOnlyString;
 			}
 			return getName();
@@ -476,15 +441,11 @@ public class SimCaseManager {
 		}
 
 		private void finishRun(final ProgressState completionProgressState) {
-			final ThreadLoggerInfo threadLoggerInfo =
-					_engineNameToThreadLoggerInfo.get(_engineName);
-			_logger.resetAppenders(threadLoggerInfo._logDir,
-					threadLoggerInfo._dbgCoreName, threadLoggerInfo._outCoreName,
-					threadLoggerInfo._wrnCoreName, threadLoggerInfo._errCoreName,
+			final ThreadLoggerInfo threadLoggerInfo = _engineNameToThreadLoggerInfo.get(_engineName);
+			_logger.resetAppenders(threadLoggerInfo._logDir, threadLoggerInfo._dbgCoreName,
+					threadLoggerInfo._outCoreName, threadLoggerInfo._wrnCoreName, threadLoggerInfo._errCoreName,
 					MyLogger._DefaultSuffix, /* append= */true);
-			String filePathString =
-					(_runnerArgs == null || _runnerArgs.length < 1) ? "NoFilePath" :
-							_runnerArgs[0];
+			String filePathString = (_runnerArgs == null || _runnerArgs.length < 1) ? "NoFilePath" : _runnerArgs[0];
 			filePathString = StringUtilities.cleanUpFilePath(filePathString);
 			final String m = String.format("finishRun(%s)", getName());
 			final boolean statusOnly = false;
@@ -529,11 +490,10 @@ public class SimCaseManager {
 			return _keepGoing;
 		}
 
-		public void setChunkReporter(final File progressDirectory,
-				final int nProgressSteps, final String[] sectionNames,
-				final boolean[] criticalSections, final String[][] sections) {
-			_chunkReporter = new ChunkReporter(progressDirectory, nProgressSteps,
-					sectionNames, criticalSections, sections);
+		public void setChunkReporter(final File progressDirectory, final int nProgressSteps,
+				final String[] sectionNames, final boolean[] criticalSections, final String[][] sections) {
+			_chunkReporter = new ChunkReporter(progressDirectory, nProgressSteps, sectionNames, criticalSections,
+					sections);
 		}
 
 		public void runOutChunks() {
@@ -558,11 +518,9 @@ public class SimCaseManager {
 			}
 		}
 
-		public void dumpCriticalTimes(final String caption,
-				final long entryTimeMs, final File timesFile) {
+		public void dumpCriticalTimes(final String caption, final long entryTimeMs, final File timesFile) {
 			if (_chunkReporter != null) {
-				_chunkReporter.dumpCriticalTimes(this, caption, entryTimeMs,
-						timesFile);
+				_chunkReporter.dumpCriticalTimes(this, caption, entryTimeMs, timesFile);
 			}
 		}
 
@@ -573,10 +531,8 @@ public class SimCaseManager {
 				nProgressSteps = _chunkReporter.getNProgressSteps();
 				nProgressStepsDone = _chunkReporter.getNProgressStepsDone();
 			} else {
-				final SimGlobalStrings simGlobalStrings =
-						SimCaseManager.getSimGlobalStrings(this);
-				final int defaultNProgressSteps =
-						simGlobalStrings.getNProgressSteps();
+				final SimGlobalStrings simGlobalStrings = SimCaseManager.getSimGlobalStrings(this);
+				final int defaultNProgressSteps = simGlobalStrings.getNProgressSteps();
 				switch (_progressState) {
 				case WAITING:
 					nProgressSteps = defaultNProgressSteps;
@@ -594,20 +550,20 @@ public class SimCaseManager {
 					break;
 				}
 			}
-			return new int[] { nProgressSteps, nProgressStepsDone };
+			return new int[] {
+					nProgressSteps, nProgressStepsDone
+			};
 		}
 
 		public boolean isOld() {
-			if (_progressState != ProgressState.DONE &&
-					_progressState != ProgressState.DROPPED) {
+			if (_progressState != ProgressState.DONE && _progressState != ProgressState.DROPPED) {
 				return false;
 			}
 			return _finishMs < System.currentTimeMillis() - _OldMs;
 		}
 
 		public boolean isVeryOld() {
-			if (_progressState != ProgressState.DONE &&
-					_progressState != ProgressState.DROPPED) {
+			if (_progressState != ProgressState.DONE && _progressState != ProgressState.DROPPED) {
 				return false;
 			}
 			return _finishMs < System.currentTimeMillis() - _VeryOldMs;
@@ -618,33 +574,28 @@ public class SimCaseManager {
 		}
 	}
 
-	private static Comparator<SimCase> _SimCaseComparator =
-			new Comparator<>() {
-				@Override
-				public int compare(final SimCase o1, final SimCase o2) {
-					final String filePath1 =
-							(o1._runnerArgs == null || o1._runnerArgs.length == 0) ?
-									null : o1._runnerArgs[0];
-					final String filePath2 =
-							(o2._runnerArgs == null || o2._runnerArgs.length == 0) ?
-									null : o2._runnerArgs[0];
-					if ((filePath1 == null) != (filePath2 == null)) {
-						return filePath1 == null ? 1 : -1;
-					}
-					int compareValue = filePath1.compareToIgnoreCase(filePath2);
-					if (compareValue != 0) {
-						return compareValue;
-					}
-					if ((o1._rawClassName == null) != (o2._rawClassName == null)) {
-						return o1._rawClassName == null ? 1 : -1;
-					}
-					if (o1._rawClassName == null) {
-						return 0;
-					}
-					compareValue = o1._rawClassName.compareTo(o2._rawClassName);
-					return compareValue;
-				}
-			};
+	private static Comparator<SimCase> _SimCaseComparator = new Comparator<>() {
+		@Override
+		public int compare(final SimCase o1, final SimCase o2) {
+			final String filePath1 = (o1._runnerArgs == null || o1._runnerArgs.length == 0) ? null : o1._runnerArgs[0];
+			final String filePath2 = (o2._runnerArgs == null || o2._runnerArgs.length == 0) ? null : o2._runnerArgs[0];
+			if ((filePath1 == null) != (filePath2 == null)) {
+				return filePath1 == null ? 1 : -1;
+			}
+			int compareValue = filePath1.compareToIgnoreCase(filePath2);
+			if (compareValue != 0) {
+				return compareValue;
+			}
+			if ((o1._rawClassName == null) != (o2._rawClassName == null)) {
+				return o1._rawClassName == null ? 1 : -1;
+			}
+			if (o1._rawClassName == null) {
+				return 0;
+			}
+			compareValue = o1._rawClassName.compareTo(o2._rawClassName);
+			return compareValue;
+		}
+	};
 
 	final private ThreadPoolExecutor _enginesThreadPool;
 	private int _nextEngineId;
@@ -662,8 +613,7 @@ public class SimCaseManager {
 		_OnlySimCaseManager = this;
 		/** Build the global logger. */
 		final File glblLogDir = DirsTracker.getLogDir();
-		if (StringUtilities.getSystemProperty("Clean.Global.Log.Files",
-				/* useSpaceProxy= */false) != null) {
+		if (StringUtilities.getSystemProperty("Clean.Global.Log.Files", /* useSpaceProxy= */false) != null) {
 			final File[] files = glblLogDir.listFiles(new FileFilter() {
 				@Override
 				public boolean accept(final File f) {
@@ -674,17 +624,16 @@ public class SimCaseManager {
 					if (!fNameLc.endsWith("." + MyLogger._DefaultSuffix)) {
 						return false;
 					}
-					if (fNameLc.startsWith("glbldbg") ||
-							fNameLc.startsWith("glblout") ||
-							fNameLc.startsWith("glblerr") ||
-							fNameLc.startsWith("nulldbg") ||
-							fNameLc.startsWith("nullout") ||
-							fNameLc.startsWith("nullwrn") ||
-							fNameLc.startsWith("nullerr")) {
+					if (fNameLc.startsWith("glbldbg") || fNameLc.startsWith("glblout") || fNameLc.startsWith("glblerr")
+							|| fNameLc.startsWith("nulldbg") || fNameLc.startsWith("nullout")
+							|| fNameLc.startsWith("nullwrn") || fNameLc.startsWith("nullerr")) {
 						return true;
 					}
 					if (fNameLc.startsWith("engn")) {
-						if (fNameLc.contains("dbg." + MyLogger._DefaultSuffix) || fNameLc.contains("out." + MyLogger._DefaultSuffix) || fNameLc.contains("wrn." + MyLogger._DefaultSuffix) || fNameLc.contains("err." + MyLogger._DefaultSuffix)) {
+						if (fNameLc.contains("dbg." + MyLogger._DefaultSuffix)
+								|| fNameLc.contains("out." + MyLogger._DefaultSuffix)
+								|| fNameLc.contains("wrn." + MyLogger._DefaultSuffix)
+								|| fNameLc.contains("err." + MyLogger._DefaultSuffix)) {
 							return true;
 						}
 					}
@@ -733,14 +682,12 @@ public class SimCaseManager {
 		}
 		final String tmString = tmStringA;
 		_globalLogger = MyLogger.CreateMyLogger(//
-				/* relativeLoggerName= */"Global", glblLogDir,
-				/*
-				 * debugCoreName=
-				 */_DEBUG_SIM_CASES ? ("GlblDbg" + tmString) : null, //
+				/* relativeLoggerName= */"Global", glblLogDir, /*
+																 * debugCoreName=
+																 */_DEBUG_SIM_CASES ? ("GlblDbg" + tmString) : null, //
 				/* outCoreName= */"GlblOut" + tmString, //
 				/* errCoreName= */"GlblWrn" + tmString, //
-				/* errCoreName= */"GlblErr" + tmString, MyLogger._DefaultSuffix,
-				/* append= */true);
+				/* errCoreName= */"GlblErr" + tmString, MyLogger._DefaultSuffix, /* append= */true);
 
 		/** Load MathXLib. */
 		MathX.acosX(0d);
@@ -751,27 +698,22 @@ public class SimCaseManager {
 		_globalLogger.out("Loaded Land and Etopo.");
 
 		final File dataDir = SaropsDirsTracker.getDataDir();
-		final RuntimeMXBean runtimeMxBean =
-				ManagementFactory.getRuntimeMXBean();
+		final RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 		final List<String> runtimeArguments = runtimeMxBean.getInputArguments();
 		final int nRuntimeArguments = runtimeArguments.size();
 		String runtimeArgumentsString = "\nRuntime Arguments:";
 		for (int k = 0; k < nRuntimeArguments; ++k) {
-			runtimeArgumentsString +=
-					String.format("\n%s", runtimeArguments.get(k));
+			runtimeArgumentsString += String.format("\n%s", runtimeArguments.get(k));
 		}
-		runtimeArgumentsString +=
-				String.format("\nEnd of Runtime Arguments.\n");
+		runtimeArgumentsString += String.format("\nEnd of Runtime Arguments.\n");
 		_globalLogger.out(runtimeArgumentsString);
-		_globalLogger.out(
-				String.format("\n%s", SimGlobalStrings.getFullStaticVersionName()));
+		_globalLogger.out(String.format("\n%s", SimGlobalStrings.getFullStaticVersionName()));
 
 		synchronized (_LockOnSimCaseManagerProperties) {
 			if (_SimCaseManagerProperties == null) {
 				final Properties simCaseManagerProperties = new Properties();
 				final Class<? extends SimCaseManager> clazz = getClass();
-				try (final InputStream is =
-						clazz.getResourceAsStream("SimCaseManager.properties")) {
+				try (final InputStream is = clazz.getResourceAsStream("SimCaseManager.properties")) {
 					simCaseManagerProperties.load(is);
 				} catch (final IOException e) {
 				}
@@ -779,109 +721,80 @@ public class SimCaseManager {
 				 * Reset (or set) maxNProcessorsToUse and then save the copyOf.
 				 */
 				int maxNProcessorsToUse = 0;
-				final String s1a = simCaseManagerProperties
-						.getProperty("SimCaseManager.MaxNProcessorsToUse");
+				final String s1a = simCaseManagerProperties.getProperty("SimCaseManager.MaxNProcessorsToUse");
 				try {
 					maxNProcessorsToUse = Integer.parseInt(s1a);
 				} catch (final NumberFormatException e1) {
-					maxNProcessorsToUse =
-							Runtime.getRuntime().availableProcessors() - 1;
-					simCaseManagerProperties.setProperty(
-							"SimCaseManager.MaxNProcessorsToUse",
+					maxNProcessorsToUse = Runtime.getRuntime().availableProcessors() - 1;
+					simCaseManagerProperties.setProperty("SimCaseManager.MaxNProcessorsToUse",
 							"" + maxNProcessorsToUse);
 				}
 				/** Back it up, since we have reset maxNProcessorsToUse. */
-				final File backupFile =
-						new File(dataDir, "CopyOfJarFileSimCaseManager.properties");
-				try (final FileOutputStream backupFos =
-						new FileOutputStream(backupFile)) {
-					simCaseManagerProperties.store(backupFos,
-							"Copy of JarFile SimCaseManager.Properties.");
+				final File backupFile = new File(dataDir, "CopyOfJarFileSimCaseManager.properties");
+				try (final FileOutputStream backupFos = new FileOutputStream(backupFile)) {
+					simCaseManagerProperties.store(backupFos, "Copy of JarFile SimCaseManager.Properties.");
 					backupFos.close();
 				} catch (final IOException e1) {
 				}
-				final File overrideFile =
-						new File(dataDir, "SimCaseManager.properties");
+				final File overrideFile = new File(dataDir, "SimCaseManager.properties");
 				if (overrideFile.exists() && !overrideFile.isDirectory()) {
-					final String overrideFilePath =
-							StringUtilities.getCanonicalPath(overrideFile);
-					_globalLogger.out(String.format(
-							"Overriding SimCaseManager.properties.  " + "filePath:%s.\n",
+					final String overrideFilePath = StringUtilities.getCanonicalPath(overrideFile);
+					_globalLogger.out(String.format("Overriding SimCaseManager.properties.  " + "filePath:%s.\n",
 							overrideFilePath));
-					try (final FileInputStream fis =
-							new FileInputStream(overrideFile)) {
+					try (final FileInputStream fis = new FileInputStream(overrideFile)) {
 						simCaseManagerProperties.load(fis);
 					} catch (final IOException e) {
 					}
 				}
 				_SimCaseManagerProperties = simCaseManagerProperties;
-				final String s1 = _SimCaseManagerProperties
-						.getProperty("SimCaseManager.MaxNProcessorsToUse");
+				final String s1 = _SimCaseManagerProperties.getProperty("SimCaseManager.MaxNProcessorsToUse");
 				_MaxNProcessorsToUse = Integer.parseInt(s1);
-				_SimCaseManagerProperties.setProperty(
-						"SimCaseManager.MaxNProcessorsToUse",
-						"" + _MaxNProcessorsToUse);
-				final String s2 = _SimCaseManagerProperties
-						.getProperty("SimCaseManager.MaxNParticlesFiles");
+				_SimCaseManagerProperties.setProperty("SimCaseManager.MaxNProcessorsToUse", "" + _MaxNProcessorsToUse);
+				final String s2 = _SimCaseManagerProperties.getProperty("SimCaseManager.MaxNParticlesFiles");
 				_MaxNParticlesFiles = Integer.parseInt(s2);
-				_SimCaseManagerProperties.setProperty(
-						"SimCaseManager.MaxNParticlesFiles", "" + _MaxNParticlesFiles);
-				final String s3 = _SimCaseManagerProperties
-						.getProperty("SimCaseManager.MaxNEngines");
+				_SimCaseManagerProperties.setProperty("SimCaseManager.MaxNParticlesFiles", "" + _MaxNParticlesFiles);
+				final String s3 = _SimCaseManagerProperties.getProperty("SimCaseManager.MaxNEngines");
 				final int maxNEngines = Integer.parseInt(s3);
 				/** Print it out when it is set for good (below). */
-				final String s4 = _SimCaseManagerProperties
-						.getProperty("SimCaseManager.MinNThreadsPerEngine");
+				final String s4 = _SimCaseManagerProperties.getProperty("SimCaseManager.MinNThreadsPerEngine");
 				/** Must have at least 1 thread per engine. */
 				final int minNThreadsPerEngine = Math.max(1, Integer.parseInt(s4));
-				_SimCaseManagerProperties.setProperty(
-						"SimCaseManager.MinNThreadsPerEngine",
-						"" + minNThreadsPerEngine);
-				final String s5 = _SimCaseManagerProperties
-						.getProperty("SimCaseManager.MaxNWorkerThreadsInOneCall");
+				_SimCaseManagerProperties.setProperty("SimCaseManager.MinNThreadsPerEngine", "" + minNThreadsPerEngine);
+				final String s5 = _SimCaseManagerProperties.getProperty("SimCaseManager.MaxNWorkerThreadsInOneCall");
 				_MaxNWorkerThreadsInOneCall = Integer.parseInt(s5);
-				_SimCaseManagerProperties.setProperty(
-						"SimCaseManager.MaxNWorkerThreadsInOneCall",
+				_SimCaseManagerProperties.setProperty("SimCaseManager.MaxNWorkerThreadsInOneCall",
 						"" + _MaxNWorkerThreadsInOneCall);
-				_NEngines = Math.max(1, Math.min(maxNEngines,
-						_MaxNProcessorsToUse / minNThreadsPerEngine));
-				_SimCaseManagerProperties.setProperty("SimCaseManager.MaxNEngines",
-						"" + _NEngines);
+				_NEngines = Math.max(1, Math.min(maxNEngines, _MaxNProcessorsToUse / minNThreadsPerEngine));
+				_SimCaseManagerProperties.setProperty("SimCaseManager.MaxNEngines", "" + _NEngines);
 				/** Dump the the working copy of the parameters. */
-				final File workingFile =
-						new File(dataDir, "WorkingSimCaseManager.properties");
-				try (final FileOutputStream fos =
-						new FileOutputStream(workingFile)) {
-					simCaseManagerProperties.store(fos,
-							"Copy of JarFile SimCaseManager.Properties.");
+				final File workingFile = new File(dataDir, "WorkingSimCaseManager.properties");
+				try (final FileOutputStream fos = new FileOutputStream(workingFile)) {
+					simCaseManagerProperties.store(fos, "Copy of JarFile SimCaseManager.Properties.");
 				} catch (final IOException e) {
 				}
 			}
 		}
 		/** Set _mayProceed so that something happens. */
 		_mayProceed = true;
-		_enginesThreadPool = new ThreadPoolExecutor(_NEngines, _NEngines, 0L,
-				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>()) {
+		_enginesThreadPool = new ThreadPoolExecutor(_NEngines, _NEngines, 0L, TimeUnit.MILLISECONDS,
+				new LinkedBlockingQueue<Runnable>()) {
 			@Override
-			protected <T> RunnableFuture<T> newTaskFor(final Runnable runnable,
-					final T value) {
+			protected <T> RunnableFuture<T> newTaskFor(final Runnable runnable, final T value) {
 				return new FutureTask<>(runnable, value);
 			}
 		};
 		/**
-		 * We will use, for the name of the logger associated with this Engine
-		 * thread, the name of the engine.
+		 * We will use, for the name of the logger associated with this Engine thread,
+		 * the name of the engine.
 		 */
 		_engineNameToThreadLoggerInfo = new TreeMap<>();
 		_enginesThreadPool.setThreadFactory(new ThreadFactory() {
 			@Override
 			public Thread newThread(final Runnable r) {
 				for (;;) {
-					final String engnName =
-							String.format("Engn%02d", _nextEngineId++);
+					final String engnName = String.format("Engn%02d", _nextEngineId++);
 					if (_engineNameToThreadLoggerInfo.containsKey(engnName)) {
-						_globalLogger.err(
-								String.format("\tFailed to produce Engine[%s].", engnName));
+						MyLogger.err(_globalLogger, String.format("\tFailed to produce Engine[%s].", engnName));
 						continue;
 					}
 					/** Create this Engine's Logger. */
@@ -891,12 +804,9 @@ public class SimCaseManager {
 					} else {
 						engnDbgCoreName = null;
 					}
-					final String engnOutCoreName =
-							String.format("%sOut+%s", engnName, tmString);
-					final String engnWrnCoreName =
-							String.format("%sWrn+%s", engnName, tmString);
-					final String engnErrCoreName =
-							String.format("%sErr+%s", engnName, tmString);
+					final String engnOutCoreName = String.format("%sOut+%s", engnName, tmString);
+					final String engnWrnCoreName = String.format("%sWrn+%s", engnName, tmString);
+					final String engnErrCoreName = String.format("%sErr+%s", engnName, tmString);
 					final MyLogger engineLogger = MyLogger.CreateMyLogger(//
 							/* relativeLoggerName= */engnName, glblLogDir, //
 							engnDbgCoreName, //
@@ -904,10 +814,8 @@ public class SimCaseManager {
 							engnWrnCoreName, //
 							engnErrCoreName, //
 							MyLogger._DefaultSuffix, /* append= */true);
-					_engineNameToThreadLoggerInfo.put(engnName,
-							new ThreadLoggerInfo(glblLogDir, engnDbgCoreName,
-									engnOutCoreName, engnWrnCoreName, engnErrCoreName,
-									engineLogger));
+					_engineNameToThreadLoggerInfo.put(engnName, new ThreadLoggerInfo(glblLogDir, engnDbgCoreName,
+							engnOutCoreName, engnWrnCoreName, engnErrCoreName, engineLogger));
 					final Thread thread = new Thread(r, engnName);
 					MyThreadPool.adjustPriority(thread, _EnginePriorityAdjustment);
 					return thread;
@@ -916,15 +824,12 @@ public class SimCaseManager {
 		});
 
 		/** Use the rest for the worker pool. */
-		final int nForWorkerPool =
-				Math.max(2, _MaxNProcessorsToUse - _NEngines);
-		_workersThreadPool =
-				new MyThreadPool(nForWorkerPool, _MaxNWorkerThreadsInOneCall,
-						_WorkerPriorityAdjustment, "SimWorkers");
-		_queueOfSimCases =
-				new QueueOfSimCases(this);/**
-																	 * For miscellaneous duties.
-																	 */
+		final int nForWorkerPool = Math.max(2, _MaxNProcessorsToUse - _NEngines);
+		_workersThreadPool = new MyThreadPool(nForWorkerPool, _MaxNWorkerThreadsInOneCall, _WorkerPriorityAdjustment,
+				"SimWorkers");
+		_queueOfSimCases = new QueueOfSimCases(this);/**
+														 * For miscellaneous duties.
+														 */
 		_particlesFilePluses = new ArrayList<>();
 		_umbrellaObject = null;
 	}
@@ -932,21 +837,17 @@ public class SimCaseManager {
 	public void shutDown(final String shutDownSrc) {
 		_mayProceed = false;
 		/**
-		 * Shut down the active ones. Cannot synchronize here since termination
-		 * of a run affects _activeCases. Also, we really want to terminate the
-		 * currently active ones. Setting _mayProceed to false will allow the
-		 * queued up ones to execute practically instantaneously.
+		 * Shut down the active ones. Cannot synchronize here since termination of a run
+		 * affects _activeCases. Also, we really want to terminate the currently active
+		 * ones. Setting _mayProceed to false will allow the queued up ones to execute
+		 * practically instantaneously.
 		 */
 		synchronized (_queueOfSimCases) {
-			for (final SimCase simCase : _queueOfSimCases
-					.getSimCasesOldestFirst()) {
+			for (final SimCase simCase : _queueOfSimCases.getSimCasesOldestFirst()) {
 				if (simCase._progressState == ProgressState.ACTIVE) {
 					simCase.stopIfGoing(false);
 					int nTriesToStop = 0;
-					for (;
-							nTriesToStop < 10 &&
-									simCase._progressState == ProgressState.ACTIVE;
-							++nTriesToStop) {
+					for (; nTriesToStop < 10 && simCase._progressState == ProgressState.ACTIVE; ++nTriesToStop) {
 						try {
 							Thread.sleep(3000);
 						} catch (final InterruptedException e) {
@@ -954,12 +855,10 @@ public class SimCaseManager {
 					}
 					if (simCase._progressState == ProgressState.ACTIVE) {
 						final String caseName = simCase.getName();
-						final String s = String.format(
-								"Hanging Problem; Could not shut down %s.", caseName);
-						_globalLogger.err(s);
+						final String s = String.format("Hanging Problem; Could not shut down %s.", caseName);
+						MyLogger.err(_globalLogger, s);
 					} else {
-						_globalLogger.out(String.format("Took %d tries to stop %s",
-								nTriesToStop, simCase.getName()));
+						_globalLogger.out(String.format("Took %d tries to stop %s", nTriesToStop, simCase.getName()));
 					}
 				}
 			}
@@ -981,49 +880,42 @@ public class SimCaseManager {
 		return !_mayProceed;
 	}
 
-	public SimCase buildCompareKeyFilesSimCase(final MyLogger logger,
-			final String engnName) {
+	public SimCase buildCompareKeyFilesSimCase(final MyLogger logger, final String engnName) {
 		final SimCase simCase = new SimCase(logger, engnName);
 		return simCase;
 	}
 
-	public void queueSimCase(final String rawClassName,
-			final String[] runnerArgsX) {
+	public void queueSimCase(final String rawClassName, final String[] runnerArgsX) {
 		if (!_mayProceed) {
 			return;
 		}
 		final String[] runnerArgs = runnerArgsX.clone();
 		final String filePath = StringUtilities.cleanUpFilePath(runnerArgs[0]);
 		runnerArgs[0] = filePath;
-		final String thisSimCaseName =
-				getReadableSimCaseName(rawClassName, filePath);
+		final String thisSimCaseName = getReadableSimCaseName(rawClassName, filePath);
 		_globalLogger.out(String.format("Queuing %s.", thisSimCaseName));
 		synchronized (_queueOfSimCases) {
 			synchronized (_enginesThreadPool) {
 				final SimCase simCase = new SimCase(rawClassName, runnerArgs);
-				for (final SimCase simCaseX : _queueOfSimCases
-						.getSimCasesOldestFirst()) {
+				for (final SimCase simCaseX : _queueOfSimCases.getSimCasesOldestFirst()) {
 					if (_SimCaseComparator.compare(simCase, simCaseX) == 0) {
-						if ((simCaseX._progressState == ProgressState.WAITING) ||
-								(simCaseX._progressState == ProgressState.ACTIVE)) {
+						if ((simCaseX._progressState == ProgressState.WAITING)
+								|| (simCaseX._progressState == ProgressState.ACTIVE)) {
 							/** Since this is already queued, we do nothing. */
-							final String s = String.format(
-									"Will not run %s; still in queue.", thisSimCaseName);
+							final String s = String.format("Will not run %s; still in queue.", thisSimCaseName);
 							_globalLogger.out(s);
 							return;
 						}
 						/**
-						 * This is a "killable one;" get rid of it to make room for this
-						 * new one.
+						 * This is a "killable one;" get rid of it to make room for this new one.
 						 */
 						_queueOfSimCases.remove(simCaseX);
 						break;
 					}
 				}
 				if (!_queueOfSimCases.add(simCase)) {
-					final String s = String.format(
-							"Will not run %s; Queue has problems.", thisSimCaseName);
-					_globalLogger.err(s);
+					final String s = String.format("Will not run %s; Queue has problems.", thisSimCaseName);
+					MyLogger.err(_globalLogger, s);
 					return;
 				}
 				_enginesThreadPool.submit(simCase);
@@ -1033,8 +925,7 @@ public class SimCaseManager {
 
 	public boolean hasActive() {
 		synchronized (_queueOfSimCases) {
-			for (final SimCase simCase : _queueOfSimCases
-					.getSimCasesOldestFirst()) {
+			for (final SimCase simCase : _queueOfSimCases.getSimCasesOldestFirst()) {
 				if (simCase._progressState == ProgressState.ACTIVE) {
 					return true;
 				}
@@ -1071,8 +962,7 @@ public class SimCaseManager {
 		return recentSimCaseList.toArray(new SimCase[recentSimCaseList.size()]);
 	}
 
-	public void cleanUpQueue(final boolean statusOnly, final String filePath,
-			final String m) {
+	public void cleanUpQueue(final boolean statusOnly, final String filePath, final String m) {
 		_queueOfSimCases.cleanUpQueue(statusOnly, filePath, m);
 	}
 
@@ -1082,9 +972,8 @@ public class SimCaseManager {
 		final double maxMemInKBts = runtime.maxMemory() / scale;
 		final double totalMemInKBts = runtime.totalMemory() / scale;
 		final double freeMemInKBts = runtime.freeMemory() / scale;
-		final String logMessage =
-				String.format("Memory: Total[%.3fM], Max[%.3fM], and Free[%.3fM]",
-						totalMemInKBts, maxMemInKBts, freeMemInKBts);
+		final String logMessage = String.format("Memory: Total[%.3fM], Max[%.3fM], and Free[%.3fM]", totalMemInKBts,
+				maxMemInKBts, freeMemInKBts);
 		out(simCase, logMessage);
 	}
 
@@ -1099,8 +988,7 @@ public class SimCaseManager {
 	public static void dbg(final SimCase simCase, final String message) {
 		if (simCase != null && simCase._logger != null) {
 			simCase._logger.dbg(message);
-		} else if (_OnlySimCaseManager != null &&
-				_OnlySimCaseManager._globalLogger != null) {
+		} else if (_OnlySimCaseManager != null && _OnlySimCaseManager._globalLogger != null) {
 			_OnlySimCaseManager._globalLogger.dbg(message);
 		} else {
 			MyLogger.dbg(null, message);
@@ -1110,8 +998,7 @@ public class SimCaseManager {
 	public static void out(final SimCase simCase, final String message) {
 		if (simCase != null && simCase._logger != null) {
 			simCase._logger.out(message);
-		} else if (_OnlySimCaseManager != null &&
-				_OnlySimCaseManager._globalLogger != null) {
+		} else if (_OnlySimCaseManager != null && _OnlySimCaseManager._globalLogger != null) {
 			_OnlySimCaseManager._globalLogger.out(message);
 		} else {
 			MyLogger.out(null, message);
@@ -1121,8 +1008,7 @@ public class SimCaseManager {
 	public static void wrn(final SimCase simCase, final String message) {
 		if (simCase != null && simCase._logger != null) {
 			simCase._logger.wrn(message);
-		} else if (_OnlySimCaseManager != null &&
-				_OnlySimCaseManager._globalLogger != null) {
+		} else if (_OnlySimCaseManager != null && _OnlySimCaseManager._globalLogger != null) {
 			_OnlySimCaseManager._globalLogger.wrn(message);
 		} else {
 			MyLogger.wrn(null, message);
@@ -1131,42 +1017,33 @@ public class SimCaseManager {
 
 	public static void err(final SimCase simCase, final String message) {
 		if (simCase != null && simCase._logger != null) {
-			simCase._logger.err(message);
-		} else if (_OnlySimCaseManager != null &&
-				_OnlySimCaseManager._globalLogger != null) {
-			_OnlySimCaseManager._globalLogger.err(message);
+			MyLogger.err(simCase._logger, message);
+		} else if (_OnlySimCaseManager != null && _OnlySimCaseManager._globalLogger != null) {
+			MyLogger.err(_OnlySimCaseManager._globalLogger, message);
 		} else {
 			MyLogger.err(null, message);
 		}
 	}
 
-	public static void standardLogError(final SimCase simCase,
-			final Throwable e) {
+	public static void standardLogError(final SimCase simCase, final Throwable e) {
 		standardLogError(simCase, e, null);
 	}
 
-	public static void standardLogError(final SimCase simCase,
-			final Throwable e, String message) {
+	public static void standardLogError(final SimCase simCase, final Throwable e, String message) {
 		if (message == null) {
 			message = e.getMessage();
 		}
-		err(simCase, String.format("\n\n@@@\n%s at: %s", message,
-				StringUtilities.getStackTraceString(e)));
+		err(simCase, String.format("\n\n@@@\n%s at: %s", message, StringUtilities.getStackTraceString(e)));
 	}
 
-	public String getReadableSimCaseName(String rawClassName,
-			final String filePath) {
+	public String getReadableSimCaseName(String rawClassName, final String filePath) {
 		try {
 			final int lastDot1 = rawClassName.lastIndexOf('.');
-			rawClassName = lastDot1 < 0 ? rawClassName :
-					rawClassName.substring(lastDot1 + 1);
-			final String shortString =
-					_shortAlphaStringMap.getShortString(filePath);
+			rawClassName = lastDot1 < 0 ? rawClassName : rawClassName.substring(lastDot1 + 1);
+			final String shortString = _shortAlphaStringMap.getShortString(filePath);
 			final String fileName = new File(filePath).getName();
-			final String shortFileName =
-					fileName.substring(0, Math.min(8, fileName.length()));
-			final String s = String.format("%s<%s>:%s", rawClassName, shortString,
-					shortFileName);
+			final String shortFileName = fileName.substring(0, Math.min(8, fileName.length()));
+			final String s = String.format("%s<%s>:%s", rawClassName, shortString, shortFileName);
 			return s;
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -1174,8 +1051,7 @@ public class SimCaseManager {
 		return null;
 	}
 
-	public String getReadableSimCaseName(final String rawClassName,
-			final String[] runnerArgs) {
+	public String getReadableSimCaseName(final String rawClassName, final String[] runnerArgs) {
 		final String filePath;
 		if (runnerArgs == null || runnerArgs.length == 0) {
 			filePath = "NoFilePath.xml";
@@ -1190,42 +1066,35 @@ public class SimCaseManager {
 		return _workersThreadPool;
 	}
 
-	public int getNFreeWorkerThreads(final SimCase simCase,
-			final String whereFrom) {
+	public int getNFreeWorkerThreads(final SimCase simCase, final String whereFrom) {
 		final MyLogger logger = getLogger(simCase);
 		return _workersThreadPool.getNFreeWorkerThreads(logger, whereFrom);
 	}
 
-	public Future<?> submitToWorkers(final SimCaseManager.SimCase simCase,
-			final Runnable runnable) {
+	public Future<?> submitToWorkers(final SimCaseManager.SimCase simCase, final Runnable runnable) {
 		final MyLogger logger = SimCaseManager.getLogger(simCase);
 		return _workersThreadPool.submitToWorkers(logger, runnable);
 	}
 
 	/** Manage ParticlesFiles. */
 	final private static String getKey(final String particlesFilePath) {
-		final String returnValue =
-				StringUtilities.cleanUpFilePath(particlesFilePath);
+		final String returnValue = StringUtilities.cleanUpFilePath(particlesFilePath);
 		return returnValue;
 	}
 
-	public ParticlesFile getParticlesFile(
-			final SimCaseManager.SimCase simCase,
-			final String particlesFilePath) {
+	public ParticlesFile getParticlesFile(final SimCaseManager.SimCase simCase, final String particlesFilePath) {
 		if (particlesFilePath == null) {
 			return null;
 		}
 		final String key = getKey(particlesFilePath);
 		synchronized (_particlesFilePluses) {
 			for (int k = 0; k < _particlesFilePluses.size(); ++k) {
-				final ParticlesFilePlus particlesFilePlus =
-						_particlesFilePluses.get(k);
+				final ParticlesFilePlus particlesFilePlus = _particlesFilePluses.get(k);
 				if (particlesFilePlus._key.equals(key)) {
 					/** Check to see if there's a newer one on disc. */
 					final File particlesFileOnDisc = new File(key);
 					if (particlesFileOnDisc.exists()) {
-						final long fileTimeSecs =
-								StaticUtilities.getTimeOfModificationMs(key) / 1000L;
+						final long fileTimeSecs = StaticUtilities.getTimeOfModificationMs(key) / 1000L;
 						if (fileTimeSecs > particlesFilePlus._fileTimeSecs) {
 							/**
 							 * Must delete it. Would like to log, with the dates.
@@ -1235,22 +1104,17 @@ public class SimCaseManager {
 						}
 					}
 					/** Got one, no need to delete. */
-					particlesFilePlus._lastAccessSecs =
-							System.currentTimeMillis() / 1000L;
+					particlesFilePlus._lastAccessSecs = System.currentTimeMillis() / 1000L;
 					out(simCase, "Retrieving  " + key + "(index[" + k + "]).");
 					return particlesFilePlus._particlesFile;
 				}
 			}
 		}
 		/** No luck. Read it in. */
-		final long modelFileModSecs =
-				StaticUtilities.getTimeOfModificationMs(key) / 1000L;
-		final long modelFileModInRefSecs =
-				TimeUtilities.convertToRefSecs(modelFileModSecs);
-		final String modelFileModString =
-				TimeUtilities.formatTime(modelFileModInRefSecs, true);
-		out(simCase, String.format("Must read in %s, dated %s", key,
-				modelFileModString));
+		final long modelFileModSecs = StaticUtilities.getTimeOfModificationMs(key) / 1000L;
+		final long modelFileModInRefSecs = TimeUtilities.convertToRefSecs(modelFileModSecs);
+		final String modelFileModString = TimeUtilities.formatTime(modelFileModInRefSecs, true);
+		out(simCase, String.format("Must read in %s, dated %s", key, modelFileModString));
 		final ParticlesFile particlesFile = new ParticlesFile(simCase, key);
 		if (particlesFile.getStatus()) {
 			addParticlesFile(simCase, key, particlesFile, modelFileModSecs);
@@ -1264,33 +1128,29 @@ public class SimCaseManager {
 		return _MaxNParticlesFiles > 0;
 	}
 
-	public void addParticlesFile(final SimCase simCase,
-			final String particlesFilePath, final ParticlesFile particlesFile,
-			final long fileSecs) {
+	public void addParticlesFile(final SimCase simCase, final String particlesFilePath,
+			final ParticlesFile particlesFile, final long fileSecs) {
 		if (_particlesFilePluses != null) {
 			final String key = getKey(particlesFilePath);
 			final int currentSizeOfCache = _particlesFilePluses.size();
 			synchronized (_particlesFilePluses) {
 				/**
-				 * Delete the one that is already there or, if we need to, the one
-				 * that is least recently accessed.
+				 * Delete the one that is already there or, if we need to, the one that is least
+				 * recently accessed.
 				 */
 				int indexToDelete = -1;
 				for (int k = 0; k < currentSizeOfCache; ++k) {
-					final ParticlesFilePlus particlesFilePlus =
-							_particlesFilePluses.get(k);
+					final ParticlesFilePlus particlesFilePlus = _particlesFilePluses.get(k);
 					if (particlesFilePlus._key.equalsIgnoreCase(key)) {
 						indexToDelete = k;
 						break;
 					}
 				}
-				if (indexToDelete == -1 &&
-						currentSizeOfCache >= _MaxNParticlesFiles) {
+				if (indexToDelete == -1 && currentSizeOfCache >= _MaxNParticlesFiles) {
 					/** Must delete the least recently accessed. */
 					long minAccessSecs = Long.MAX_VALUE;
 					for (int k = 0; k < currentSizeOfCache; ++k) {
-						final ParticlesFilePlus particlesFilePlus =
-								_particlesFilePluses.get(k);
+						final ParticlesFilePlus particlesFilePlus = _particlesFilePluses.get(k);
 						final long thisAccessSecs = particlesFilePlus._lastAccessSecs;
 						if (thisAccessSecs < minAccessSecs) {
 							indexToDelete = k;
@@ -1300,8 +1160,7 @@ public class SimCaseManager {
 				}
 				if (indexToDelete != -1) {
 					/** Must delete something. */
-					final ParticlesFilePlus particlesFilePlus =
-							_particlesFilePluses.get(indexToDelete);
+					final ParticlesFilePlus particlesFilePlus = _particlesFilePluses.get(indexToDelete);
 					out(simCase, "Deleting " + particlesFilePlus._key);
 					_particlesFilePluses.remove(indexToDelete);
 				}
@@ -1310,8 +1169,7 @@ public class SimCaseManager {
 				 */
 				if (_MaxNParticlesFiles > 0) {
 					out(simCase, "Adding " + key);
-					_particlesFilePluses
-							.add(new ParticlesFilePlus(key, particlesFile, fileSecs));
+					_particlesFilePluses.add(new ParticlesFilePlus(key, particlesFile, fileSecs));
 				}
 			}
 		}
@@ -1343,25 +1201,21 @@ public class SimCaseManager {
 		for (final Map.Entry<String, String> entry : env.entrySet()) {
 			final String key = entry.getKey();
 			final String value = entry.getValue();
-			SimCaseManager.out(simCase,
-					String.format("|+%s+| |+%s+|", key, value));
+			SimCaseManager.out(simCase, String.format("|+%s+| |+%s+|", key, value));
 		}
 		final Properties properties = System.getProperties();
 		int k = 0;
 		for (final Map.Entry<Object, Object> entry : properties.entrySet()) {
 			final String key = (String) entry.getKey();
 			final String value = (String) entry.getValue();
-			SimCaseManager.out(simCase, String.format("%s|++%s++| |+%s+|",
-					k == 0 ? "\n\n" : "", key, value));
+			SimCaseManager.out(simCase, String.format("%s|++%s++| |+%s+|", k == 0 ? "\n\n" : "", key, value));
 			++k;
 		}
 	}
 
-	public static SimGlobalStrings getSimGlobalStrings(
-			final SimCase simCase) {
+	public static SimGlobalStrings getSimGlobalStrings(final SimCase simCase) {
 		if (simCase != null) {
-			final SimGlobalStrings simGlobalStrings =
-					simCase.getSimGlobalStrings();
+			final SimGlobalStrings simGlobalStrings = simCase.getSimGlobalStrings();
 			if (simGlobalStrings != null) {
 				return simGlobalStrings;
 			}

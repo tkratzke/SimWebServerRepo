@@ -3,6 +3,7 @@ package com.skagit.sarops.tracker;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
+import com.skagit.sarops.model.DebrisObjectType;
 import com.skagit.sarops.model.Scenario;
 import com.skagit.sarops.model.SearchObjectType;
 import com.skagit.sarops.model.Sortie;
@@ -15,6 +16,7 @@ import com.skagit.util.randomx.Randomx;
 public class Particle {
 
 	final private ParticleIndexes _prtclIndxs;
+	final private Boolean _guaranteedSticky;
 	private StateVector _root;
 	final private LinkedList<CpaCalculator.Result> _cpaCalculatorResults;
 	private StateVector _tail;
@@ -32,10 +34,8 @@ public class Particle {
 	private TangentCylinder _tangentCylinder;
 	final private SearchObjectType _originatingSot;
 	final private SearchObjectType _distressObjectType;
-	final private TreeMap<Sortie.Leg, CpaCalculator.Result> _legCpaCalculatorResultMap =
-			new TreeMap<>();
-	final private TreeMap<Sortie, CpaCalculator.Result> _sortieCpaCalculatorResultMap =
-			new TreeMap<>();
+	final private TreeMap<Sortie.Leg, CpaCalculator.Result> _legCpaCalculatorResultMap = new TreeMap<>();
+	final private TreeMap<Sortie, CpaCalculator.Result> _sortieCpaCalculatorResultMap = new TreeMap<>();
 
 	public int _fullPenalty;
 	public int _remainingPenalty;
@@ -44,35 +44,49 @@ public class Particle {
 		return _cpaCalculatorResults;
 	}
 
-	public Particle(final Tracker tracker, final Scenario scenario,
-			final ParticleIndexes prtclIndxs,
-			final SearchObjectType originatingSot, final long birthSimSecs,
-			final SearchObjectType distressSot, final long distressSimSecs,
-			final Randomx random) {
+	public Particle(final Tracker tracker, final Scenario scenario, final boolean guaranteedSticky,
+			final SearchObjectType originatingSot, final long birthSimSecs, final DebrisObjectType distressSot,
+			final long distressSimSecs, final Randomx random) {
+		this(tracker, scenario, /* prtclIndxs= */null, guaranteedSticky, originatingSot, birthSimSecs, distressSot,
+				distressSimSecs, random);
+	}
+
+	public Particle(final Tracker tracker, final Scenario scenario, final ParticleIndexes prtclIndxs,
+			final SearchObjectType originatingSot, final long birthSimSecs, final SearchObjectType distressSot,
+			final long distressSimSecs, final Randomx random) {
+		this(tracker, scenario, prtclIndxs, /* guaranteedSticky= */null, originatingSot, birthSimSecs, distressSot,
+				distressSimSecs, random);
+	}
+
+	public Particle(final Tracker tracker, final Scenario scenario, final ParticleIndexes prtclIndxs,
+			final Boolean guaranteedSticky, final SearchObjectType originatingSot, final long birthSimSecs,
+			final SearchObjectType distressSot, final long distressSimSecs, final Randomx random) {
 		_scenario = scenario;
 		_tracker = tracker;
 		_prtclIndxs = prtclIndxs;
+		_guaranteedSticky = guaranteedSticky;
 		_cpaCalculatorResults = new LinkedList<>();
 		_originatingSot = originatingSot;
 		_distressObjectType = distressSot;
 		_birthSimSecs = birthSimSecs;
 		_distressLatLng = null;
-		final SearchObjectType.LeewayData leewayData =
-				distressSot.getLeewayData();
+		final SearchObjectType.LeewayData leewayData = distressSot.getLeewayData();
 		_random = random;
 		/**
-		 * For the leeway calculator, use _random once and only once, to keep
-		 * _random in synch.
+		 * For the leeway calculator, use _random once and only once, to keep _random in
+		 * synch.
 		 */
-		final Randomx r = _random == null ? null :
-				new Randomx(_random.nextLong(), /* nToAdvance= */6);
+		final Randomx r = _random == null ? null : new Randomx(_random.nextLong(), /* nToAdvance= */6);
 		_leewayCalculator = new LeewayCalculator(r, leewayData);
 		_fullPenalty = _remainingPenalty = 0;
 		_distressSimSecs = distressSimSecs;
-		final SearchObjectType.SurvivalData survivalData =
-				distressSot.getSurvivalData();
-		final long lifeLengthAfterDistressSecs =
-				survivalData.getLifeLengthAfterDistressSecs(_random);
+		final SearchObjectType.SurvivalData survivalData = distressSot.getSurvivalData();
+		final long lifeLengthAfterDistressSecs;
+		if (survivalData != null) {
+			lifeLengthAfterDistressSecs = survivalData.getLifeLengthAfterDistressSecs(_random);
+		} else {
+			lifeLengthAfterDistressSecs = 0L;
+		}
 		_expirationSimSecs = distressSimSecs + lifeLengthAfterDistressSecs;
 	}
 
@@ -106,8 +120,8 @@ public class Particle {
 
 	public static class LeewayCalculator {
 		/**
-		 * We could just store the 3 random draws and the
-		 * SearchObjectType.LeewayData, and re-create the slopes.
+		 * We could just store the 3 random draws and the SearchObjectType.LeewayData,
+		 * and re-create the slopes.
 		 */
 		final public double _downWindSlope;
 		final public double _downWindConstant;
@@ -119,21 +133,16 @@ public class Particle {
 		public boolean _usingPlus;
 		public long _nextFlipSecs;
 
-		private static double getSlopeIfConstantIsZero(final double slope,
-				final double standardDeviation, final double nominalSpeed,
-				final double z) {
-			return (nominalSpeed * slope - (z * standardDeviation)) /
-					nominalSpeed;
+		private static double getSlopeIfConstantIsZero(final double slope, final double standardDeviation,
+				final double nominalSpeed, final double z) {
+			return (nominalSpeed * slope - (z * standardDeviation)) / nominalSpeed;
 		}
 
-		private LeewayCalculator(final Randomx localR,
-				final SearchObjectType.LeewayData leewayData) {
+		private LeewayCalculator(final Randomx localR, final SearchObjectType.LeewayData leewayData) {
 			final double nominalSpeed = leewayData._nominalSpeed;
 			if (leewayData._useRayleigh) {
-				final double b =
-						leewayData._dwlSlope / Math.sqrt(Constants._PiOver2);
-				final double rayleighDraw =
-						localR == null ? 0d : localR.getStandardTruncatedRayleighDraw();
+				final double b = leewayData._dwlSlope / Math.sqrt(Constants._PiOver2);
+				final double rayleighDraw = localR == null ? 0d : localR.getStandardTruncatedRayleighDraw();
 				_downWindSlope = b * rayleighDraw;
 				_downWindConstant = 0d;
 			} else {
@@ -141,14 +150,11 @@ public class Particle {
 				final double constant = leewayData._dwlConstant;
 				final double standardDeviation = leewayData._dwlStandardDeviation;
 				if (constant == 0d) {
-					final double gaussianDraw0 =
-							localR == null ? 0d : localR.getTruncatedGaussian();
-					_downWindSlope = getSlopeIfConstantIsZero(slope,
-							standardDeviation, nominalSpeed, gaussianDraw0);
+					final double gaussianDraw0 = localR == null ? 0d : localR.getTruncatedGaussian();
+					_downWindSlope = getSlopeIfConstantIsZero(slope, standardDeviation, nominalSpeed, gaussianDraw0);
 					_downWindConstant = 0d;
 				} else {
-					final double gaussianDraw1 =
-							localR == null ? 0d : localR.getTruncatedGaussian();
+					final double gaussianDraw1 = localR == null ? 0d : localR.getTruncatedGaussian();
 					final double q = gaussianDraw1 * standardDeviation;
 					final double rValue = q / 2d;
 					_downWindSlope = slope + rValue / nominalSpeed;
@@ -159,14 +165,11 @@ public class Particle {
 			double constant = leewayData._cwlPlusConstant;
 			double standardDeviation = leewayData._cwlPlusStandardDeviation;
 			if (constant == 0d) {
-				final double gaussianDraw2 =
-						localR == null ? 0d : localR.getTruncatedGaussian();
-				_crossWindPlusSlope = getSlopeIfConstantIsZero(slope,
-						standardDeviation, nominalSpeed, gaussianDraw2);
+				final double gaussianDraw2 = localR == null ? 0d : localR.getTruncatedGaussian();
+				_crossWindPlusSlope = getSlopeIfConstantIsZero(slope, standardDeviation, nominalSpeed, gaussianDraw2);
 				_crossWindPlusConstant = 0d;
 			} else {
-				final double gaussianDraw3 =
-						localR == null ? 0d : localR.getTruncatedGaussian();
+				final double gaussianDraw3 = localR == null ? 0d : localR.getTruncatedGaussian();
 				final double q = gaussianDraw3 * standardDeviation;
 				final double rValue = q / 2d;
 				_crossWindPlusSlope = slope + rValue / nominalSpeed;
@@ -176,14 +179,11 @@ public class Particle {
 			constant = leewayData._cwlMinusConstant;
 			standardDeviation = leewayData._cwlMinusStandardDeviation;
 			if (constant == 0d) {
-				final double gaussianDraw4 =
-						localR == null ? 0d : localR.getTruncatedGaussian();
-				_crossWindMinusSlope = getSlopeIfConstantIsZero(slope,
-						standardDeviation, nominalSpeed, gaussianDraw4);
+				final double gaussianDraw4 = localR == null ? 0d : localR.getTruncatedGaussian();
+				_crossWindMinusSlope = getSlopeIfConstantIsZero(slope, standardDeviation, nominalSpeed, gaussianDraw4);
 				_crossWindMinusConstant = 0d;
 			} else {
-				final double gaussianDraw5 =
-						localR == null ? 0d : localR.getTruncatedGaussian();
+				final double gaussianDraw5 = localR == null ? 0d : localR.getTruncatedGaussian();
 				final double q = gaussianDraw5 * standardDeviation;
 				final double rValue = q / 2d;
 				_crossWindMinusSlope = slope + rValue / nominalSpeed;
@@ -194,16 +194,16 @@ public class Particle {
 			_usingPlus = true;
 		}
 
-		public double[] getEastAndNorthLeewaySpeeds(final double rawDownwindU,
-				final double rawDownwindV, final long simSecs,
-				final Particle particle) {
-			final double[] eastAndNorthLeewaySpeeds = new double[] { 0d, 0d };
+		public double[] getEastAndNorthLeewaySpeeds(final double rawDownwindU, final double rawDownwindV,
+				final long simSecs, final Particle particle) {
+			final double[] eastAndNorthLeewaySpeeds = new double[] {
+					0d, 0d
+			};
 			/**
-			 * Jack Frost's version (given here) eliminates several calculations
-			 * in the old version.
+			 * Jack Frost's version (given here) eliminates several calculations in the old
+			 * version.
 			 */
-			final double rawWindSpeedSquared =
-					rawDownwindU * rawDownwindU + rawDownwindV * rawDownwindV;
+			final double rawWindSpeedSquared = rawDownwindU * rawDownwindU + rawDownwindV * rawDownwindV;
 			if (rawWindSpeedSquared <= 0d) {
 				return eastAndNorthLeewaySpeeds;
 			}
@@ -214,12 +214,9 @@ public class Particle {
 				eastAndNorthLeewaySpeeds[0] = rawDownwindU * _downWindSlope;
 				eastAndNorthLeewaySpeeds[1] = rawDownwindV * _downWindSlope;
 			} else {
-				final double downWindParticleSpeed =
-						_downWindSlope * rawWindSpeed + _downWindConstant;
-				eastAndNorthLeewaySpeeds[0] =
-						normalizedRawUComponent * downWindParticleSpeed;
-				eastAndNorthLeewaySpeeds[1] =
-						normalizedRawVComponent * downWindParticleSpeed;
+				final double downWindParticleSpeed = _downWindSlope * rawWindSpeed + _downWindConstant;
+				eastAndNorthLeewaySpeeds[0] = normalizedRawUComponent * downWindParticleSpeed;
+				eastAndNorthLeewaySpeeds[1] = normalizedRawVComponent * downWindParticleSpeed;
 			}
 			/** Find the crosswind slope. */
 			if (!particle.isEnvMean() && simSecs > _nextFlipSecs) {
@@ -229,8 +226,8 @@ public class Particle {
 					_usingPlus = !_usingPlus;
 				}
 				if (_gibingFrequencyPerSecond > 0d) {
-					_nextFlipSecs = (long) (particle.getRandom().getExponentialDraw(
-							1d / _gibingFrequencyPerSecond) + simSecs);
+					_nextFlipSecs = (long) (particle.getRandom().getExponentialDraw(1d / _gibingFrequencyPerSecond)
+							+ simSecs);
 				} else {
 					_nextFlipSecs = Long.MAX_VALUE;
 				}
@@ -245,18 +242,15 @@ public class Particle {
 			}
 			if (crossWindConstant == 0d) {
 				/**
-				 * Add in the cross wind contribution; By now, the crosswind is
-				 * defined to be 90 degrees clockwise from downwind.
+				 * Add in the cross wind contribution; By now, the crosswind is defined to be 90
+				 * degrees clockwise from downwind.
 				 */
 				eastAndNorthLeewaySpeeds[0] += rawDownwindV * crossWindSlope;
 				eastAndNorthLeewaySpeeds[1] += -rawDownwindU * crossWindSlope;
 			} else {
-				final double crossWindParticleSpeed =
-						crossWindSlope * rawWindSpeed + crossWindConstant;
-				eastAndNorthLeewaySpeeds[0] +=
-						normalizedRawVComponent * crossWindParticleSpeed;
-				eastAndNorthLeewaySpeeds[1] +=
-						-normalizedRawUComponent * crossWindParticleSpeed;
+				final double crossWindParticleSpeed = crossWindSlope * rawWindSpeed + crossWindConstant;
+				eastAndNorthLeewaySpeeds[0] += normalizedRawVComponent * crossWindParticleSpeed;
+				eastAndNorthLeewaySpeeds[1] += -normalizedRawUComponent * crossWindParticleSpeed;
 			}
 			return eastAndNorthLeewaySpeeds;
 		}
@@ -294,10 +288,8 @@ public class Particle {
 		return _expirationSimSecs;
 	}
 
-	final public SearchObjectType getSearchObjectTypeFromSimSecs(
-			final long simSecs) {
-		return (simSecs < _distressSimSecs) ? _originatingSot :
-				getDistressObjectType();
+	final public SearchObjectType getSearchObjectTypeFromSimSecs(final long simSecs) {
+		return (simSecs < _distressSimSecs) ? _originatingSot : getDistressObjectType();
 	}
 
 	public long getLandingSimSecs() {
@@ -320,7 +312,7 @@ public class Particle {
 		_distressLatLng = distressLatLng;
 	}
 
-	public Sdi getPsd() {
+	public Sdi getSdi() {
 		return null;
 	}
 
@@ -328,8 +320,7 @@ public class Particle {
 		_anchoringSimSecs = anchoringSimSecs;
 	}
 
-	public TangentCylinder getTangentCylinderFromSimSecs(final LatLng3 latLng,
-			final long simSecs) {
+	public TangentCylinder getTangentCylinderFromSimSecs(final LatLng3 latLng, final long simSecs) {
 		if (simSecs < _distressSimSecs) {
 			return null;
 		}
@@ -341,10 +332,8 @@ public class Particle {
 
 	public double getCompletePrior() {
 		final double w0 = _scenario.getScenarioWeight();
-		final double w1 =
-				_scenario.getInitialPriorWithinScenario(_distressObjectType);
-		final ParticleSet particleSet =
-				_tracker.getParticleSet(_scenario.getIScenario());
+		final double w1 = _scenario.getInitialPriorWithinScenario(_distressObjectType);
+		final ParticleSet particleSet = _tracker.getParticleSet(_scenario.getIScenario());
 		final int sotId = _distressObjectType.getId();
 		final int nParticlesObjectType = particleSet.getNParticles(sotId);
 		if (nParticlesObjectType == 0) {
@@ -359,6 +348,10 @@ public class Particle {
 
 	public long getAnchoringSimSecs() {
 		return _anchoringSimSecs;
+	}
+
+	public boolean getGuaranteedSticky() {
+		return _guaranteedSticky;
 	}
 
 	public void capExpirationSimSecs(final long lastSimSecs) {

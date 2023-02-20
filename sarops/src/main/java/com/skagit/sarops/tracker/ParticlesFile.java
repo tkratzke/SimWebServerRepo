@@ -639,37 +639,37 @@ public class ParticlesFile {
 		final int i = prtclIndxs.getScenarioIndex();
 		final int k = prtclIndxs.getSotOrd();
 		if (k >= 0) {
-			final SearchObjectType searchObjectType = _model.getSearchObjectTypeFromOrd(k);
-			final int objectType = searchObjectType.getId();
-			if (objectType < 0) {
-				assert false : "Bad distressType in ParticlesFile: " + objectType;
+			final SearchObjectType sot = _model.getSotFromOrd(k);
+			final int sotId = sot.getId();
+			if (sotId < 0) {
+				assert false : "Bad distressType in ParticlesFile: " + sotId;
 			}
-			return objectType;
+			return sotId;
 		}
 		final int j = prtclIndxs.getParticleIndex();
 		final int objectType = _distressTypes[i][j];
 		return objectType;
 	}
 
-	public int getObjectTypeId(final long refSecs, final ParticleIndexes prtclIndxs) {
-		final int objectType;
+	public int getSotId(final long refSecs, final ParticleIndexes prtclIndxs) {
+		final int sotId;
 		if (_model.getReverseDrift()) {
-			objectType = getDistressType(prtclIndxs);
+			sotId = getDistressType(prtclIndxs);
 		} else {
 			final int k = prtclIndxs.getSotOrd();
 			if (k >= 0) {
-				final SearchObjectType searchObjectType = _model.getSearchObjectTypeFromOrd(k);
-				objectType = searchObjectType.getId();
+				final SearchObjectType sot = _model.getSotFromOrd(k);
+				sotId = sot.getId();
 			} else {
 				final long distressRefSecs = getDistressRefSecs(prtclIndxs);
 				if (refSecs < distressRefSecs) {
-					objectType = getUnderwayType(prtclIndxs);
+					sotId = getUnderwayType(prtclIndxs);
 				} else {
-					objectType = getDistressType(prtclIndxs);
+					sotId = getDistressType(prtclIndxs);
 				}
 			}
 		}
-		return objectType;
+		return sotId;
 	}
 
 	public long getAnchoringRefSecs(final ParticleIndexes prtclIndxs) {
@@ -824,10 +824,7 @@ public class ParticlesFile {
 				return false;
 			}
 		}
-		/**
-		 * _distressTypes' first index indexes the scenarios; so the following line is
-		 * right.
-		 */
+		/** _distressTypes' first index indexes the scenarios. */
 		final int nScenarii = _distressTypes.length;
 		if (nScenarii != other._distressTypes.length) {
 			SimCaseManager.err(_simCase,
@@ -1156,6 +1153,16 @@ public class ParticlesFile {
 				_cumPFails[timeIdx][i][j] *= pFail;
 				_probabilities[timeIdx][i][j] *= pFail;
 			}
+		}
+	}
+
+	public void updateFromLikelihood(final ParticleIndexes prtclIndxs, final double likelihood, final long refSecs) {
+		final int i = prtclIndxs.getScenarioIndex();
+		final int j = prtclIndxs.getParticleIndex();
+		final int nRefSecsS = _cumPFails.length;
+		final int timeIdx0 = getTimeIndexForSetting(refSecs);
+		for (int timeIdx = timeIdx0; timeIdx < nRefSecsS; ++timeIdx) {
+			_probabilities[timeIdx][i][j] *= likelihood;
 		}
 	}
 
