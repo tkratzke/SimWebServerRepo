@@ -66,10 +66,8 @@ public class DebrisSighting implements Comparable<DebrisSighting> {
 		if (_id != other._id) {
 			return false;
 		}
-		if (_name != null && _name.length() > 0 && other._name != null && other._name.length() > 0) {
-			if (_name.compareTo(other._name) != 0) {
-				return false;
-			}
+		if (_name.compareTo(other._name) != 0) {
+			return false;
 		}
 		if (_sightingRefSecs != other._sightingRefSecs) {
 			return false;

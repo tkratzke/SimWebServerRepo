@@ -63,7 +63,7 @@ public class SphericalTimedSegs {
 			final double sllNmi, final double sgndTsNmi, //
 			final double excBufferNmi) {
 
-		/** Store _center and create tc. */
+		/** Store _center and create _tc. */
 		_center = TangentCylinder.convertToCentered(center);
 		final TangentCylinder tc =
 				((TangentCylinder.FlatLatLng) _center).getOwningTangentCylinder();
@@ -171,10 +171,10 @@ public class SphericalTimedSegs {
 		_tightExcLatLngs = tightTsLooseTsAndTightExc[2];
 		final int tsFlag =
 				Loop3Statics.createGenericFlag(/* isClockwise= */_firstTurnRight);
-		_tightTsLoop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		_tightTsLoop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, tsFlag, /* ancestorId= */-1, _tightTsLatLngs,
 				/* logChanges= */false, /* debug= */false);
-		_tightExcCcwGcas = new CcwGcas(/* logger= */null, _tightExcLatLngs);
+		_tightExcCcwGcas = new CcwGcas(/* _logger= */null, _tightExcLatLngs);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class SphericalTimedSegs {
 			final double sgndTsNmi, //
 			final double excBufferNmi) {
 
-		/** Store _center and create tc. */
+		/** Store _center and create _tc. */
 		_center = TangentCylinder.convertToCentered(center);
 		final TangentCylinder tc =
 				((TangentCylinder.FlatLatLng) _center).getOwningTangentCylinder();
@@ -278,10 +278,10 @@ public class SphericalTimedSegs {
 		_tightExcLatLngs = tightTsLooseTsAndTightExc[2];
 		final int tsFlag =
 				Loop3Statics.createGenericFlag(/* isClockwise= */_firstTurnRight);
-		_tightTsLoop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		_tightTsLoop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, tsFlag, /* ancestorId= */-1, _tightTsLatLngs,
 				/* logChanges= */false, /* debug= */false);
-		_tightExcCcwGcas = new CcwGcas(/* logger= */null, _tightExcLatLngs);
+		_tightExcCcwGcas = new CcwGcas(/* _logger= */null, _tightExcLatLngs);
 	}
 
 	private LatLng3[][] getTightTsLooseTsTightExc(
@@ -544,10 +544,10 @@ public class SphericalTimedSegs {
 		}
 		final int tsFlag =
 				Loop3Statics.createGenericFlag(/* isClockwise= */_firstTurnRight);
-		_tightTsLoop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		_tightTsLoop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, tsFlag, /* ancestorId= */-1, _tightTsLatLngs,
 				/* logChanges= */false, /* debug= */false);
-		_tightExcCcwGcas = new CcwGcas(/* logger= */null, _tightExcLatLngs);
+		_tightExcCcwGcas = new CcwGcas(/* _logger= */null, _tightExcLatLngs);
 	}
 
 	final private static double _Cos30Sq = 0.75;
@@ -684,7 +684,7 @@ public class SphericalTimedSegs {
 			}
 		}
 
-		/** Now rotate the points about tc's center. */
+		/** Now rotate the points about _tc's center. */
 		final TangentCylinder.FlatLatLng flatCenter =
 				TangentCylinder.convertToCentered(_center);
 		final TangentCylinder tc = flatCenter.getOwningTangentCylinder();

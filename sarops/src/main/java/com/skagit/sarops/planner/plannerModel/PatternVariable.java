@@ -652,7 +652,7 @@ public class PatternVariable {
 		} else {
 			tsNmiForSingleLeg = PatternUtilStatics._TsInc;
 		}
-		final Sortie sortie = new Sortie(/* model= */null, /* sortieId= */_id,
+		final Sortie sortie = new Sortie(/* _model= */null, /* sortieId= */_id,
 				/* sortieName= */_name, _motionType, creepHdg,
 				/* fxdTsNmi= */Double.NaN, tsNmiForSingleLeg);
 		final long[] waypointSecsS = sphericalTimedSegs._waypointSecsS;

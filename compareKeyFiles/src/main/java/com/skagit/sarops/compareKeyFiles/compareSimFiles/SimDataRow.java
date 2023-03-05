@@ -144,7 +144,7 @@ class SimDataRow implements Comparable<SimDataRow> {
 			areaOfIntersection = 0d;
 		} else {
 			final ArrayList<Loop3> intersectionLoops =
-					LoopsFinder.findLoopsFromLoops(/* logger= */null,
+					LoopsFinder.findLoopsFromLoops(/* _logger= */null,
 							new Loop3[] { origCcwLoop, newCcwLoop },
 							/* waterWins= */true);
 			if (intersectionLoops == null || intersectionLoops.size() != 1) {
@@ -162,7 +162,7 @@ class SimDataRow implements Comparable<SimDataRow> {
 			areaOfUnion = origCcwLoop.getSqNmi();
 		} else {
 			final ArrayList<Loop3> unionLoops = LoopsFinder.findLoopsFromLoops(
-					/* logger= */null, new Loop3[] { origCcwLoop, newCcwLoop },
+					/* _logger= */null, new Loop3[] { origCcwLoop, newCcwLoop },
 					/* waterWins= */false);
 			if (unionLoops == null) {
 				areaOfUnion = 0d;
@@ -264,7 +264,7 @@ class SimDataRow implements Comparable<SimDataRow> {
 		/** Build a ccw loop. */
 		final int ccwFlag =
 				Loop3Statics.createGenericFlag(/* isClockwise= */false);
-		final Loop3 loop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		final Loop3 loop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, ccwFlag, /* ancestorId= */-1, latLngArray,
 				/* logChanges= */false, /* debug= */false);
 		return loop;

@@ -24,7 +24,7 @@ public class ParticlesFileExcelDumper {
 		/** Preliminary nuisance constants. */
 		final SimCaseManager.SimCase simCase = null;
 		final boolean includeSeconds = false;
-		/** Read in the ParticlesFile and get the model. */
+		/** Read in the ParticlesFile and get the _model. */
 		ParticlesFile particlesFile = null;
 		try {
 			particlesFile = new ParticlesFile(simCase, particlesFilePath);

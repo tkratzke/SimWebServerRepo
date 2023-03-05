@@ -380,7 +380,7 @@ public class ModelReader {
 		if ("SIM".equals(topTag) || "DISP".equals(topTag)) {
 			final boolean displayOnly = !("SIM".equals(topTag));
 			/**
-			 * Following is an empty model. Start by adding the StringPluses from all of the
+			 * Following is an empty _model. Start by adding the StringPluses from all of the
 			 * Sim.properties files.
 			 */
 			final Model model = new Model(simCase, modelFilePath, displayOnly);
@@ -406,7 +406,7 @@ public class ModelReader {
 	 * Reads the XML content from the decoded particlesFile string.
 	 *
 	 * @param decodedString the text to be read.
-	 * @return a model fully populated or null if the reading fails.
+	 * @return a _model fully populated or null if the reading fails.
 	 */
 	public static Model readFromParticlesFileModelString(final SimCaseManager.SimCase simCase,
 			final String decodedString) {
@@ -418,7 +418,7 @@ public class ModelReader {
 				model = new Model(simCase, /* simFilePath= */"TEXT", /* displayOnly= */false);
 				final Element root = document.getDocumentElement();
 				/**
-				 * caseDirFile is null since this is not a case; just a model stored in some
+				 * caseDirFile is null since this is not a case; just a _model stored in some
 				 * text String.
 				 */
 				traverse(simCase, model, /* caseDirFile= */null, /* modelFilePath= */null, root);
@@ -495,7 +495,7 @@ public class ModelReader {
 		}
 
 		/**
-		 * The 2nd time through, we get only the Request so we can set model's extent,
+		 * The 2nd time through, we get only the Request so we can set _model's extent,
 		 * TangentCylinder, and water/land issues.
 		 */
 		boolean requestRead = false;
@@ -595,7 +595,7 @@ public class ModelReader {
 	 * Reads a fix hazard description.
 	 *
 	 * @param element the node containing the description of the fix hazard.
-	 * @param model   the model to be populated.
+	 * @param _model   the _model to be populated.
 	 * @throws ReaderException when an incorrect definition is given.
 	 */
 	private static void readFixHazard(final SimCaseManager.SimCase simCase, final Element element, final Model model,
@@ -1558,7 +1558,7 @@ public class ModelReader {
 	 *
 	 * @param element the node containing the data.
 	 * @param sortie  the sortie to be populated.
-	 * @param model   the model being populated.
+	 * @param _model   the _model being populated.
 	 * @throws ReaderException when an incorrect definition is given.
 	 */
 	private static void readSortieLegs(final SimCaseManager.SimCase simCase, final Element element, final Sortie sortie,
@@ -1597,7 +1597,7 @@ public class ModelReader {
 		}
 	}
 
-	/** Reads a scenario and updates the model. */
+	/** Reads a scenario and updates the _model. */
 	private static void readScenario(final SimCaseManager.SimCase simCase, final HashSet<Integer> usedIds,
 			final Element element, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final short id = uniquifyId(getInt(simCase, element, "id", /* unit= */null, stringPluses), usedIds);
@@ -1759,7 +1759,7 @@ public class ModelReader {
 		return (short) -1;
 	}
 
-	/** Reads a debris sighting and updates the model. */
+	/** Reads a debris sighting and updates the _model. */
 	private static void readDebrisSighting(final SimCaseManager.SimCase simCase, final HashSet<Integer> usedIds,
 			final Element element, final Model model, final TreeSet<StringPlus> stringPluses) throws ReaderException {
 		final short id = uniquifyId(getInt(simCase, element, "id", /* unit= */null, stringPluses), usedIds);

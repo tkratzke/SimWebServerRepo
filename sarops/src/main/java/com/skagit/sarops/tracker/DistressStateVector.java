@@ -73,6 +73,7 @@ public class DistressStateVector extends StateVector {
 		final boolean riverine = model.isRiverine();
 		final long currentSimSecs = getSimSecs();
 		final long simSecs = simSecsS[iT];
+		//
 		if (currentSimSecs >= simSecs) {
 			/**
 			 * This happens when particles are initially at different times when we do the

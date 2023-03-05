@@ -186,7 +186,7 @@ public class VoyageItineraryBuilder extends ItineraryBuilder {
 				/**
 				 * If we have a dead end, we add another leg, but only if this is real. If this
 				 * is just for computing the minimum arrival, we don't care. That's a good thing
-				 * because model will be null in that case.
+				 * because _model will be null in that case.
 				 */
 				if (model != null && sailSegs.size() > 0) {
 					final SailSeg sailSeg = sailSegs.get(nSailSegs - 1);

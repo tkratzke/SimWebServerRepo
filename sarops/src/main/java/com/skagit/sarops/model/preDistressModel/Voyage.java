@@ -194,7 +194,7 @@ public class Voyage extends PreDistressModel {
 		final VoyageItineraryBuilder voyageItineraryBuilder =
 				(VoyageItineraryBuilder) getItineraryBuilder(simCase, startingArea);
 		final VoyageItinerary quickieItinerary = voyageItineraryBuilder
-				.myBuildItinerary(/* model= */null, /* r= */null, birthRefSecs,
+				.myBuildItinerary(/* _model= */null, /* r= */null, birthRefSecs,
 						/* prtclIndxs= */null, /* refSecsS= */null, /* sdi= */null);
 		return quickieItinerary.getArrivalRefSecs();
 	}

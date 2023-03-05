@@ -33,7 +33,10 @@ public class SotWithDbl implements Comparable<SotWithDbl> {
 	}
 
 	public boolean deepEquals(final SotWithDbl other) {
-		if ((other == null) || (_origDbl != other._origDbl) || (_sot.getId() != other._sot.getId())) {
+		if (other == null) {
+			return false;
+		}
+		if ((_origDbl != other._origDbl) || (_sot.getId() != other._sot.getId())) {
 			return false;
 		}
 		return true;

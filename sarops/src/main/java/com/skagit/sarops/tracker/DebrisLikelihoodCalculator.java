@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.skagit.sarops.model.DebrisObjectType;
@@ -37,49 +38,56 @@ public class DebrisLikelihoodCalculator {
 		public int compareTo(final DotSightings other) {
 			return _dot.compareTo(other._dot);
 		}
-
 	}
 
 	private final Tracker _tracker;
-	private final DotSightings[] _dotSightings;
+	final MyLogger _logger;
+	final Model _model;
+	final TangentCylinder _tc;
+	final int _nSticky;
 	final Randomx _r;
+	private final DotSightings[] _dotSightings;
 
 	public DebrisLikelihoodCalculator(final Tracker tracker) {
 		_tracker = tracker;
-		final Model model = _tracker.getModel();
-		_r = new Randomx(model.getRandomSeed());
+		_logger = _tracker.getSimCase().getLogger();
+		_model = _tracker.getModel();
+		_tc = _model.getTangentCylinder();
+		_nSticky = Math.max(_NTrajectories, (int) Math.round(_NTrajectories * _model.getProportionOfSticky()));
+		_r = new Randomx(_model.getRandomSeed());
+
 		final TreeMap<DebrisObjectType, DebrisSighting[]> dotToSghtngs = new TreeMap<>();
-		final int nAllSightings = model.getNDebrisSightings();
-		for (int k0 = 0; k0 < nAllSightings; ++k0) {
-			final DebrisSighting sighting = model.getDebrisSighting(k0);
+		final int nSightings = _model.getNDebrisSightings();
+		for (int k0 = 0; k0 < nSightings; ++k0) {
+			final DebrisSighting sighting = _model.getDebrisSighting(k0);
 			final SotWithDbl[] dotWithCnfdncs = sighting.getDotWithCnfdncs();
 			final int nDotWithCnfdncs = dotWithCnfdncs.length;
 			for (int k1 = 0; k1 < nDotWithCnfdncs; ++k1) {
 				final SotWithDbl dotWithCnfdnc = dotWithCnfdncs[k1];
 				final DebrisObjectType dot = (DebrisObjectType) (dotWithCnfdnc.getSot());
-				final DebrisSighting[] sightings = dotToSghtngs.get(dot);
-				if (sightings == null) {
+				final DebrisSighting[] theseSightings = dotToSghtngs.get(dot);
+				if (theseSightings == null) {
 					dotToSghtngs.put(dot, new DebrisSighting[] {
 							sighting
 					});
 				} else {
-					final int nOld = sightings.length;
-					final DebrisSighting[] sightingsX = new DebrisSighting[nOld + 1];
-					System.arraycopy(sightings, 0, sightingsX, 0, nOld);
-					sightingsX[nOld] = sighting;
-					Arrays.sort(sightingsX, new Comparator<DebrisSighting>() {
+					final int nOld = theseSightings.length;
+					final DebrisSighting[] newTheseSightings = new DebrisSighting[nOld + 1];
+					System.arraycopy(theseSightings, 0, newTheseSightings, 0, nOld);
+					newTheseSightings[nOld] = sighting;
+					Arrays.sort(newTheseSightings, new Comparator<DebrisSighting>() {
 
 						@Override
 						public int compare(final DebrisSighting sighting0, final DebrisSighting sighting1) {
-							final long refSecs0 = sighting0.getSightingRefSecs();
-							final long refSecs1 = sighting1.getSightingRefSecs();
-							if (refSecs0 != refSecs1) {
-								return refSecs0 < refSecs1 ? -1 : 1;
+							final long secs0 = sighting0.getSightingRefSecs();
+							final long secs1 = sighting1.getSightingRefSecs();
+							if (secs0 != secs1) {
+								return secs0 < secs1 ? -1 : 1;
 							}
 							return sighting0.compareTo(sighting1);
 						}
 					});
-					dotToSghtngs.put(dot, sightingsX);
+					dotToSghtngs.put(dot, newTheseSightings);
 				}
 			}
 		}
@@ -106,7 +114,7 @@ public class DebrisLikelihoodCalculator {
 
 	private DebrisSighting[] getSightings(final DebrisObjectType dot) {
 		final int idx = Arrays.binarySearch(_dotSightings, new DotSightings(dot, null));
-		return _dotSightings[idx]._sightings;
+		return idx >= 0 ? _dotSightings[idx]._sightings : null;
 	}
 
 	private final static int _NTrajectories = 25;
@@ -118,68 +126,72 @@ public class DebrisLikelihoodCalculator {
 	private double computeLikelihood(final Randomx r, final DebrisObjectType dot, final LatLng3 distressLatLng,
 			final long distressSecs) {
 		final DebrisSighting[] sightings = getSightings(dot);
-		final int nSightings = sightings.length;
-		final long lastSightingSecs = sightings[nSightings - 1].getSightingRefSecs();
-		/**
-		 * Compute all the secs that we want our drifts to stop at. These include the
-		 * sightings' secs as well as intermediate steps.
-		 */
-		final HashSet<Long> secsSet = new HashSet<>();
-		secsSet.add(distressSecs);
-		for (int k = 0; k < nSightings; ++k) {
-			final long refSecs = sightings[k].getSightingRefSecs();
-			if (refSecs > distressSecs) {
-				secsSet.add(refSecs);
-			}
-		}
-		final long gap = lastSightingSecs - distressSecs;
-		if (gap > 0) {
-			final long timeStep = _tracker.getModel().getMonteCarloSecs();
-			final int nFenceposts0 = (int) (2L + (gap - 1L) / timeStep);
-			final long[] fenceposts = CombinatoricTools.getFenceposts(distressSecs, lastSightingSecs, nFenceposts0);
-			final int nFenceposts1 = fenceposts.length;
-			for (int k = 0; k < nFenceposts1; ++k) {
-				secsSet.add(fenceposts[k]);
-			}
-		}
-		final int nAllSecsS = secsSet.size();
-		final long[] allSecsS = new long[nAllSecsS];
-		final Iterator<Long> it = secsSet.iterator();
-		for (int k = 0; k < nAllSecsS; ++k) {
-			allSecsS[k] = it.next();
-		}
-		Arrays.sort(allSecsS);
-		if (true) {
+		final int nSightings = sightings == null ? 0 : sightings.length;
+		if (nSightings == 0) {
 			return 1d;
 		}
-
-		final LatLng3[][] trajectories = new LatLng3[_NTrajectories][];
-		final int nSticky = Math.max(_NTrajectories,
-				(int) Math.round(_NTrajectories * _tracker.getModel().getProportionOfSticky()));
-		final BitSet stickies = PermutationTools.randomKofNBitSet(nSticky, _NTrajectories, r);
-
-		for (int k = 0; k < _NTrajectories; ++k) {
-			trajectories[k] = createTrajectory(r, stickies.get(k), dot, distressLatLng, distressSecs, allSecsS);
-		}
-		final TreeMap<Long, WeightedPairReDataAcc> secsToAcc = new TreeMap<>();
-		final TreeMap<Long, TangentCylinder> secsToTc = new TreeMap<>();
+		/** Compute the distinct times of the sightings. */
+		final HashSet<Long> sightingsSecsSet = new HashSet<>();
 		for (int k0 = 0; k0 < nSightings; ++k0) {
-			final DebrisSighting sighting = sightings[k0];
-			final long secs = sighting.getSightingRefSecs();
-			if (secsToAcc.get(secs) == null) {
-				final int k1 = Arrays.binarySearch(allSecsS, secs);
-				final LatLng3[] latLngs = new LatLng3[_NTrajectories];
-				for (int k2 = 0; k2 < _NTrajectories; ++k2) {
-					latLngs[k2] = trajectories[k2][k1];
+			final long sightingSecs = sightings[k0].getSightingRefSecs();
+			sightingsSecsSet.add(sightingSecs);
+		}
+		final long[] sightingsSecsS = secsSetToArray(sightingsSecsSet);
+		final int nSightingsSecsS = sightingsSecsS.length;
+		/**
+		 * Trajectories' times include distressSecs, the times of the sightings that
+		 * occur after distressSecs, and intermediate times.
+		 */
+		final HashSet<Long> trajectoriesSecsSet0 = new HashSet<>();
+		trajectoriesSecsSet0.add(distressSecs);
+		for (int k1 = 0; k1 < nSightingsSecsS; ++k1) {
+			final long secs = sightingsSecsS[k1];
+			if (secs > distressSecs) {
+				trajectoriesSecsSet0.add(secs);
+			}
+		}
+		final long[] trajectoriesSecsS0 = secsSetToArray(trajectoriesSecsSet0);
+		final int nTrajectoriesSecsS0 = trajectoriesSecsS0.length;
+
+		final long timeStep = _model.getMonteCarloSecs();
+		final HashSet<Long> trajectorySecsSet = new HashSet<Long>();
+		for (int k2 = 1; k2 < nTrajectoriesSecsS0; ++k2) {
+			final long lo = trajectoriesSecsS0[k2 - 1];
+			final long hi = trajectoriesSecsS0[k2];
+			final long gap = hi - lo;
+			final int nFencepostsA = (int) (2L + (gap - 1L) / timeStep);
+			final long[] fenceposts = CombinatoricTools.getFenceposts(lo, hi, nFencepostsA);
+			final int nFencepostsB = fenceposts.length - 2;
+			for (int k3 = 0; k3 < nFencepostsB; ++k3) {
+				trajectorySecsSet.add(fenceposts[1 + k3]);
+			}
+		}
+		final long[] trajectorySecsS = secsSetToArray(trajectorySecsSet);
+		final int nTrajectorySecsS = trajectorySecsS.length;
+		final long lastTrajectorySecs = trajectorySecsS[nTrajectorySecsS - 1];
+
+		final WeightedPairReDataAcc[] secsToAcc = new WeightedPairReDataAcc[nTrajectorySecsS];
+		for (int k4 = 0; k4 < nTrajectorySecsS; ++k4) {
+			secsToAcc[k4] = null;
+		}
+
+		final BitSet stickies = PermutationTools.randomKofNBitSet(_nSticky, _NTrajectories, r);
+		if (lastTrajectorySecs > distressSecs) {
+			for (int k5 = 0; k5 < _NTrajectories; ++k5) {
+				final LatLng3[] trajectory = createTrajectory(r, stickies.get(k5), dot, distressLatLng, distressSecs,
+						trajectorySecsS);
+				for (int k1 = 0; k1 < nSightingsSecsS; ++k1) {
+					final long secs = sightingsSecsS[k1];
+					final int k4 = Arrays.binarySearch(trajectorySecsS, secs);
+					if (k4 >= 0) {
+						WeightedPairReDataAcc acc = secsToAcc[k4];
+						if (acc == null) {
+							acc = secsToAcc[k4] = new WeightedPairReDataAcc();
+						}
+						final TangentCylinder.FlatLatLng flatLatLng = _tc.convertToMyFlatLatLng(trajectory[k4]);
+						acc.add(flatLatLng.getEastOffsetNmi(), flatLatLng.getNorthOffsetNmi(), /* wt= */1d);
+					}
 				}
-				final TangentCylinder tc = TangentCylinder.getTangentCylinder(latLngs, /* wts= */null);
-				secsToTc.put(secs, tc);
-				final WeightedPairReDataAcc acc = new WeightedPairReDataAcc();
-				for (int k2 = 0; k2 < _NTrajectories; ++k2) {
-					final TangentCylinder.FlatLatLng flatLatLng = tc.convertToMyFlatLatLng(latLngs[k2]);
-					acc.add(flatLatLng.getEastOffsetNmi(), flatLatLng.getNorthOffsetNmi(), /* wt= */1d);
-				}
-				secsToAcc.put(secs, acc);
 			}
 		}
 
@@ -188,44 +200,56 @@ public class DebrisLikelihoodCalculator {
 		for (int k0 = 0; k0 < nSightings; ++k0) {
 			final DebrisSighting sighting = sightings[k0];
 			final long secs = sighting.getSightingRefSecs();
-			final WeightedPairReDataAcc acc = secsToAcc.get(secs);
-			final TangentCylinder tc = secsToTc.get(sighting.getSightingRefSecs());
-			//
-			final LatLng3[] polygon0 = sighting.getPolygon().getPerimeterPoints();
-			final int nLatLngs = polygon0.length;
-			final double[][] points = new double[nLatLngs][];
-			for (int k = 0; k < nLatLngs; ++k) {
-				final TangentCylinder.FlatLatLng flatLatLng = tc.convertToMyFlatLatLng(polygon0[k]);
-				points[k] = new double[] {
-						flatLatLng.getEastOffsetNmi(), flatLatLng.getNorthOffsetNmi()
-				};
-			}
-			double liveLikelihood = 0d;
-			try {
-				final MyLogger logger = _tracker.getSimCase().getLogger();
-				final PolygonCdf cdf = new PolygonCdf(logger, points, Cdf._QuietAboutIrregularity);
-				final double cdfArea = cdf.getTotalArea();
-				/** Find the average density over _NSampleToSide*_NSampleToSide points. */
-				double ttlDensity = 0d;
-				for (int kA = 0; kA < _NSampleToSide; ++kA) {
-					final double cdfX = kA / _NSampleToSideD + 0.5;
-					for (int kB = 0; kB < _NSampleToSide; ++kB) {
-						final double cdfYGivenX = kB / _NSampleToSideD + 0.5;
-						final double[] xy = cdf.cdfsToXy(logger, cdfX, cdfYGivenX, /* result= */null);
-						final double density = acc.getDensity(xy[0], xy[1]);
-						ttlDensity += density;
-					}
+			double sightingLikelihood = 0d;
+			final int k4 = Arrays.binarySearch(trajectorySecsS, secs);
+			if (k4 >= 0) {
+				final WeightedPairReDataAcc acc = secsToAcc[k4];
+				final LatLng3[] perimeter = sighting.getPolygon().getPerimeterPoints();
+				final int nLatLngs = perimeter.length;
+				final double[][] points = new double[nLatLngs][];
+				for (int k5 = 0; k5 < nLatLngs; ++k5) {
+					final TangentCylinder.FlatLatLng flatLatLng = _tc.convertToMyFlatLatLng(perimeter[k5]);
+					points[k5] = new double[] {
+							flatLatLng.getEastOffsetNmi(), flatLatLng.getNorthOffsetNmi()
+					};
 				}
-				final double avgDensity = ttlDensity / _NInSampleD;
-				liveLikelihood = Math.max(1d - _Eps, avgDensity * cdfArea);
-			} catch (final BadCdfException e) {
-				liveLikelihood = 0d;
+				try {
+					final PolygonCdf cdf = new PolygonCdf(_logger, points, Cdf._QuietAboutIrregularity);
+					final double cdfArea = cdf.getTotalArea();
+					/** Find the average density over _NSampleToSide*_NSampleToSide points. */
+					double ttlDensity = 0d;
+					for (int k6a = 0; k6a < _NSampleToSide; ++k6a) {
+						final double cdfX = (k6a + 0.5) / _NSampleToSideD;
+						for (int k6b = 0; k6b < _NSampleToSide; ++k6b) {
+							final double cdfYGivenX = (k6b + 0.5) / _NSampleToSideD;
+							final double[] xy = cdf.cdfsToXy(_logger, cdfX, cdfYGivenX, /* result= */null);
+							final double density = acc.getDensity(xy[0], xy[1]);
+							ttlDensity += density;
+						}
+					}
+					final double avgDensity = ttlDensity / _NInSampleD;
+					sightingLikelihood = Math.max(1d - _Eps, avgDensity * cdfArea);
+				} catch (final BadCdfException e) {
+				}
+			} else {
+				sightingLikelihood = 0d;
 			}
 			final double confidence = sighting.getConfidence(dot);
-			final double thisLikelihood = Math.max(_Eps, confidence * liveLikelihood + (1d - confidence));
+			final double thisLikelihood = Math.max(_Eps, confidence * sightingLikelihood + (1d - confidence));
 			maxLikelihood = Math.max(maxLikelihood, thisLikelihood);
 		}
 		return maxLikelihood;
+	}
+
+	private static long[] secsSetToArray(final Set<Long> secsSet) {
+		final int n = secsSet == null ? 0 : secsSet.size();
+		final long[] longArray = new long[n];
+		final Iterator<Long> it = secsSet.iterator();
+		for (int k = 0; k < n; ++k) {
+			longArray[k] = it.next();
+		}
+		Arrays.sort(longArray);
+		return longArray;
 	}
 
 	private LatLng3[] createTrajectory(final Randomx r, final boolean sticky, final DebrisObjectType dot,

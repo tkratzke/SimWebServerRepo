@@ -334,7 +334,7 @@ public class PvValue implements Comparable<PvValue> {
 			} else {
 				tsNmiForSingleLeg = PatternUtilStatics._TsInc;
 			}
-			_sortie = new Sortie(/* model= */null, /* sortieId= */_pv.getId(), /* sortieName= */_pv.getName(),
+			_sortie = new Sortie(/* _model= */null, /* sortieId= */_pv.getId(), /* sortieName= */_pv.getName(),
 					MotionType.GREAT_CIRCLE, creepHdgIn, tsNmiIn, tsNmiForSingleLeg);
 			long recentRefSecs = Long.MIN_VALUE;
 			LatLng3 recentLatLng = null;
@@ -390,15 +390,15 @@ public class PvValue implements Comparable<PvValue> {
 				final double tsNmi = _sortie.getTsNmi();
 				final GreatCircleArc[] distinctGcas = _sortie.getDistinctGcas();
 				_looseSpecLatLngs = null;
-				_tightTsLoop = computeBufferedCcwCvxHull(/* logger= */null, distinctGcas, tsNmi / 2d);
+				_tightTsLoop = computeBufferedCcwCvxHull(/* _logger= */null, distinctGcas, tsNmi / 2d);
 				/**
 				 * The screwed up order within _tightTsLoop is acceptable here, and keeping it
 				 * ccw is fine as well.
 				 */
 				_looseTsLatLngs = _tightTsLatLngs = _tightTsLoop.getLatLngArray();
 				final double excBufferNmi = _pv.getExcBufferNmi();
-				final Loop3 excLoop = computeBufferedCcwCvxHull(/* logger= */null, distinctGcas, excBufferNmi);
-				_tightExcCcwGcas = new CcwGcas(/* logger= */null, excLoop);
+				final Loop3 excLoop = computeBufferedCcwCvxHull(/* _logger= */null, distinctGcas, excBufferNmi);
+				_tightExcCcwGcas = new CcwGcas(/* _logger= */null, excLoop);
 			}
 			_tightExcLatLngs = _tightExcCcwGcas.getCcwLoop().getLatLngArray();
 			_objectTypeToViz2Pod = computeObjectTypeToPod();
@@ -712,7 +712,7 @@ public class PvValue implements Comparable<PvValue> {
 		if (_myStyle != null) {
 			return _myStyle.getCenter();
 		}
-		final LatLng3 center = _tightTsLoop.getCenterOfMass(/* logger= */null);
+		final LatLng3 center = _tightTsLoop.getCenterOfMass(/* _logger= */null);
 		return center;
 	}
 

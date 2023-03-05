@@ -69,7 +69,7 @@ import com.skagit.util.shorelineFinder.ShorelineFinder;
 import com.skagit.util.shpFileUtils.ShpFileWriter;
 
 /**
- * A tracker generates the particles according to a given model, performs the
+ * A tracker generates the particles according to a given _model, performs the
  * simulation, and updates the weights of each particle according to searches.
  */
 public class Tracker implements MainSaropsObject {
@@ -254,7 +254,7 @@ public class Tracker implements MainSaropsObject {
 		};
 		final int nProgressSteps = simGlobalStrings.getNProgressSteps();
 		_simCase.setChunkReporter(_progressDirectory, nProgressSteps, sectionNames, criticalSections, sections);
-		/** Announce that the model has been read in. */
+		/** Announce that the _model has been read in. */
 		simCase.reportChunkDone();
 		/**
 		 * Set the various forms of environmental data, and write out shp files. This is
@@ -412,8 +412,8 @@ public class Tracker implements MainSaropsObject {
 		}
 		/**
 		 * Now that we have the first and last output times, we can build the
-		 * ParticlesFile object, which calls model's "computeRefTimes," which uses
-		 * model's monteCarloTimeStep.
+		 * ParticlesFile object, which calls _model's "computeRefTimes," which uses
+		 * _model's monteCarloTimeStep.
 		 */
 		_particlesFile = new ParticlesFile(this, firstOutputRefSecsY, lastOutputRefSecsY);
 		/**
@@ -557,7 +557,7 @@ public class Tracker implements MainSaropsObject {
 		final int nParticlesFileWriterChunks = _particlesFileWriterChunks.length;
 		final int nWrapUpChunks = _wrapUpChunks.length;
 		/**
-		 * Now that we have the full time extent of the simulation, let the model know
+		 * Now that we have the full time extent of the simulation, let the _model know
 		 * about it.
 		 */
 		_model.setFullRefSecsExtent(new long[] {

@@ -270,7 +270,7 @@ class SimWriteKmlFiles {
 				LatLng3.getLatLngB(46.75, -124d), //
 				LatLng3.getLatLngB(47d, -123.5) //
 		};
-		final Loop3 redLoop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		final Loop3 redLoop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, flag, /* ancestorId= */-1, redLoopArray,
 				/* logChanges= */false, /* debug= */false);
 		addLoopAndGcaWithStyleToFolder(redLoop, /* gca= */null, redStyleMap,
@@ -284,7 +284,7 @@ class SimWriteKmlFiles {
 				LatLng3.getLatLngB(46.75, -124.25), //
 				LatLng3.getLatLngB(47d, -123.75) //
 		};
-		final Loop3 blueLoop = Loop3.getLoop(/* logger= */null, /* id= */0,
+		final Loop3 blueLoop = Loop3.getLoop(/* _logger= */null, /* id= */0,
 				/* subId= */0, flag, /* ancestorId= */-1, blueLoopArray,
 				/* logChanges= */false, /* debug= */false);
 		addLoopAndGcaWithStyleToFolder(blueLoop, /* gca= */null, blueStyleMap,

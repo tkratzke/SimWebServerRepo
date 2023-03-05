@@ -123,7 +123,7 @@ public class CompareSimFiles {
 
 	/**
 	 * There must be exactly one matching .nc file from which we can extract a
-	 * model, or else we return null.
+	 * _model, or else we return null.
 	 */
 	private static File[] getMainAndOrigNcFiles(
 			final SimCaseManager.SimCase simCase, final File caseDir) {
@@ -145,7 +145,7 @@ public class CompareSimFiles {
 		File[] winningPair = null;
 		for (int k0 = 0; k0 < nMain; ++k0) {
 			final File mainNcFile = mainNcFiles[k0];
-			/** Can we extract a model from this? */
+			/** Can we extract a _model from this? */
 			try {
 				@SuppressWarnings("unused")
 				final ParticlesFile particlesFile =
@@ -254,7 +254,7 @@ public class CompareSimFiles {
 
 	/**
 	 * Gather the caseDirs based on the presence of exactly one matching .nc
-	 * file from which we can extract a model.
+	 * file from which we can extract a _model.
 	 */
 	private static final File[] gatherSimCaseDirs(
 			final SimCaseManager.SimCase simCase, final File dir) {

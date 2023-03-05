@@ -131,7 +131,7 @@ abstract public class AbstractOutFilesManager {
 			}
 			return GetParticlesFilePath(xmlFilePath, particlesFilePathFromXml);
 		} catch (final Exception e) {
-			MyLogger.wrn(/* logger= */null, "Error getting ParticlesFilePathFromXml");
+			MyLogger.wrn(/* _logger= */null, "Error getting ParticlesFilePathFromXml");
 		}
 		return null;
 	}

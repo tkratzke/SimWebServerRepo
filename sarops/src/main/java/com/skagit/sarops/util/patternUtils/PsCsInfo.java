@@ -17,7 +17,7 @@ public class PsCsInfo {
 
 	final public LatLng3 _center;
 	/**
-	 * The following is ignored except for re-writing a model file's completed
+	 * The following is ignored except for re-writing a _model file's completed
 	 * searches, and when we have a single leg.
 	 */
 	final private double _tsNmiIn;

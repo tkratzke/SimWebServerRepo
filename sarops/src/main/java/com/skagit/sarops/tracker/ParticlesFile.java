@@ -34,14 +34,14 @@ public class ParticlesFile {
 
 	/**
 	 * <pre>
-	 *   _FileContentAttribute MUST be "model." Outside programs look for this attribute.
+	 *   _FileContentAttribute MUST be "_model." Outside programs look for this attribute.
 	 * Moreover, the outside programs cannot necessarily read any xml, so we reproduce
 	 * the exact file content in this attribute.
-	 *   _ModelStringAttribute can be anything.  echoModel is an xml version of the model,
+	 *   _ModelStringAttribute can be anything.  echoModel is an xml version of the _model,
 	 * after it has been read in and processed.
 	 * </pre>
 	 */
-	final public static String _FileContentAttribute = "model";
+	final public static String _FileContentAttribute = "_model";
 	final public static String _ModelStringAttribute = "simEchoModel";
 	final public static String _OldModelStringAttribute = "xmlmodel";
 	final public static String _StateVectorTypesAttribute = "stateVectorTypesString";
@@ -365,7 +365,7 @@ public class ParticlesFile {
 			final String modelString = NetCdfUtil.getGlobalAttributeValue(netCdfFile, _ModelStringAttribute,
 					_OldModelStringAttribute);
 			model = ModelReader.readFromParticlesFileModelString(simCase, modelString);
-			SimCaseManager.out(simCase, "Decoded model from particlesFile.");
+			SimCaseManager.out(simCase, "Decoded _model from particlesFile.");
 			nScenarii = model.getNScenarii();
 			nParticlesPerScenario = model.getNParticlesPerScenario();
 			/** Get the basic dimension lengths. */
@@ -373,7 +373,7 @@ public class ParticlesFile {
 			nRefSecsS = timeDimension.getLength();
 			final Dimension particleDimension = netCdfFile.findDimension(_DimParticle);
 			/**
-			 * Because reading nParticlesPerScenario from the model, even the one within the
+			 * Because reading nParticlesPerScenario from the _model, even the one within the
 			 * particlesFile, might refer to the current set of SimProperties, we must get
 			 * it from the dimension within the actual NetCdf file to not crash while
 			 * reading.

@@ -85,7 +85,7 @@ public class Particle {
 		if (survivalData != null) {
 			lifeLengthAfterDistressSecs = survivalData.getLifeLengthAfterDistressSecs(_random);
 		} else {
-			lifeLengthAfterDistressSecs = 0L;
+			lifeLengthAfterDistressSecs = Long.MAX_VALUE / 2;
 		}
 		_expirationSimSecs = distressSimSecs + lifeLengthAfterDistressSecs;
 	}

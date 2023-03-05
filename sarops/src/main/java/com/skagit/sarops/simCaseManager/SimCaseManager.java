@@ -611,7 +611,7 @@ public class SimCaseManager {
 		/** Load all the classes. */
 		assert _OnlySimCaseManager == null : "Should not build more than one SimCaseManager.";
 		_OnlySimCaseManager = this;
-		/** Build the global logger. */
+		/** Build the global _logger. */
 		final File glblLogDir = DirsTracker.getLogDir();
 		if (StringUtilities.getSystemProperty("Clean.Global.Log.Files", /* useSpaceProxy= */false) != null) {
 			final File[] files = glblLogDir.listFiles(new FileFilter() {
@@ -784,7 +784,7 @@ public class SimCaseManager {
 			}
 		};
 		/**
-		 * We will use, for the name of the logger associated with this Engine thread,
+		 * We will use, for the name of the _logger associated with this Engine thread,
 		 * the name of the engine.
 		 */
 		_engineNameToThreadLoggerInfo = new TreeMap<>();

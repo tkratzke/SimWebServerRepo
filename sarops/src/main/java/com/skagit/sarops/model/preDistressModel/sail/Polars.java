@@ -123,7 +123,7 @@ public class Polars {
 		final String regEx = "polars[/\\\\].*\\.(xls|xlsx)";
 		final Pattern pattern = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
 		final ArrayList<ResourcesLister.ResourceNamePlus> resourceNamePluses = ResourcesLister
-				.getRelativeResourceNamePluses(/* logger= */null, packaje, pattern, /* lookInDirectories= */true,
+				.getRelativeResourceNamePluses(/* _logger= */null, packaje, pattern, /* lookInDirectories= */true,
 						/* lookInJarFiles= */true, /* debug= */false);
 		final int nWorkbooks = resourceNamePluses.size();
 

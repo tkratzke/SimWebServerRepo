@@ -129,7 +129,7 @@ public class Model {
 	private double _proportionOfSticky;
 	private BitSet _stickies;
 
-	/** Misc model data. */
+	/** Misc _model data. */
 	private long _randomSeed;
 	private boolean _excludeInitialLandDraws;
 	private boolean _excludeInitialWaterDraws;
