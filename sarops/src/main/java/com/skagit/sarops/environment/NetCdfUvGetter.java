@@ -296,7 +296,7 @@ public class NetCdfUvGetter implements SummaryBuilder {
 				}
 				final NetCdfDataPoint netCdfDataPoint = new NetCdfDataPoint(LatLng3.getLatLngB(lat, lng), _refSecsS,
 						_defaultDU, _defaultDV, riverSeqLcr);
-				_pointCollection.add(_simCase, netCdfDataPoint);
+				_pointCollection.add(_simCase.getLogger(), netCdfDataPoint);
 			}
 			if (lngIndexIterator.hasNext() != latIndexIterator.hasNext()) {
 				SimCaseManager.err(_simCase, "@@@ LngIndexIterator out of synch with LatIndexIterator!! @@@");

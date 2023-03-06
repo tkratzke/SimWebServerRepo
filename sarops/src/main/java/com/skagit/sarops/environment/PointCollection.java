@@ -18,6 +18,7 @@ import com.skagit.util.StaticUtilities;
 import com.skagit.util.massFinder.MassFinderPointFinder;
 import com.skagit.util.massFinder.PointFinder;
 import com.skagit.util.massFinder.PointFinderData;
+import com.skagit.util.myLogger.MyLogger;
 import com.skagit.util.navigation.Extent;
 import com.skagit.util.navigation.LatLng3;
 
@@ -33,18 +34,17 @@ public class PointCollection {
 	private PointFinderData _pointFinderData;
 	private Comparator<NetCdfDataPoint> _netCdfDataPointComparator;
 	private PointFinder _pointFinder;
-	protected Extent _extent = Extent.getUnsetExtent();
+	private Extent _extent = Extent.getUnsetExtent();
 	protected double _cosMidLat = Double.NaN;
 	public long _totalEstimatorTime = 0;
 	public int _nEstimatesMade = 0;
-	final private boolean[] _haveClosed = new boolean[] { false };
+	private final boolean _haveClosed = false;
 
 	/** ctor and basic add routine. */
 	public PointCollection() {
 	}
 
-	public void add(final SimCaseManager.SimCase simCase,
-			final NetCdfDataPoint dataPoint) {
+	public void add(final MyLogger logger, final NetCdfDataPoint dataPoint) {
 		if (_dataPoints == null) {
 			synchronized (this) {
 				if (_dataPoints == null) {
@@ -58,25 +58,23 @@ public class PointCollection {
 			_extent = _extent.buildExtension(latLng);
 			_dataPoints.add(dataPoint);
 		} else {
-			final String errorMessage = String.format(
-					"Duplicate LatLng %s in set of environmental Points.",
+			final String errorMessage = String.format("Duplicate LatLng %s in set of environmental Points.",
 					latLng.getString());
-			SimCaseManager.err(simCase, errorMessage);
+			MyLogger.err(logger, errorMessage);
 		}
 	}
 
-	public void close(final SimCaseManager.SimCase simCase,
-			final String interpolationMode) {
-		if (_haveClosed[0]) {
+	public void close(final SimCaseManager.SimCase simCase, final String interpolationMode) {
+		if (_haveClosed) {
 			return;
 		}
-		synchronized (_haveClosed) {
-			if (_haveClosed[0]) {
+		synchronized (this) {
+			if (_haveClosed) {
 				return;
 			}
 			/**
-			 * Create the PointFinderData first so we have the LatLng comparator
-			 * that takes into account leftLng.
+			 * Create the PointFinderData first so we have the LatLng comparator that takes
+			 * into account leftLng.
 			 */
 			final Set<LatLng3> allLatLngs = new HashSet<>();
 			for (final NetCdfDataPoint netCdfDataPoint : _dataPoints) {
@@ -88,28 +86,23 @@ public class PointCollection {
 			if (dumpSummaryString) {
 				SimCaseManager.out(simCase, _pointFinderData.getString());
 			}
-			final Comparator<LatLng3> pointFinderDataLatLngComparator =
-					_pointFinderData._lngToEast2ThenLatComparator;
+			final Comparator<LatLng3> pointFinderDataLatLngComparator = _pointFinderData._lngToEast2ThenLatComparator;
 			_cosMidLat = MathX.cosX(Math.toRadians(_extent.getMidLat()));
 			_netCdfDataPointComparator = new Comparator<>() {
 				@Override
-				public int compare(final NetCdfDataPoint o1,
-						final NetCdfDataPoint o2) {
-					return pointFinderDataLatLngComparator.compare(o1.getLatLng(),
-							o2.getLatLng());
+				public int compare(final NetCdfDataPoint o1, final NetCdfDataPoint o2) {
+					return pointFinderDataLatLngComparator.compare(o1.getLatLng(), o2.getLatLng());
 				}
 			};
-			_sortedDataPoints =
-					_dataPoints.toArray(new NetCdfDataPoint[_dataPoints.size()]);
+			_sortedDataPoints = _dataPoints.toArray(new NetCdfDataPoint[_dataPoints.size()]);
 			Arrays.sort(_sortedDataPoints, _netCdfDataPointComparator);
-			if (interpolationMode.compareTo(Model._CenterDominated) == 0 ||
-					interpolationMode.compareTo(Model._UseAllStrips) == 0) {
-				_riverSeqLcrMachinery = new RiverSeqLcrMachinery(simCase,
-						_sortedDataPoints, interpolationMode, /* debug= */false);
+			if (interpolationMode.compareTo(Model._CenterDominated) == 0
+					|| interpolationMode.compareTo(Model._UseAllStrips) == 0) {
+				_riverSeqLcrMachinery = new RiverSeqLcrMachinery(simCase, _sortedDataPoints, interpolationMode,
+						/* debug= */false);
 				if (!_riverSeqLcrMachinery.canDoRiverineInterpolation()) {
-					final String infoString = "@@@ Inadequate data for riverine " +
-							"interpolation (missing sequence " +
-							"numbers(?)).  Switching to 2Closest. @@@";
+					final String infoString = "@@@ Inadequate data for riverine " + "interpolation (missing sequence "
+							+ "numbers(?)).  Switching to 2Closest. @@@";
 					SimCaseManager.out(simCase, infoString);
 					_riverSeqLcrMachinery = null;
 				}
@@ -119,44 +112,37 @@ public class PointCollection {
 				return;
 			}
 			/**
-			 * At this point, we are not using riverine. We must prepare a
-			 * "standard" PointFinder. We do this by using the PointFinderData.
+			 * At this point, we are not using riverine. We must prepare a "standard"
+			 * PointFinder. We do this by using the PointFinderData.
 			 */
-			final MassFinderPointFinder massFinderPointFinder =
-					new MassFinderPointFinder(_pointFinderData);
+			final MassFinderPointFinder massFinderPointFinder = new MassFinderPointFinder(_pointFinderData);
 			_pointFinder = massFinderPointFinder;
 		}
 	}
 
 	/**
 	 * Produces the standard (2-closest or 3-closest) "Getters." We find the
-	 * k-closest (in position) points and store them for interpolation
-	 * purposes for any time step.
+	 * k-closest (in position) points and store them for interpolation purposes for
+	 * any time step.
 	 *
 	 * @param latLng             The point we're trying to get uv values for.
 	 * @param nToInterpolateWith Either 2 or 3. Determines how many we'll
 	 *                           interpolate with.
 	 */
-	public StandardUvCalculator getStandardUvCalculator(final LatLng3 latLng,
-			final int nToInterpolateWith) {
-		final ArrayList<LatLng3> referenceLatLngs =
-				_pointFinder.getClosestPoints(latLng, nToInterpolateWith);
+	public StandardUvCalculator getStandardUvCalculator(final LatLng3 latLng, final int nToInterpolateWith) {
+		final ArrayList<LatLng3> referenceLatLngs = _pointFinder.getClosestPoints(latLng, nToInterpolateWith);
 		final int nReferencePoints = referenceLatLngs.size();
-		final NetCdfDataPoint[] referencePoints =
-				new NetCdfDataPoint[nReferencePoints];
+		final NetCdfDataPoint[] referencePoints = new NetCdfDataPoint[nReferencePoints];
 		final double[] dSquareds = new double[nReferencePoints];
 		int k = 0;
 		final double lat = latLng.getLat();
 		final double lng = latLng.getLng();
 		for (final LatLng3 referenceLatLng : referenceLatLngs) {
 			final NetCdfDataPoint lookUp = new NetCdfDataPoint(referenceLatLng);
-			final int glbIndex = CombinatoricTools.getGlbIndex(_sortedDataPoints,
-					lookUp, _netCdfDataPointComparator);
+			final int glbIndex = CombinatoricTools.getGlbIndex(_sortedDataPoints, lookUp, _netCdfDataPointComparator);
 			referencePoints[k] = _sortedDataPoints[glbIndex];
-			final double scaledLngDifference = _cosMidLat *
-					LatLng3.degsToEast180_180(lng, referenceLatLng.getLng());
-			final double scaledLngDifferenceSquared =
-					scaledLngDifference * scaledLngDifference;
+			final double scaledLngDifference = _cosMidLat * LatLng3.degsToEast180_180(lng, referenceLatLng.getLng());
+			final double scaledLngDifferenceSquared = scaledLngDifference * scaledLngDifference;
 			final double latDifference = (referenceLatLng.getLat() - lat);
 			final double latDifferenceSquared = latDifference * latDifference;
 			dSquareds[k] = scaledLngDifferenceSquared + latDifferenceSquared;
@@ -172,9 +158,11 @@ public class PointCollection {
 				if (iPass == 0) {
 					/** If some reference point coincides, it gets all the weight. */
 					if (NumericalRoutines.compare(dSquareds[i], 0.0) == 0) {
-						return new StandardUvCalculator(this,
-								new NetCdfDataPoint[] { referencePoints[i] },
-								new double[] { 1.0 });
+						return new StandardUvCalculator(this, new NetCdfDataPoint[] {
+								referencePoints[i]
+						}, new double[] {
+								1.0
+						});
 					}
 					weights[i] = 1.0 / Math.sqrt(dSquareds[i]);
 					totalWeight += weights[i];
@@ -190,17 +178,14 @@ public class PointCollection {
 	 * This gives a "Riverine" interpolation scheme.
 	 *
 	 * @param latLng            Position of interest.
-	 * @param interpolationMode See
-	 *                          {@link com.skagit.sarops.model.Model#_2Closest},
+	 * @param interpolationMode See {@link com.skagit.sarops.model.Model#_2Closest},
 	 *                          et. al.
 	 * @param debug             Set it to false.
 	 */
-	public RiverSeqLcrUvCalculator getRiverSeqLcrUvCalculator(
-			final SimCaseManager.SimCase simCase, final LatLng3 latLng,
-			final String interpolationMode) {
+	public RiverSeqLcrUvCalculator getRiverSeqLcrUvCalculator(final SimCaseManager.SimCase simCase,
+			final LatLng3 latLng, final String interpolationMode) {
 		if (_riverSeqLcrMachinery != null) {
-			return new RiverSeqLcrUvCalculator(simCase, _riverSeqLcrMachinery,
-					latLng);
+			return new RiverSeqLcrUvCalculator(simCase, _riverSeqLcrMachinery, latLng);
 		}
 		return null;
 	}
