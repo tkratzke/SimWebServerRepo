@@ -15,6 +15,9 @@ import com.skagit.util.CombinatoricTools;
 import com.skagit.util.MathX;
 import com.skagit.util.NumericalRoutines;
 import com.skagit.util.StaticUtilities;
+import com.skagit.util.massFinder.MassFinderPointFinder;
+import com.skagit.util.massFinder.PointFinder;
+import com.skagit.util.massFinder.PointFinderData;
 import com.skagit.util.navigation.Extent;
 import com.skagit.util.navigation.LatLng3;
 
