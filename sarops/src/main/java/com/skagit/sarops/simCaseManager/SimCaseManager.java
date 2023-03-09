@@ -608,7 +608,7 @@ public class SimCaseManager {
 	final public MyLogger _globalLogger;
 
 	public SimCaseManager() {
-		/** Load all the classes. */
+		/** Calling this should Load all of the classes. */
 		assert _OnlySimCaseManager == null : "Should not build more than one SimCaseManager.";
 		_OnlySimCaseManager = this;
 		/** Build the global _logger. */

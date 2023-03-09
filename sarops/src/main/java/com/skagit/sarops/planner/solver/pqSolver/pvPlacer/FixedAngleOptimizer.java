@@ -262,7 +262,7 @@ public class FixedAngleOptimizer {
 			final int objTp = prtclPlus._objectType;
 			final double[] xy = getTwistedXy(latLng);
 			final double wt = entry.getValue()[0];
-			items.add(new MassFinder.Item(xy, wt, objTp, null));
+			items.add(new MassFinder.Item(xy, wt, objTp, /* referenceObject= */null));
 			assert _objTpToSweepWidth.get(new IntDouble(objTp)) != null : "FixedAngleOptProblem1";
 		}
 		_massFinder = new MassFinder(items);
